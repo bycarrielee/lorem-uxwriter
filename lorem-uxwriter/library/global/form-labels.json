@@ -1,0 +1,560 @@
+{
+  "global": {
+    "forms": {
+      "personalDetails": {
+        "applicantDetails": {
+          "fullName": {
+            "label": { "id": "global.forms.personalDetails.applicantDetails.fullName.label", "elementType": "form-field-label", "status": "draft", "screenshot": "screenshots/[Desktop] 1.1 Personal Details - Errors.png", "notes": null, "value": "Full name (as in NRIC)" },
+            "errors": {
+              "required": { "id": "global.forms.personalDetails.applicantDetails.fullName.errors.required", "elementType": "form-field-error", "status": "draft", "screenshot": "screenshots/[Desktop] 1.1 Personal Details - Errors.png", "notes": null, "value": "Enter full name", "field": { "id": "global.forms.personalDetails.applicantDetails.fullName", "label": "Full name (as in NRIC)" } }
+            }
+          },
+          "sex": {
+            "label": { "id": "global.forms.personalDetails.applicantDetails.sex.label", "elementType": "form-field-label", "status": "draft", "screenshot": "screenshots/[Desktop] 1.1 Personal Details - Errors.png", "notes": null, "value": "Sex" },
+            "errors": {
+              "required": { "id": "global.forms.personalDetails.applicantDetails.sex.errors.required", "elementType": "form-field-error", "status": "draft", "screenshot": "screenshots/[Desktop] 1.1 Personal Details - Errors.png", "notes": null, "value": "Select sex", "field": { "id": "global.forms.personalDetails.applicantDetails.sex", "label": "Sex" } }
+            }
+          },
+          "race": {
+            "label": { "id": "global.forms.personalDetails.applicantDetails.race.label", "elementType": "form-field-label", "status": "draft", "screenshot": "screenshots/[Desktop] 1.1 Personal Details - Errors.png", "notes": null, "value": "Race" },
+            "errors": {
+              "required": { "id": "global.forms.personalDetails.applicantDetails.race.errors.required", "elementType": "form-field-error", "status": "draft", "screenshot": "screenshots/[Desktop] 1.1 Personal Details - Errors.png", "notes": null, "value": "Select race", "field": { "id": "global.forms.personalDetails.applicantDetails.race", "label": "Race" } }
+            }
+          },
+          "religion": {
+            "label": { "id": "global.forms.personalDetails.applicantDetails.religion.label", "elementType": "form-field-label", "status": "draft", "screenshot": "screenshots/[Desktop] 1.1 Personal Details - Errors.png", "notes": null, "value": "Religion" },
+            "errors": {
+              "required": { "id": "global.forms.personalDetails.applicantDetails.religion.errors.required", "elementType": "form-field-error", "status": "draft", "screenshot": "screenshots/[Desktop] 1.1 Personal Details - Errors.png", "notes": null, "value": "Select religion", "field": { "id": "global.forms.personalDetails.applicantDetails.religion", "label": "Religion" } }
+            }
+          },
+          "maritalStatus": {
+            "label": { "id": "global.forms.personalDetails.applicantDetails.maritalStatus.label", "elementType": "form-field-label", "status": "draft", "screenshot": "screenshots/[Desktop] 1.1 Personal Details - Errors.png", "notes": null, "value": "Marital status" },
+            "errors": {
+              "required": { "id": "global.forms.personalDetails.applicantDetails.maritalStatus.errors.required", "elementType": "form-field-error", "status": "draft", "screenshot": "screenshots/[Desktop] 1.1 Personal Details - Errors.png", "notes": null, "value": "Select marital status", "field": { "id": "global.forms.personalDetails.applicantDetails.maritalStatus", "label": "Marital status" } }
+            }
+          },
+          "placeOfBirth": {
+            "label": { "id": "global.forms.personalDetails.applicantDetails.placeOfBirth.label", "elementType": "form-field-label", "status": "draft", "screenshot": "screenshots/[Desktop] 1.1 Personal Details - Errors.png", "notes": null, "value": "Place of birth" },
+            "errors": {
+              "required": { "id": "global.forms.personalDetails.applicantDetails.placeOfBirth.errors.required", "elementType": "form-field-error", "status": "draft", "screenshot": "screenshots/[Desktop] 1.1 Personal Details - Errors.png", "notes": null, "value": "Select place of birth", "field": { "id": "global.forms.personalDetails.applicantDetails.placeOfBirth", "label": "Place of birth" } }
+            }
+          },
+          "otherCitizenship": {
+            "label": { "id": "global.forms.personalDetails.applicantDetails.otherCitizenship.label", "elementType": "form-field-label", "status": "draft", "screenshot": "screenshots/[Desktop] 1.1 Personal Details - Errors.png", "notes": null, "value": "Do you currently have, or have you previously had, citizenship or permanent residence in any country other than Singapore?" },
+            "errors": {
+              "required": { "id": "global.forms.personalDetails.applicantDetails.otherCitizenship.errors.required", "elementType": "form-field-error", "status": "draft", "screenshot": "screenshots/[Desktop] 1.1 Personal Details - Errors.png", "notes": null, "value": "Select Yes or No", "field": { "id": "global.forms.personalDetails.applicantDetails.otherCitizenship", "label": "Do you currently have, or have you previously had, citizenship or permanent residence in any country other than Singapore?" } }
+            }
+          }
+        },
+        "contactInformation": {
+          "contactNumber": {
+            "label": { "id": "global.forms.personalDetails.contactInformation.contactNumber.label", "elementType": "form-field-label", "status": "draft", "screenshot": "screenshots/[Desktop] 1.1 Personal Details - Errors.png", "notes": null, "value": "Contact number" },
+            "errors": {
+              "required": { "id": "global.forms.personalDetails.contactInformation.contactNumber.errors.required", "elementType": "form-field-error", "status": "draft", "screenshot": "screenshots/[Desktop] 1.1 Personal Details - Errors.png", "notes": null, "value": "Enter contact number", "field": { "id": "global.forms.personalDetails.contactInformation.contactNumber", "label": "Contact number" } },
+              "format": { "id": "global.forms.personalDetails.contactInformation.contactNumber.errors.format", "elementType": "form-field-error", "status": "draft", "screenshot": "screenshots/[Desktop] 1.1 Personal Details - Errors.png", "notes": null, "value": "Enter an 8-digit contact number", "field": { "id": "global.forms.personalDetails.contactInformation.contactNumber", "label": "Contact number" } },
+              "numbersOnly": { "id": "global.forms.personalDetails.contactInformation.contactNumber.errors.numbersOnly", "elementType": "form-field-error", "status": "draft", "screenshot": "screenshots/[Desktop] 1.1 Personal Details - Errors.png", "notes": null, "value": "Enter numbers only", "field": { "id": "global.forms.personalDetails.contactInformation.contactNumber", "label": "Contact number" } }
+            }
+          },
+          "alternativeContactNumber": {
+            "label": { "id": "global.forms.personalDetails.contactInformation.alternativeContactNumber.label", "elementType": "form-field-label", "status": "draft", "screenshot": "screenshots/[Desktop] 1.1 Personal Details - Errors.png", "notes": null, "value": "Alternative contact number" },
+            "errors": {
+              "required": { "id": "global.forms.personalDetails.contactInformation.alternativeContactNumber.errors.required", "elementType": "form-field-error", "status": "draft", "screenshot": "screenshots/[Desktop] 1.1 Personal Details - Errors.png", "notes": null, "value": "Enter contact number", "field": { "id": "global.forms.personalDetails.contactInformation.alternativeContactNumber", "label": "Alternative contact number" } },
+              "format": { "id": "global.forms.personalDetails.contactInformation.alternativeContactNumber.errors.format", "elementType": "form-field-error", "status": "draft", "screenshot": "screenshots/[Desktop] 1.1 Personal Details - Errors.png", "notes": null, "value": "Enter an 8-digit contact number", "field": { "id": "global.forms.personalDetails.contactInformation.alternativeContactNumber", "label": "Alternative contact number" } },
+              "numbersOnly": { "id": "global.forms.personalDetails.contactInformation.alternativeContactNumber.errors.numbersOnly", "elementType": "form-field-error", "status": "draft", "screenshot": "screenshots/[Desktop] 1.1 Personal Details - Errors.png", "notes": null, "value": "Enter numbers only", "field": { "id": "global.forms.personalDetails.contactInformation.alternativeContactNumber", "label": "Alternative contact number" } },
+              "duplicate": { "id": "global.forms.personalDetails.contactInformation.alternativeContactNumber.errors.duplicate", "elementType": "form-field-error", "status": "draft", "screenshot": "screenshots/[Desktop] 1.1 Personal Details - Errors.png", "notes": null, "value": "Alternative number cannot be the same as your primary number", "field": { "id": "global.forms.personalDetails.contactInformation.alternativeContactNumber", "label": "Alternative contact number" } }
+            }
+          },
+          "emailAddress": {
+            "label": { "id": "global.forms.personalDetails.contactInformation.emailAddress.label", "elementType": "form-field-label", "status": "draft", "screenshot": "screenshots/[Desktop] 1.1 Personal Details - Errors.png", "notes": null, "value": "Email address" },
+            "errors": {
+              "required": { "id": "global.forms.personalDetails.contactInformation.emailAddress.errors.required", "elementType": "form-field-error", "status": "draft", "screenshot": "screenshots/[Desktop] 1.1 Personal Details - Errors.png", "notes": null, "value": "Enter email address", "field": { "id": "global.forms.personalDetails.contactInformation.emailAddress", "label": "Email address" } },
+              "invalid": { "id": "global.forms.personalDetails.contactInformation.emailAddress.errors.invalid", "elementType": "form-field-error", "status": "draft", "screenshot": "screenshots/[Desktop] 1.1 Personal Details - Errors.png", "notes": null, "value": "Enter an email address in the format name@example.com", "field": { "id": "global.forms.personalDetails.contactInformation.emailAddress", "label": "Email address" } }
+            }
+          }
+        },
+        "residentialAddress": {
+          "typeOfDwelling": {
+            "label": { "id": "global.forms.personalDetails.residentialAddress.typeOfDwelling.label", "elementType": "form-field-label", "status": "draft", "screenshot": "screenshots/[Desktop] 1.1 Personal Details - Errors.png", "notes": null, "value": "Type of dwelling" },
+            "errors": {
+              "required": { "id": "global.forms.personalDetails.residentialAddress.typeOfDwelling.errors.required", "elementType": "form-field-error", "status": "draft", "screenshot": "screenshots/[Desktop] 1.1 Personal Details - Errors.png", "notes": null, "value": "Select type of dwelling", "field": { "id": "global.forms.personalDetails.residentialAddress.typeOfDwelling", "label": "Type of dwelling" } }
+            }
+          },
+          "blockOrHouseNumber": {
+            "label": { "id": "global.forms.personalDetails.residentialAddress.blockOrHouseNumber.label", "elementType": "form-field-label", "status": "draft", "screenshot": "screenshots/[Desktop] 1.1 Personal Details - Errors.png", "notes": null, "value": "Block or house number" },
+            "errors": {
+              "required": { "id": "global.forms.personalDetails.residentialAddress.blockOrHouseNumber.errors.required", "elementType": "form-field-error", "status": "draft", "screenshot": "screenshots/[Desktop] 1.1 Personal Details - Errors.png", "notes": null, "value": "Enter block or house number", "field": { "id": "global.forms.personalDetails.residentialAddress.blockOrHouseNumber", "label": "Block or house number" } }
+            }
+          },
+          "streetName": {
+            "label": { "id": "global.forms.personalDetails.residentialAddress.streetName.label", "elementType": "form-field-label", "status": "draft", "screenshot": "screenshots/[Desktop] 1.1 Personal Details - Errors.png", "notes": null, "value": "Street name" },
+            "errors": {
+              "required": { "id": "global.forms.personalDetails.residentialAddress.streetName.errors.required", "elementType": "form-field-error", "status": "draft", "screenshot": "screenshots/[Desktop] 1.1 Personal Details - Errors.png", "notes": null, "value": "Enter street name", "field": { "id": "global.forms.personalDetails.residentialAddress.streetName", "label": "Street name" } }
+            }
+          },
+          "unitNumber": {
+            "label": { "id": "global.forms.personalDetails.residentialAddress.unitNumber.label", "elementType": "form-field-label", "status": "draft", "screenshot": "screenshots/[Desktop] 1.1 Personal Details - Errors.png", "notes": null, "value": "Unit number" },
+            "errors": {
+              "incomplete": { "id": "global.forms.personalDetails.residentialAddress.unitNumber.errors.incomplete", "elementType": "form-field-error", "status": "draft", "screenshot": "screenshots/[Desktop] 1.1 Personal Details - Errors.png", "notes": null, "value": "Enter a complete unit number", "field": { "id": "global.forms.personalDetails.residentialAddress.unitNumber", "label": "Unit number" } },
+              "numbersOnly": { "id": "global.forms.personalDetails.residentialAddress.unitNumber.errors.numbersOnly", "elementType": "form-field-error", "status": "draft", "screenshot": "screenshots/[Desktop] 1.1 Personal Details - Errors.png", "notes": null, "value": "Enter numbers only", "field": { "id": "global.forms.personalDetails.residentialAddress.unitNumber", "label": "Unit number" } }
+            }
+          },
+          "postalCode": {
+            "label": { "id": "global.forms.personalDetails.residentialAddress.postalCode.label", "elementType": "form-field-label", "status": "draft", "screenshot": "screenshots/[Desktop] 1.1 Personal Details - Errors.png", "notes": null, "value": "Postal code" },
+            "errors": {
+              "format": { "id": "global.forms.personalDetails.residentialAddress.postalCode.errors.format", "elementType": "form-field-error", "status": "draft", "screenshot": "screenshots/[Desktop] 1.1 Personal Details - Errors.png", "notes": null, "value": "Enter a 6-digit postal code", "field": { "id": "global.forms.personalDetails.residentialAddress.postalCode", "label": "Postal code" } },
+              "notFound": { "id": "global.forms.personalDetails.residentialAddress.postalCode.errors.notFound", "elementType": "form-field-error", "status": "draft", "screenshot": "screenshots/[Desktop] 1.1 Personal Details - Errors.png", "notes": null, "value": "Postal code not found. Check and try again.", "field": { "id": "global.forms.personalDetails.residentialAddress.postalCode", "label": "Postal code" } }
+            }
+          },
+          "buildingName": {
+            "label": { "id": "global.forms.personalDetails.residentialAddress.buildingName.label", "elementType": "form-field-label", "status": "draft", "screenshot": "screenshots/[Desktop] 1.1 Personal Details - Errors.png", "notes": null, "value": "Building name" },
+            "errors": {
+              "required": { "id": "global.forms.personalDetails.residentialAddress.buildingName.errors.required", "elementType": "form-field-error", "status": "draft", "screenshot": "screenshots/[Desktop] 1.1 Personal Details - Errors.png", "notes": null, "value": "Enter building name", "field": { "id": "global.forms.personalDetails.residentialAddress.buildingName", "label": "Building name" } }
+            }
+          },
+          "residingOverseas": {
+            "label": { "id": "global.forms.personalDetails.residentialAddress.residingOverseas.label", "elementType": "form-field-label", "status": "draft", "screenshot": "screenshots/[Desktop] 1.1 Personal Details - Errors.png", "notes": null, "value": "Are you currently residing overseas?" },
+            "errors": {
+              "required": { "id": "global.forms.personalDetails.residentialAddress.residingOverseas.errors.required", "elementType": "form-field-error", "status": "draft", "screenshot": "screenshots/[Desktop] 1.1 Personal Details - Errors.png", "notes": null, "value": "Select Yes or No", "field": { "id": "global.forms.personalDetails.residentialAddress.residingOverseas", "label": "Are you currently residing overseas?" } }
+            }
+          }
+        },
+        "languages": {
+          "languagesSpoken": {
+            "label": { "id": "global.forms.personalDetails.languages.languagesSpoken.label", "elementType": "form-field-label", "status": "draft", "screenshot": "screenshots/[Desktop] 1.1 Personal Details - Errors.png", "notes": null, "value": "Languages spoken" },
+            "hint": { "id": "global.forms.personalDetails.languages.languagesSpoken.hint", "elementType": "form-field-hint", "status": "draft", "screenshot": "screenshots/[Desktop] 1.1 Personal Details - Errors.png", "notes": null, "value": "Select all that apply" },
+            "errors": {
+              "required": { "id": "global.forms.personalDetails.languages.languagesSpoken.errors.required", "elementType": "form-field-error", "status": "draft", "screenshot": "screenshots/[Desktop] 1.1 Personal Details - Errors.png", "notes": null, "value": "Select at least one language", "field": { "id": "global.forms.personalDetails.languages.languagesSpoken", "label": "Languages spoken" } }
+            }
+          },
+          "languagesWritten": {
+            "label": { "id": "global.forms.personalDetails.languages.languagesWritten.label", "elementType": "form-field-label", "status": "draft", "screenshot": "screenshots/[Desktop] 1.1 Personal Details - Errors.png", "notes": null, "value": "Languages written" },
+            "hint": { "id": "global.forms.personalDetails.languages.languagesWritten.hint", "elementType": "form-field-hint", "status": "draft", "screenshot": "screenshots/[Desktop] 1.1 Personal Details - Errors.png", "notes": null, "value": "Select all that apply" },
+            "errors": {
+              "required": { "id": "global.forms.personalDetails.languages.languagesWritten.errors.required", "elementType": "form-field-error", "status": "draft", "screenshot": "screenshots/[Desktop] 1.1 Personal Details - Errors.png", "notes": null, "value": "Select at least one language", "field": { "id": "global.forms.personalDetails.languages.languagesWritten", "label": "Languages written" } }
+            }
+          }
+        }
+      },
+      "familyDetails": {
+        "householdIncome": {
+          "monthlyHouseholdIncome": {
+            "label": { "id": "global.forms.familyDetails.householdIncome.monthlyHouseholdIncome.label", "elementType": "form-field-label", "status": "draft", "screenshot": "screenshots/[Desktop] 1.2 Family Details - Error.png", "notes": null, "value": "Monthly household income" },
+            "errors": {
+              "required": { "id": "global.forms.familyDetails.householdIncome.monthlyHouseholdIncome.errors.required", "elementType": "form-field-error", "status": "draft", "screenshot": "screenshots/[Desktop] 1.2 Family Details - Error.png", "notes": null, "value": "Enter monthly household income", "field": { "id": "global.forms.familyDetails.householdIncome.monthlyHouseholdIncome", "label": "Monthly household income" } },
+              "numbersOnly": { "id": "global.forms.familyDetails.householdIncome.monthlyHouseholdIncome.errors.numbersOnly", "elementType": "form-field-error", "status": "draft", "screenshot": "screenshots/[Desktop] 1.2 Family Details - Error.png", "notes": null, "value": "Enter numbers only", "field": { "id": "global.forms.familyDetails.householdIncome.monthlyHouseholdIncome", "label": "Monthly household income" } }
+            }
+          }
+        },
+        "familyMembers": {
+          "relationship": {
+            "label": { "id": "global.forms.familyDetails.familyMembers.relationship.label", "elementType": "form-field-label", "status": "draft", "screenshot": "screenshots/[Desktop] 1.2 Family Details - Error.png", "notes": null, "value": "Relationship" },
+            "errors": {
+              "required": { "id": "global.forms.familyDetails.familyMembers.relationship.errors.required", "elementType": "form-field-error", "status": "draft", "screenshot": "screenshots/[Desktop] 1.2 Family Details - Error.png", "notes": null, "value": "Select relationship", "field": { "id": "global.forms.familyDetails.familyMembers.relationship", "label": "Relationship" } }
+            }
+          },
+          "fullName": {
+            "label": { "id": "global.forms.familyDetails.familyMembers.fullName.label", "elementType": "form-field-label", "status": "draft", "screenshot": "screenshots/[Desktop] 1.2 Family Details - Error.png", "notes": null, "value": "Full Name (as in NRIC or passport)" },
+            "errors": {
+              "required": { "id": "global.forms.familyDetails.familyMembers.fullName.errors.required", "elementType": "form-field-error", "status": "draft", "screenshot": "screenshots/[Desktop] 1.2 Family Details - Error.png", "notes": null, "value": "Enter full name", "field": { "id": "global.forms.familyDetails.familyMembers.fullName", "label": "Full Name (as in NRIC or passport)" } }
+            }
+          },
+          "idType": {
+            "label": { "id": "global.forms.familyDetails.familyMembers.idType.label", "elementType": "form-field-label", "status": "draft", "screenshot": "screenshots/[Desktop] 1.2 Family Details - Error.png", "notes": null, "value": "ID type" },
+            "errors": {
+              "required": { "id": "global.forms.familyDetails.familyMembers.idType.errors.required", "elementType": "form-field-error", "status": "draft", "screenshot": "screenshots/[Desktop] 1.2 Family Details - Error.png", "notes": null, "value": "Select ID type", "field": { "id": "global.forms.familyDetails.familyMembers.idType", "label": "ID type" } }
+            }
+          },
+          "nricFinPassportNumber": {
+            "label": { "id": "global.forms.familyDetails.familyMembers.nricFinPassportNumber.label", "elementType": "form-field-label", "status": "draft", "screenshot": "screenshots/[Desktop] 1.2 Family Details - Error.png", "notes": null, "value": "NRIC, FIN, or passport number" },
+            "errors": {
+              "required": { "id": "global.forms.familyDetails.familyMembers.nricFinPassportNumber.errors.required", "elementType": "form-field-error", "status": "draft", "screenshot": "screenshots/[Desktop] 1.2 Family Details - Error.png", "notes": null, "value": "Enter NRIC, FIN, or passport number", "field": { "id": "global.forms.familyDetails.familyMembers.nricFinPassportNumber", "label": "NRIC, FIN, or passport number" } },
+              "invalid": { "id": "global.forms.familyDetails.familyMembers.nricFinPassportNumber.errors.invalid", "elementType": "form-field-error", "status": "draft", "screenshot": "screenshots/[Desktop] 1.2 Family Details - Error.png", "notes": null, "value": "Enter a valid NRIC or FIN", "field": { "id": "global.forms.familyDetails.familyMembers.nricFinPassportNumber", "label": "NRIC, FIN, or passport number" } }
+            }
+          },
+          "maritalStatus": {
+            "label": { "id": "global.forms.familyDetails.familyMembers.maritalStatus.label", "elementType": "form-field-label", "status": "draft", "screenshot": "screenshots/[Desktop] 1.2 Family Details - Error.png", "notes": null, "value": "Marital status" },
+            "errors": {
+              "required": { "id": "global.forms.familyDetails.familyMembers.maritalStatus.errors.required", "elementType": "form-field-error", "status": "draft", "screenshot": "screenshots/[Desktop] 1.2 Family Details - Error.png", "notes": null, "value": "Select marital status", "field": { "id": "global.forms.familyDetails.familyMembers.maritalStatus", "label": "Marital status" } }
+            }
+          },
+          "dateOfBirth": {
+            "label": { "id": "global.forms.familyDetails.familyMembers.dateOfBirth.label", "elementType": "form-field-label", "status": "draft", "screenshot": "screenshots/[Desktop] 1.2 Family Details - Error.png", "notes": null, "value": "Date of birth" },
+            "errors": {
+              "required": { "id": "global.forms.familyDetails.familyMembers.dateOfBirth.errors.required", "elementType": "form-field-error", "status": "draft", "screenshot": "screenshots/[Desktop] 1.2 Family Details - Error.png", "notes": null, "value": "Enter date of birth", "field": { "id": "global.forms.familyDetails.familyMembers.dateOfBirth", "label": "Date of birth" } }
+            }
+          },
+          "contactNumber": {
+            "label": { "id": "global.forms.familyDetails.familyMembers.contactNumber.label", "elementType": "form-field-label", "status": "draft", "screenshot": "screenshots/[Desktop] 1.2 Family Details - Error.png", "notes": null, "value": "Contact number" },
+            "errors": {
+              "required": { "id": "global.forms.familyDetails.familyMembers.contactNumber.errors.required", "elementType": "form-field-error", "status": "draft", "screenshot": "screenshots/[Desktop] 1.2 Family Details - Error.png", "notes": null, "value": "Enter contact number", "field": { "id": "global.forms.familyDetails.familyMembers.contactNumber", "label": "Contact number" } },
+              "format": { "id": "global.forms.familyDetails.familyMembers.contactNumber.errors.format", "elementType": "form-field-error", "status": "draft", "screenshot": "screenshots/[Desktop] 1.2 Family Details - Error.png", "notes": null, "value": "Enter an 8-digit contact number", "field": { "id": "global.forms.familyDetails.familyMembers.contactNumber", "label": "Contact number" } },
+              "numbersOnly": { "id": "global.forms.familyDetails.familyMembers.contactNumber.errors.numbersOnly", "elementType": "form-field-error", "status": "draft", "screenshot": "screenshots/[Desktop] 1.2 Family Details - Error.png", "notes": null, "value": "Enter numbers only", "field": { "id": "global.forms.familyDetails.familyMembers.contactNumber", "label": "Contact number" } }
+            }
+          },
+          "citizenship": {
+            "label": { "id": "global.forms.familyDetails.familyMembers.citizenship.label", "elementType": "form-field-label", "status": "draft", "screenshot": "screenshots/[Desktop] 1.2 Family Details - Error.png", "notes": null, "value": "Citizenship" },
+            "errors": {
+              "required": { "id": "global.forms.familyDetails.familyMembers.citizenship.errors.required", "elementType": "form-field-error", "status": "draft", "screenshot": "screenshots/[Desktop] 1.2 Family Details - Error.png", "notes": null, "value": "Select citizenship", "field": { "id": "global.forms.familyDetails.familyMembers.citizenship", "label": "Citizenship" } }
+            }
+          },
+          "placeOfBirth": {
+            "label": { "id": "global.forms.familyDetails.familyMembers.placeOfBirth.label", "elementType": "form-field-label", "status": "draft", "screenshot": "screenshots/[Desktop] 1.2 Family Details - Error.png", "notes": null, "value": "Place of birth" },
+            "errors": {
+              "required": { "id": "global.forms.familyDetails.familyMembers.placeOfBirth.errors.required", "elementType": "form-field-error", "status": "draft", "screenshot": "screenshots/[Desktop] 1.2 Family Details - Error.png", "notes": null, "value": "Select place of birth", "field": { "id": "global.forms.familyDetails.familyMembers.placeOfBirth", "label": "Place of birth" } }
+            }
+          },
+          "otherCitizenshipsCurrent": {
+            "label": { "id": "global.forms.familyDetails.familyMembers.otherCitizenshipsCurrent.label", "elementType": "form-field-label", "status": "draft", "screenshot": "screenshots/[Desktop] 1.2 Family Details - Error.png", "notes": null, "value": "Other citizenships (currently held)" }
+          },
+          "otherCitizenshipsPrevious": {
+            "label": { "id": "global.forms.familyDetails.familyMembers.otherCitizenshipsPrevious.label", "elementType": "form-field-label", "status": "draft", "screenshot": "screenshots/[Desktop] 1.2 Family Details - Error.png", "notes": null, "value": "Other citizenships (previously held)" }
+          },
+          "occupation": {
+            "label": { "id": "global.forms.familyDetails.familyMembers.occupation.label", "elementType": "form-field-label", "status": "draft", "screenshot": "screenshots/[Desktop] 1.2 Family Details - Error.png", "notes": null, "value": "Occupation" },
+            "errors": {
+              "required": { "id": "global.forms.familyDetails.familyMembers.occupation.errors.required", "elementType": "form-field-error", "status": "draft", "screenshot": "screenshots/[Desktop] 1.2 Family Details - Error.png", "notes": null, "value": "Select occupation", "field": { "id": "global.forms.familyDetails.familyMembers.occupation", "label": "Occupation" } }
+            }
+          },
+          "designation": {
+            "label": { "id": "global.forms.familyDetails.familyMembers.designation.label", "elementType": "form-field-label", "status": "draft", "screenshot": "screenshots/[Desktop] 1.2 Family Details - Error.png", "notes": null, "value": "Designation" },
+            "errors": {
+              "required": { "id": "global.forms.familyDetails.familyMembers.designation.errors.required", "elementType": "form-field-error", "status": "draft", "screenshot": "screenshots/[Desktop] 1.2 Family Details - Error.png", "notes": null, "value": "Enter designation", "field": { "id": "global.forms.familyDetails.familyMembers.designation", "label": "Designation" } }
+            }
+          },
+          "organisation": {
+            "label": { "id": "global.forms.familyDetails.familyMembers.organisation.label", "elementType": "form-field-label", "status": "draft", "screenshot": "screenshots/[Desktop] 1.2 Family Details - Error.png", "notes": null, "value": "Organisation" }
+          },
+          "governmentScholarshipHeld": {
+            "label": { "id": "global.forms.familyDetails.familyMembers.governmentScholarshipHeld.label", "elementType": "form-field-label", "status": "draft", "screenshot": "screenshots/[Desktop] 1.2 Family Details - Error.png", "notes": null, "value": "Government scholarship held" }
+          }
+        }
+      },
+      "education": {
+        "primarySchool": {
+          "countryOrRegion": {
+            "label": { "id": "global.forms.education.primarySchool.countryOrRegion.label", "elementType": "form-field-label", "status": "draft", "screenshot": "screenshots/[Desktop] 2.1 Education History - Errors.png", "notes": null, "value": "Country or region" },
+            "errors": {
+              "required": { "id": "global.forms.education.primarySchool.countryOrRegion.errors.required", "elementType": "form-field-error", "status": "draft", "screenshot": "screenshots/[Desktop] 2.1 Education History - Errors.png", "notes": null, "value": "Select country or region", "field": { "id": "global.forms.education.primarySchool.countryOrRegion", "label": "Country or region" } }
+            }
+          },
+          "institution": {
+            "label": { "id": "global.forms.education.primarySchool.institution.label", "elementType": "form-field-label", "status": "draft", "screenshot": "screenshots/[Desktop] 2.1 Education History - Errors.png", "notes": null, "value": "Institution" },
+            "hint": { "id": "global.forms.education.primarySchool.institution.hint", "elementType": "form-field-hint", "status": "draft", "screenshot": "screenshots/[Desktop] 2.1 Education History - Errors.png", "notes": null, "value": "If your institution is not listed, select 'Other'." },
+            "errors": {
+              "required": { "id": "global.forms.education.primarySchool.institution.errors.required", "elementType": "form-field-error", "status": "draft", "screenshot": "screenshots/[Desktop] 2.1 Education History - Errors.png", "notes": null, "value": "Select institution", "field": { "id": "global.forms.education.primarySchool.institution", "label": "Institution" } }
+            }
+          },
+          "from": {
+            "label": { "id": "global.forms.education.primarySchool.from.label", "elementType": "form-field-label", "status": "draft", "screenshot": "screenshots/[Desktop] 2.1 Education History - Errors.png", "notes": null, "value": "From" },
+            "errors": {
+              "selectMonth": { "id": "global.forms.education.primarySchool.from.errors.selectMonth", "elementType": "form-field-error", "status": "draft", "screenshot": "screenshots/[Desktop] 2.1 Education History - Errors.png", "notes": null, "value": "Select month", "field": { "id": "global.forms.education.primarySchool.from", "label": "From" } },
+              "selectYear": { "id": "global.forms.education.primarySchool.from.errors.selectYear", "elementType": "form-field-error", "status": "draft", "screenshot": "screenshots/[Desktop] 2.1 Education History - Errors.png", "notes": null, "value": "Select year", "field": { "id": "global.forms.education.primarySchool.from", "label": "From" } }
+            }
+          },
+          "to": {
+            "label": { "id": "global.forms.education.primarySchool.to.label", "elementType": "form-field-label", "status": "draft", "screenshot": "screenshots/[Desktop] 2.1 Education History - Errors.png", "notes": null, "value": "To" },
+            "errors": {
+              "selectMonth": { "id": "global.forms.education.primarySchool.to.errors.selectMonth", "elementType": "form-field-error", "status": "draft", "screenshot": "screenshots/[Desktop] 2.1 Education History - Errors.png", "notes": null, "value": "Select month", "field": { "id": "global.forms.education.primarySchool.to", "label": "To" } },
+              "selectYear": { "id": "global.forms.education.primarySchool.to.errors.selectYear", "elementType": "form-field-error", "status": "draft", "screenshot": "screenshots/[Desktop] 2.1 Education History - Errors.png", "notes": null, "value": "Select year", "field": { "id": "global.forms.education.primarySchool.to", "label": "To" } }
+            }
+          }
+        },
+        "secondarySchool": {
+          "countryOrRegion": {
+            "label": { "id": "global.forms.education.secondarySchool.countryOrRegion.label", "elementType": "form-field-label", "status": "draft", "screenshot": "screenshots/[Desktop] 2.1 Education History - Secondary school - Errors.png", "notes": null, "value": "Country or region" },
+            "errors": {
+              "required": { "id": "global.forms.education.secondarySchool.countryOrRegion.errors.required", "elementType": "form-field-error", "status": "draft", "screenshot": "screenshots/[Desktop] 2.1 Education History - Secondary school - Errors.png", "notes": null, "value": "Select country or region", "field": { "id": "global.forms.education.secondarySchool.countryOrRegion", "label": "Country or region" } }
+            }
+          },
+          "institution": {
+            "label": { "id": "global.forms.education.secondarySchool.institution.label", "elementType": "form-field-label", "status": "draft", "screenshot": "screenshots/[Desktop] 2.1 Education History - Secondary school - Errors.png", "notes": null, "value": "Institution" },
+            "hint": { "id": "global.forms.education.secondarySchool.institution.hint", "elementType": "form-field-hint", "status": "draft", "screenshot": "screenshots/[Desktop] 2.1 Education History - Secondary school - Errors.png", "notes": null, "value": "If your institution is not listed, select 'Other'." },
+            "errors": {
+              "required": { "id": "global.forms.education.secondarySchool.institution.errors.required", "elementType": "form-field-error", "status": "draft", "screenshot": "screenshots/[Desktop] 2.1 Education History - Secondary school - Errors.png", "notes": null, "value": "Select institution", "field": { "id": "global.forms.education.secondarySchool.institution", "label": "Institution" } }
+            }
+          },
+          "from": {
+            "label": { "id": "global.forms.education.secondarySchool.from.label", "elementType": "form-field-label", "status": "draft", "screenshot": "screenshots/[Desktop] 2.1 Education History - Secondary school - Errors.png", "notes": null, "value": "From" },
+            "errors": {
+              "selectMonth": { "id": "global.forms.education.secondarySchool.from.errors.selectMonth", "elementType": "form-field-error", "status": "draft", "screenshot": "screenshots/[Desktop] 2.1 Education History - Secondary school - Errors.png", "notes": null, "value": "Select month", "field": { "id": "global.forms.education.secondarySchool.from", "label": "From" } },
+              "selectYear": { "id": "global.forms.education.secondarySchool.from.errors.selectYear", "elementType": "form-field-error", "status": "draft", "screenshot": "screenshots/[Desktop] 2.1 Education History - Secondary school - Errors.png", "notes": null, "value": "Select year", "field": { "id": "global.forms.education.secondarySchool.from", "label": "From" } }
+            }
+          },
+          "to": {
+            "label": { "id": "global.forms.education.secondarySchool.to.label", "elementType": "form-field-label", "status": "draft", "screenshot": "screenshots/[Desktop] 2.1 Education History - Secondary school - Errors.png", "notes": null, "value": "To" },
+            "errors": {
+              "selectMonth": { "id": "global.forms.education.secondarySchool.to.errors.selectMonth", "elementType": "form-field-error", "status": "draft", "screenshot": "screenshots/[Desktop] 2.1 Education History - Secondary school - Errors.png", "notes": null, "value": "Select month", "field": { "id": "global.forms.education.secondarySchool.to", "label": "To" } },
+              "selectYear": { "id": "global.forms.education.secondarySchool.to.errors.selectYear", "elementType": "form-field-error", "status": "draft", "screenshot": "screenshots/[Desktop] 2.1 Education History - Secondary school - Errors.png", "notes": null, "value": "Select year", "field": { "id": "global.forms.education.secondarySchool.to", "label": "To" } }
+            }
+          },
+          "qualification": {
+            "label": { "id": "global.forms.education.secondarySchool.qualification.label", "elementType": "form-field-label", "status": "draft", "screenshot": "screenshots/[Desktop] 2.1 Education History - Secondary school - Errors.png", "notes": null, "value": "Qualification" },
+            "errors": {
+              "required": { "id": "global.forms.education.secondarySchool.qualification.errors.required", "elementType": "form-field-error", "status": "draft", "screenshot": "screenshots/[Desktop] 2.1 Education History - Secondary school - Errors.png", "notes": null, "value": "Select qualification", "field": { "id": "global.forms.education.secondarySchool.qualification", "label": "Qualification" } }
+            }
+          }
+        },
+        "preTertiary": {
+          "countryOrRegion": {
+            "label": { "id": "global.forms.education.preTertiary.countryOrRegion.label", "elementType": "form-field-label", "status": "draft", "screenshot": "screenshots/[Desktop] 2.1 Education History - Pre-Tertiary sub-section expanded.png", "notes": null, "value": "Country or region" },
+            "errors": {
+              "required": { "id": "global.forms.education.preTertiary.countryOrRegion.errors.required", "elementType": "form-field-error", "status": "draft", "screenshot": "screenshots/[Desktop] 2.1 Education History - Pre-Tertiary sub-section expanded.png", "notes": null, "value": "Select country or region", "field": { "id": "global.forms.education.preTertiary.countryOrRegion", "label": "Country or region" } }
+            }
+          },
+          "institution": {
+            "label": { "id": "global.forms.education.preTertiary.institution.label", "elementType": "form-field-label", "status": "draft", "screenshot": "screenshots/[Desktop] 2.1 Education History - Pre-Tertiary sub-section expanded.png", "notes": null, "value": "Institution" },
+            "hint": { "id": "global.forms.education.preTertiary.institution.hint", "elementType": "form-field-hint", "status": "draft", "screenshot": "screenshots/[Desktop] 2.1 Education History - Pre-Tertiary sub-section expanded.png", "notes": null, "value": "If your institution is not listed, select 'Other'." },
+            "errors": {
+              "required": { "id": "global.forms.education.preTertiary.institution.errors.required", "elementType": "form-field-error", "status": "draft", "screenshot": "screenshots/[Desktop] 2.1 Education History - Pre-Tertiary sub-section expanded.png", "notes": null, "value": "Select institution", "field": { "id": "global.forms.education.preTertiary.institution", "label": "Institution" } }
+            }
+          },
+          "from": {
+            "label": { "id": "global.forms.education.preTertiary.from.label", "elementType": "form-field-label", "status": "draft", "screenshot": "screenshots/[Desktop] 2.1 Education History - Pre-Tertiary sub-section expanded.png", "notes": null, "value": "From" },
+            "errors": {
+              "selectMonth": { "id": "global.forms.education.preTertiary.from.errors.selectMonth", "elementType": "form-field-error", "status": "draft", "screenshot": "screenshots/[Desktop] 2.1 Education History - Pre-Tertiary sub-section expanded.png", "notes": null, "value": "Select month", "field": { "id": "global.forms.education.preTertiary.from", "label": "From" } },
+              "selectYear": { "id": "global.forms.education.preTertiary.from.errors.selectYear", "elementType": "form-field-error", "status": "draft", "screenshot": "screenshots/[Desktop] 2.1 Education History - Pre-Tertiary sub-section expanded.png", "notes": null, "value": "Select year", "field": { "id": "global.forms.education.preTertiary.from", "label": "From" } }
+            }
+          },
+          "to": {
+            "label": { "id": "global.forms.education.preTertiary.to.label", "elementType": "form-field-label", "status": "draft", "screenshot": "screenshots/[Desktop] 2.1 Education History - Pre-Tertiary sub-section expanded.png", "notes": null, "value": "To" },
+            "errors": {
+              "selectMonth": { "id": "global.forms.education.preTertiary.to.errors.selectMonth", "elementType": "form-field-error", "status": "draft", "screenshot": "screenshots/[Desktop] 2.1 Education History - Pre-Tertiary sub-section expanded.png", "notes": null, "value": "Select month", "field": { "id": "global.forms.education.preTertiary.to", "label": "To" } },
+              "selectYear": { "id": "global.forms.education.preTertiary.to.errors.selectYear", "elementType": "form-field-error", "status": "draft", "screenshot": "screenshots/[Desktop] 2.1 Education History - Pre-Tertiary sub-section expanded.png", "notes": null, "value": "Select year", "field": { "id": "global.forms.education.preTertiary.to", "label": "To" } }
+            }
+          },
+          "qualification": {
+            "label": { "id": "global.forms.education.preTertiary.qualification.label", "elementType": "form-field-label", "status": "draft", "screenshot": "screenshots/[Desktop] 2.1 Education History - Pre-Tertiary sub-section expanded.png", "notes": null, "value": "Qualification" },
+            "errors": {
+              "required": { "id": "global.forms.education.preTertiary.qualification.errors.required", "elementType": "form-field-error", "status": "draft", "screenshot": "screenshots/[Desktop] 2.1 Education History - Pre-Tertiary sub-section expanded.png", "notes": null, "value": "Select qualification", "field": { "id": "global.forms.education.preTertiary.qualification", "label": "Qualification" } }
+            }
+          }
+        },
+        "university": {
+          "countryOrRegion": {
+            "label": { "id": "global.forms.education.university.countryOrRegion.label", "elementType": "form-field-label", "status": "draft", "screenshot": "screenshots/[Desktop] 2.1 Education History - University sub-section expanded - Errors.png", "notes": null, "value": "Country or region" },
+            "errors": {
+              "required": { "id": "global.forms.education.university.countryOrRegion.errors.required", "elementType": "form-field-error", "status": "draft", "screenshot": "screenshots/[Desktop] 2.1 Education History - University sub-section expanded - Errors.png", "notes": null, "value": "Select country or region", "field": { "id": "global.forms.education.university.countryOrRegion", "label": "Country or region" } }
+            }
+          },
+          "institution": {
+            "label": { "id": "global.forms.education.university.institution.label", "elementType": "form-field-label", "status": "draft", "screenshot": "screenshots/[Desktop] 2.1 Education History - University sub-section expanded - Errors.png", "notes": null, "value": "Institution" },
+            "hint": { "id": "global.forms.education.university.institution.hint", "elementType": "form-field-hint", "status": "draft", "screenshot": "screenshots/[Desktop] 2.1 Education History - University sub-section expanded - Errors.png", "notes": null, "value": "If your institution is not listed, select 'Other'." },
+            "errors": {
+              "required": { "id": "global.forms.education.university.institution.errors.required", "elementType": "form-field-error", "status": "draft", "screenshot": "screenshots/[Desktop] 2.1 Education History - University sub-section expanded - Errors.png", "notes": null, "value": "Select institution", "field": { "id": "global.forms.education.university.institution", "label": "Institution" } }
+            }
+          },
+          "from": {
+            "label": { "id": "global.forms.education.university.from.label", "elementType": "form-field-label", "status": "draft", "screenshot": "screenshots/[Desktop] 2.1 Education History - University sub-section expanded - Errors.png", "notes": null, "value": "From" },
+            "errors": {
+              "selectMonth": { "id": "global.forms.education.university.from.errors.selectMonth", "elementType": "form-field-error", "status": "draft", "screenshot": "screenshots/[Desktop] 2.1 Education History - University sub-section expanded - Errors.png", "notes": null, "value": "Select month", "field": { "id": "global.forms.education.university.from", "label": "From" } },
+              "selectYear": { "id": "global.forms.education.university.from.errors.selectYear", "elementType": "form-field-error", "status": "draft", "screenshot": "screenshots/[Desktop] 2.1 Education History - University sub-section expanded - Errors.png", "notes": null, "value": "Select year", "field": { "id": "global.forms.education.university.from", "label": "From" } }
+            }
+          },
+          "to": {
+            "label": { "id": "global.forms.education.university.to.label", "elementType": "form-field-label", "status": "draft", "screenshot": "screenshots/[Desktop] 2.1 Education History - University sub-section expanded - Errors.png", "notes": null, "value": "To" },
+            "errors": {
+              "selectMonth": { "id": "global.forms.education.university.to.errors.selectMonth", "elementType": "form-field-error", "status": "draft", "screenshot": "screenshots/[Desktop] 2.1 Education History - University sub-section expanded - Errors.png", "notes": null, "value": "Select month", "field": { "id": "global.forms.education.university.to", "label": "To" } },
+              "selectYear": { "id": "global.forms.education.university.to.errors.selectYear", "elementType": "form-field-error", "status": "draft", "screenshot": "screenshots/[Desktop] 2.1 Education History - University sub-section expanded - Errors.png", "notes": null, "value": "Select year", "field": { "id": "global.forms.education.university.to", "label": "To" } }
+            }
+          },
+          "courseOfStudy": {
+            "label": { "id": "global.forms.education.university.courseOfStudy.label", "elementType": "form-field-label", "status": "draft", "screenshot": "screenshots/[Desktop] 2.1 Education History - University sub-section expanded - Errors.png", "notes": null, "value": "Course of study" },
+            "errors": {
+              "required": { "id": "global.forms.education.university.courseOfStudy.errors.required", "elementType": "form-field-error", "status": "draft", "screenshot": "screenshots/[Desktop] 2.1 Education History - University sub-section expanded - Errors.png", "notes": null, "value": "Enter course of study", "field": { "id": "global.forms.education.university.courseOfStudy", "label": "Course of study" } }
+            }
+          },
+          "qualificationObtained": {
+            "label": { "id": "global.forms.education.university.qualificationObtained.label", "elementType": "form-field-label", "status": "draft", "screenshot": "screenshots/[Desktop] 2.1 Education History - University sub-section expanded - Errors.png", "notes": null, "value": "Qualification obtained" },
+            "errors": {
+              "required": { "id": "global.forms.education.university.qualificationObtained.errors.required", "elementType": "form-field-error", "status": "draft", "screenshot": "screenshots/[Desktop] 2.1 Education History - University sub-section expanded - Errors.png", "notes": null, "value": "Enter qualification obtained", "field": { "id": "global.forms.education.university.qualificationObtained", "label": "Qualification obtained" } }
+            }
+          },
+          "classOfDegree": {
+            "label": { "id": "global.forms.education.university.classOfDegree.label", "elementType": "form-field-label", "status": "draft", "screenshot": "screenshots/[Desktop] 2.1 Education History - University sub-section expanded - Errors.png", "notes": null, "value": "Class of degree" },
+            "errors": {
+              "required": { "id": "global.forms.education.university.classOfDegree.errors.required", "elementType": "form-field-error", "status": "draft", "screenshot": "screenshots/[Desktop] 2.1 Education History - University sub-section expanded - Errors.png", "notes": null, "value": "Select class of degree", "field": { "id": "global.forms.education.university.classOfDegree", "label": "Class of degree" } }
+            }
+          },
+          "yearObtained": {
+            "label": { "id": "global.forms.education.university.yearObtained.label", "elementType": "form-field-label", "status": "draft", "screenshot": "screenshots/[Desktop] 2.1 Education History - University sub-section expanded - Errors.png", "notes": null, "value": "Year obtained" },
+            "errors": {
+              "required": { "id": "global.forms.education.university.yearObtained.errors.required", "elementType": "form-field-error", "status": "draft", "screenshot": "screenshots/[Desktop] 2.1 Education History - University sub-section expanded - Errors.png", "notes": null, "value": "Select year obtained", "field": { "id": "global.forms.education.university.yearObtained", "label": "Year obtained" } }
+            }
+          },
+          "cumulativeGpaOrCpa": {
+            "label": { "id": "global.forms.education.university.cumulativeGpaOrCpa.label", "elementType": "form-field-label", "status": "draft", "screenshot": "screenshots/[Desktop] 2.1 Education History - University sub-section expanded - Errors.png", "notes": null, "value": "Cumulative GPA or CPA" },
+            "errors": {
+              "required": { "id": "global.forms.education.university.cumulativeGpaOrCpa.errors.required", "elementType": "form-field-error", "status": "draft", "screenshot": "screenshots/[Desktop] 2.1 Education History - University sub-section expanded - Errors.png", "notes": null, "value": "Enter cumulative GPA or CPA", "field": { "id": "global.forms.education.university.cumulativeGpaOrCpa", "label": "Cumulative GPA or CPA" } }
+            }
+          },
+          "maximumPossibleGpaOrCpa": {
+            "label": { "id": "global.forms.education.university.maximumPossibleGpaOrCpa.label", "elementType": "form-field-label", "status": "draft", "screenshot": "screenshots/[Desktop] 2.1 Education History - University sub-section expanded - Errors.png", "notes": null, "value": "Maximum possible GPA or CPA" },
+            "errors": {
+              "required": { "id": "global.forms.education.university.maximumPossibleGpaOrCpa.errors.required", "elementType": "form-field-error", "status": "draft", "screenshot": "screenshots/[Desktop] 2.1 Education History - University sub-section expanded - Errors.png", "notes": null, "value": "Enter maximum possible GPA or CPA", "field": { "id": "global.forms.education.university.maximumPossibleGpaOrCpa", "label": "Maximum possible GPA or CPA" } }
+            }
+          }
+        }
+      },
+      "achievementsCommunityService": {
+        "achievements": {
+          "year": {
+            "label": { "id": "global.forms.achievementsCommunityService.achievements.year.label", "elementType": "form-field-label", "status": "draft", "screenshot": "screenshots/[Desktop]  2.2 Achievements & Community Service - Error.png", "notes": null, "value": "Year" },
+            "errors": {
+              "required": { "id": "global.forms.achievementsCommunityService.achievements.year.errors.required", "elementType": "form-field-error", "status": "draft", "screenshot": "screenshots/[Desktop]  2.2 Achievements & Community Service - Error.png", "notes": null, "value": "Select year", "field": { "id": "global.forms.achievementsCommunityService.achievements.year", "label": "Year" } }
+            }
+          },
+          "description": {
+            "label": { "id": "global.forms.achievementsCommunityService.achievements.description.label", "elementType": "form-field-label", "status": "draft", "screenshot": "screenshots/[Desktop]  2.2 Achievements & Community Service - Error.png", "notes": null, "value": "Description" },
+            "errors": {
+              "required": { "id": "global.forms.achievementsCommunityService.achievements.description.errors.required", "elementType": "form-field-error", "status": "draft", "screenshot": "screenshots/[Desktop]  2.2 Achievements & Community Service - Error.png", "notes": null, "value": "Enter description", "field": { "id": "global.forms.achievementsCommunityService.achievements.description", "label": "Description" } }
+            }
+          }
+        },
+        "communityService": {
+          "organisation": {
+            "label": { "id": "global.forms.achievementsCommunityService.communityService.organisation.label", "elementType": "form-field-label", "status": "draft", "screenshot": "screenshots/[Desktop]  2.2 Achievements & Community Service - Error.png", "notes": null, "value": "Organisation" },
+            "errors": {
+              "required": { "id": "global.forms.achievementsCommunityService.communityService.organisation.errors.required", "elementType": "form-field-error", "status": "draft", "screenshot": "screenshots/[Desktop]  2.2 Achievements & Community Service - Error.png", "notes": null, "value": "Enter organisation", "field": { "id": "global.forms.achievementsCommunityService.communityService.organisation", "label": "Organisation" } }
+            }
+          },
+          "role": {
+            "label": { "id": "global.forms.achievementsCommunityService.communityService.role.label", "elementType": "form-field-label", "status": "draft", "screenshot": "screenshots/[Desktop]  2.2 Achievements & Community Service - Error.png", "notes": null, "value": "Role" },
+            "errors": {
+              "required": { "id": "global.forms.achievementsCommunityService.communityService.role.errors.required", "elementType": "form-field-error", "status": "draft", "screenshot": "screenshots/[Desktop]  2.2 Achievements & Community Service - Error.png", "notes": null, "value": "Enter role", "field": { "id": "global.forms.achievementsCommunityService.communityService.role", "label": "Role" } }
+            }
+          },
+          "from": {
+            "label": { "id": "global.forms.achievementsCommunityService.communityService.from.label", "elementType": "form-field-label", "status": "draft", "screenshot": "screenshots/[Desktop]  2.2 Achievements & Community Service - Error.png", "notes": null, "value": "From" },
+            "errors": {
+              "selectMonth": { "id": "global.forms.achievementsCommunityService.communityService.from.errors.selectMonth", "elementType": "form-field-error", "status": "draft", "screenshot": "screenshots/[Desktop]  2.2 Achievements & Community Service - Error.png", "notes": null, "value": "Select month", "field": { "id": "global.forms.achievementsCommunityService.communityService.from", "label": "From" } },
+              "selectYear": { "id": "global.forms.achievementsCommunityService.communityService.from.errors.selectYear", "elementType": "form-field-error", "status": "draft", "screenshot": "screenshots/[Desktop]  2.2 Achievements & Community Service - Error.png", "notes": null, "value": "Select year", "field": { "id": "global.forms.achievementsCommunityService.communityService.from", "label": "From" } }
+            }
+          },
+          "to": {
+            "label": { "id": "global.forms.achievementsCommunityService.communityService.to.label", "elementType": "form-field-label", "status": "draft", "screenshot": "screenshots/[Desktop]  2.2 Achievements & Community Service - Error.png", "notes": null, "value": "To" },
+            "errors": {
+              "selectMonth": { "id": "global.forms.achievementsCommunityService.communityService.to.errors.selectMonth", "elementType": "form-field-error", "status": "draft", "screenshot": "screenshots/[Desktop]  2.2 Achievements & Community Service - Error.png", "notes": null, "value": "Select month", "field": { "id": "global.forms.achievementsCommunityService.communityService.to", "label": "To" } },
+              "selectYear": { "id": "global.forms.achievementsCommunityService.communityService.to.errors.selectYear", "elementType": "form-field-error", "status": "draft", "screenshot": "screenshots/[Desktop]  2.2 Achievements & Community Service - Error.png", "notes": null, "value": "Select year", "field": { "id": "global.forms.achievementsCommunityService.communityService.to", "label": "To" } }
+            }
+          },
+          "description": {
+            "label": { "id": "global.forms.achievementsCommunityService.communityService.description.label", "elementType": "form-field-label", "status": "draft", "screenshot": "screenshots/[Desktop]  2.2 Achievements & Community Service - Error.png", "notes": null, "value": "Description" },
+            "errors": {
+              "required": { "id": "global.forms.achievementsCommunityService.communityService.description.errors.required", "elementType": "form-field-error", "status": "draft", "screenshot": "screenshots/[Desktop]  2.2 Achievements & Community Service - Error.png", "notes": null, "value": "Enter description", "field": { "id": "global.forms.achievementsCommunityService.communityService.description", "label": "Description" } }
+            }
+          }
+        }
+      },
+      "internshipWorkExperience": {
+        "internship": {
+          "typeOfOrganisation": {
+            "label": { "id": "global.forms.internshipWorkExperience.internship.typeOfOrganisation.label", "elementType": "form-field-label", "status": "draft", "screenshot": "screenshots/Internship & Work Experience – Errors.png", "notes": null, "value": "Type of organisation" },
+            "errors": {
+              "required": { "id": "global.forms.internshipWorkExperience.internship.typeOfOrganisation.errors.required", "elementType": "form-field-error", "status": "draft", "screenshot": "screenshots/Internship & Work Experience – Errors.png", "notes": null, "value": "Select type of organisation", "field": { "id": "global.forms.internshipWorkExperience.internship.typeOfOrganisation", "label": "Type of organisation" } }
+            }
+          },
+          "agency": {
+            "label": { "id": "global.forms.internshipWorkExperience.internship.agency.label", "elementType": "form-field-label", "status": "draft", "screenshot": "screenshots/Internship & Work Experience – Errors.png", "notes": null, "value": "Agency" },
+            "errors": {
+              "required": { "id": "global.forms.internshipWorkExperience.internship.agency.errors.required", "elementType": "form-field-error", "status": "draft", "screenshot": "screenshots/Internship & Work Experience – Errors.png", "notes": null, "value": "Select agency", "field": { "id": "global.forms.internshipWorkExperience.internship.agency", "label": "Agency" } }
+            }
+          },
+          "departmentOrUnit": {
+            "label": { "id": "global.forms.internshipWorkExperience.internship.departmentOrUnit.label", "elementType": "form-field-label", "status": "draft", "screenshot": "screenshots/Internship & Work Experience – Errors.png", "notes": null, "value": "Department or unit" },
+            "errors": {
+              "required": { "id": "global.forms.internshipWorkExperience.internship.departmentOrUnit.errors.required", "elementType": "form-field-error", "status": "draft", "screenshot": "screenshots/Internship & Work Experience – Errors.png", "notes": null, "value": "Enter department or unit", "field": { "id": "global.forms.internshipWorkExperience.internship.departmentOrUnit", "label": "Department or unit" } }
+            }
+          },
+          "from": {
+            "label": { "id": "global.forms.internshipWorkExperience.internship.from.label", "elementType": "form-field-label", "status": "draft", "screenshot": "screenshots/Internship & Work Experience – Errors.png", "notes": null, "value": "From" },
+            "errors": {
+              "selectMonth": { "id": "global.forms.internshipWorkExperience.internship.from.errors.selectMonth", "elementType": "form-field-error", "status": "draft", "screenshot": "screenshots/Internship & Work Experience – Errors.png", "notes": null, "value": "Select month", "field": { "id": "global.forms.internshipWorkExperience.internship.from", "label": "From" } },
+              "selectYear": { "id": "global.forms.internshipWorkExperience.internship.from.errors.selectYear", "elementType": "form-field-error", "status": "draft", "screenshot": "screenshots/Internship & Work Experience – Errors.png", "notes": null, "value": "Select year", "field": { "id": "global.forms.internshipWorkExperience.internship.from", "label": "From" } }
+            }
+          },
+          "to": {
+            "label": { "id": "global.forms.internshipWorkExperience.internship.to.label", "elementType": "form-field-label", "status": "draft", "screenshot": "screenshots/Internship & Work Experience – Errors.png", "notes": null, "value": "To" },
+            "errors": {
+              "selectMonth": { "id": "global.forms.internshipWorkExperience.internship.to.errors.selectMonth", "elementType": "form-field-error", "status": "draft", "screenshot": "screenshots/Internship & Work Experience – Errors.png", "notes": null, "value": "Select month", "field": { "id": "global.forms.internshipWorkExperience.internship.to", "label": "To" } },
+              "selectYear": { "id": "global.forms.internshipWorkExperience.internship.to.errors.selectYear", "elementType": "form-field-error", "status": "draft", "screenshot": "screenshots/Internship & Work Experience – Errors.png", "notes": null, "value": "Select year", "field": { "id": "global.forms.internshipWorkExperience.internship.to", "label": "To" } }
+            }
+          },
+          "mentorOrSupervisor": {
+            "label": { "id": "global.forms.internshipWorkExperience.internship.mentorOrSupervisor.label", "elementType": "form-field-label", "status": "draft", "screenshot": "screenshots/Internship & Work Experience – Errors.png", "notes": null, "value": "Mentor or supervisor" },
+            "errors": {
+              "required": { "id": "global.forms.internshipWorkExperience.internship.mentorOrSupervisor.errors.required", "elementType": "form-field-error", "status": "draft", "screenshot": "screenshots/Internship & Work Experience – Errors.png", "notes": null, "value": "Enter name of mentor or supervisor", "field": { "id": "global.forms.internshipWorkExperience.internship.mentorOrSupervisor", "label": "Mentor or supervisor" } }
+            }
+          },
+          "designation": {
+            "label": { "id": "global.forms.internshipWorkExperience.internship.designation.label", "elementType": "form-field-label", "status": "draft", "screenshot": "screenshots/Internship & Work Experience – Errors.png", "notes": null, "value": "Designation" },
+            "errors": {
+              "required": { "id": "global.forms.internshipWorkExperience.internship.designation.errors.required", "elementType": "form-field-error", "status": "draft", "screenshot": "screenshots/Internship & Work Experience – Errors.png", "notes": null, "value": "Enter designation", "field": { "id": "global.forms.internshipWorkExperience.internship.designation", "label": "Designation" } }
+            }
+          },
+          "contactNumber": {
+            "label": { "id": "global.forms.internshipWorkExperience.internship.contactNumber.label", "elementType": "form-field-label", "status": "draft", "screenshot": "screenshots/Internship & Work Experience – Errors.png", "notes": null, "value": "Contact number" },
+            "errors": {
+              "required": { "id": "global.forms.internshipWorkExperience.internship.contactNumber.errors.required", "elementType": "form-field-error", "status": "draft", "screenshot": "screenshots/Internship & Work Experience – Errors.png", "notes": null, "value": "Enter contact number", "field": { "id": "global.forms.internshipWorkExperience.internship.contactNumber", "label": "Contact number" } },
+              "format": { "id": "global.forms.internshipWorkExperience.internship.contactNumber.errors.format", "elementType": "form-field-error", "status": "draft", "screenshot": "screenshots/Internship & Work Experience – Errors.png", "notes": null, "value": "Enter an 8-digit contact number", "field": { "id": "global.forms.internshipWorkExperience.internship.contactNumber", "label": "Contact number" } },
+              "numbersOnly": { "id": "global.forms.internshipWorkExperience.internship.contactNumber.errors.numbersOnly", "elementType": "form-field-error", "status": "draft", "screenshot": "screenshots/Internship & Work Experience – Errors.png", "notes": null, "value": "Enter numbers only", "field": { "id": "global.forms.internshipWorkExperience.internship.contactNumber", "label": "Contact number" } }
+            }
+          },
+          "emailAddress": {
+            "label": { "id": "global.forms.internshipWorkExperience.internship.emailAddress.label", "elementType": "form-field-label", "status": "draft", "screenshot": "screenshots/Internship & Work Experience – Errors.png", "notes": null, "value": "Email address" },
+            "errors": {
+              "required": { "id": "global.forms.internshipWorkExperience.internship.emailAddress.errors.required", "elementType": "form-field-error", "status": "draft", "screenshot": "screenshots/Internship & Work Experience – Errors.png", "notes": null, "value": "Enter email address", "field": { "id": "global.forms.internshipWorkExperience.internship.emailAddress", "label": "Email address" } },
+              "invalid": { "id": "global.forms.internshipWorkExperience.internship.emailAddress.errors.invalid", "elementType": "form-field-error", "status": "draft", "screenshot": "screenshots/Internship & Work Experience – Errors.png", "notes": null, "value": "Enter an email address in the format name@example.com", "field": { "id": "global.forms.internshipWorkExperience.internship.emailAddress", "label": "Email address" } }
+            }
+          },
+          "description": {
+            "label": { "id": "global.forms.internshipWorkExperience.internship.description.label", "elementType": "form-field-label", "status": "draft", "screenshot": "screenshots/Internship & Work Experience – Errors.png", "notes": null, "value": "Description" },
+            "hint": { "id": "global.forms.internshipWorkExperience.internship.description.hint", "elementType": "form-field-hint", "status": "draft", "screenshot": "screenshots/Internship & Work Experience – Errors.png", "notes": null, "value": "Describe your internship experience, responsibilities, and key learnings." },
+            "errors": {
+              "required": { "id": "global.forms.internshipWorkExperience.internship.description.errors.required", "elementType": "form-field-error", "status": "draft", "screenshot": "screenshots/Internship & Work Experience – Errors.png", "notes": null, "value": "Enter description", "field": { "id": "global.forms.internshipWorkExperience.internship.description", "label": "Description" } }
+            }
+          }
+        },
+        "workExperience": {
+          "typeOfOrganisation": {
+            "label": { "id": "global.forms.internshipWorkExperience.workExperience.typeOfOrganisation.label", "elementType": "form-field-label", "status": "draft", "screenshot": "screenshots/Internship & Work Experience – Errors.png", "notes": null, "value": "Type of organisation" },
+            "errors": {
+              "required": { "id": "global.forms.internshipWorkExperience.workExperience.typeOfOrganisation.errors.required", "elementType": "form-field-error", "status": "draft", "screenshot": "screenshots/Internship & Work Experience – Errors.png", "notes": null, "value": "Select type of organisation", "field": { "id": "global.forms.internshipWorkExperience.workExperience.typeOfOrganisation", "label": "Type of organisation" } }
+            }
+          },
+          "agency": {
+            "label": { "id": "global.forms.internshipWorkExperience.workExperience.agency.label", "elementType": "form-field-label", "status": "draft", "screenshot": "screenshots/Internship & Work Experience – Errors.png", "notes": null, "value": "Agency" },
+            "errors": {
+              "required": { "id": "global.forms.internshipWorkExperience.workExperience.agency.errors.required", "elementType": "form-field-error", "status": "draft", "screenshot": "screenshots/Internship & Work Experience – Errors.png", "notes": null, "value": "Select agency", "field": { "id": "global.forms.internshipWorkExperience.workExperience.agency", "label": "Agency" } }
+            }
+          },
+          "departmentOrUnit": {
+            "label": { "id": "global.forms.internshipWorkExperience.workExperience.departmentOrUnit.label", "elementType": "form-field-label", "status": "draft", "screenshot": "screenshots/Internship & Work Experience – Errors.png", "notes": null, "value": "Department or unit" },
+            "errors": {
+              "required": { "id": "global.forms.internshipWorkExperience.workExperience.departmentOrUnit.errors.required", "elementType": "form-field-error", "status": "draft", "screenshot": "screenshots/Internship & Work Experience – Errors.png", "notes": null, "value": "Enter department or unit", "field": { "id": "global.forms.internshipWorkExperience.workExperience.departmentOrUnit", "label": "Department or unit" } }
+            }
+          },
+          "designation": {
+            "label": { "id": "global.forms.internshipWorkExperience.workExperience.designation.label", "elementType": "form-field-label", "status": "draft", "screenshot": "screenshots/Internship & Work Experience – Errors.png", "notes": null, "value": "Designation" },
+            "errors": {
+              "required": { "id": "global.forms.internshipWorkExperience.workExperience.designation.errors.required", "elementType": "form-field-error", "status": "draft", "screenshot": "screenshots/Internship & Work Experience – Errors.png", "notes": null, "value": "Enter designation", "field": { "id": "global.forms.internshipWorkExperience.workExperience.designation", "label": "Designation" } }
+            }
+          },
+          "from": {
+            "label": { "id": "global.forms.internshipWorkExperience.workExperience.from.label", "elementType": "form-field-label", "status": "draft", "screenshot": "screenshots/Internship & Work Experience – Errors.png", "notes": null, "value": "From" },
+            "errors": {
+              "selectMonth": { "id": "global.forms.internshipWorkExperience.workExperience.from.errors.selectMonth", "elementType": "form-field-error", "status": "draft", "screenshot": "screenshots/Internship & Work Experience – Errors.png", "notes": null, "value": "Select month", "field": { "id": "global.forms.internshipWorkExperience.workExperience.from", "label": "From" } },
+              "selectYear": { "id": "global.forms.internshipWorkExperience.workExperience.from.errors.selectYear", "elementType": "form-field-error", "status": "draft", "screenshot": "screenshots/Internship & Work Experience – Errors.png", "notes": null, "value": "Select year", "field": { "id": "global.forms.internshipWorkExperience.workExperience.from", "label": "From" } }
+            }
+          },
+          "to": {
+            "label": { "id": "global.forms.internshipWorkExperience.workExperience.to.label", "elementType": "form-field-label", "status": "draft", "screenshot": "screenshots/Internship & Work Experience – Errors.png", "notes": null, "value": "To" },
+            "errors": {
+              "selectMonth": { "id": "global.forms.internshipWorkExperience.workExperience.to.errors.selectMonth", "elementType": "form-field-error", "status": "draft", "screenshot": "screenshots/Internship & Work Experience – Errors.png", "notes": null, "value": "Select month", "field": { "id": "global.forms.internshipWorkExperience.workExperience.to", "label": "To" } },
+              "selectYear": { "id": "global.forms.internshipWorkExperience.workExperience.to.errors.selectYear", "elementType": "form-field-error", "status": "draft", "screenshot": "screenshots/Internship & Work Experience – Errors.png", "notes": null, "value": "Select year", "field": { "id": "global.forms.internshipWorkExperience.workExperience.to", "label": "To" } }
+            }
+          }
+        }
+      }
+    }
+  }
+}
