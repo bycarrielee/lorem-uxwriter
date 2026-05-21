@@ -12,7 +12,7 @@ This guide installs Lorem as a Claude Code skill on your machine. Once installed
 1. From the repository root, run:
 
    ```bash
-   cp -r lorem-uxwriter ~/.claude/skills/lorem-uxwriter
+   cp -r . ~/.claude/skills/lorem-uxwriter
    ```
 
    The installed structure should look like:
@@ -45,18 +45,18 @@ This guide installs Lorem as a Claude Code skill on your machine. Once installed
 When files change in the repository, re-run the install command to sync:
 
 ```bash
-cp -r lorem-uxwriter ~/.claude/skills/lorem-uxwriter
+cp -r . ~/.claude/skills/lorem-uxwriter
 ```
 
 ## Add product overrides
 
 These instructions assume you have a local clone of the repository. If you installed the skill directly into `~/.claude/skills/lorem-uxwriter/`, create the override files there instead and skip the install command.
 
-To override global foundations or patterns for a specific product, create override files in `lorem-uxwriter/`:
+To override global foundations or patterns for a specific product, create override files in the repository root:
 
 ```
-lorem-uxwriter/foundations/products/my-product/voice.md
-lorem-uxwriter/patterns/products/my-product/buttons.md
+foundations/products/my-product/voice.md
+patterns/products/my-product/buttons.md
 ```
 
 The file only needs to contain the overrides — Lorem reads the product file first and falls back to global for anything not overridden.
@@ -65,10 +65,10 @@ Re-run the install command to pick up the changes.
 
 ## Add product library entries
 
-To add a product copy library, create a folder under `lorem-uxwriter/library/products/`:
+To add a product copy library, create a folder under `library/products/`:
 
 ```
-lorem-uxwriter/library/products/my-product/copy-entries.json
+library/products/my-product/copy-entries.json
 ```
 
 The file must be a JSON array. Minimum required fields per entry:
