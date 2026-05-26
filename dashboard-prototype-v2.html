@@ -91,11 +91,6 @@
       padding: 32px;
     }
     .login-brand { display: flex; align-items: center; gap: 8px; margin-bottom: 28px; }
-    .login-mark {
-      width: 28px; height: 28px; border-radius: 6px;
-      background: #047857;
-      display: flex; align-items: center; justify-content: center; flex-shrink: 0;
-    }
     .login-wordmark { font-family: 'DM Mono', ui-monospace, monospace; font-size: 14px; font-weight: 500; color: var(--txt-1); }
     .login-heading { font-size: 18px; font-weight: 600; letter-spacing: -0.01em; margin-bottom: 6px; }
     .login-sub { font-size: 13px; color: var(--txt-2); margin-bottom: 24px; }
@@ -130,10 +125,6 @@
       display: flex; align-items: center; padding: 0 20px; gap: 12px;
     }
     .dash-brand { display: flex; align-items: center; gap: 8px; flex: 1; }
-    .dash-mark {
-      width: 24px; height: 24px; border-radius: 5px; background: #047857;
-      display: flex; align-items: center; justify-content: center; flex-shrink: 0;
-    }
     .dash-wordmark { font-family: 'DM Mono', ui-monospace, monospace; font-size: 13px; font-weight: 500; color: var(--txt-1); }
     .dash-sep { width: 1px; height: 16px; background: var(--divider-strong); }
     .dash-page-title { font-size: 13px; color: var(--txt-3); }
@@ -289,9 +280,13 @@
 <div id="login-screen" class="login-screen">
   <div class="login-card">
     <div class="login-brand">
-      <div class="login-mark">
-        <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M3 3h10v6a5 5 0 01-10 0V3z" fill="white" fill-opacity=".9"/></svg>
-      </div>
+      <svg width="26" height="26" viewBox="0 0 24 24" aria-hidden="true" style="flex-shrink:0">
+        <rect x="2" y="2" width="17" height="13" rx="3" fill="oklch(56% 0.17 185)"/>
+        <path d="M5 15 L3 20 L8 18.5Z" fill="oklch(56% 0.17 185)"/>
+        <circle cx="6.5"  cy="8.5" r="1.25" fill="white"/>
+        <circle cx="10.5" cy="8.5" r="1.25" fill="white"/>
+        <circle cx="14.5" cy="8.5" r="1.25" fill="white"/>
+      </svg>
       <span class="login-wordmark">Lorem</span>
     </div>
     <h1 class="login-heading">Dashboard</h1>
@@ -313,9 +308,13 @@
 
   <header class="dash-header">
     <div class="dash-brand">
-      <div class="dash-mark">
-        <svg width="12" height="12" viewBox="0 0 16 16" fill="none"><path d="M3 3h10v6a5 5 0 01-10 0V3z" fill="white" fill-opacity=".9"/></svg>
-      </div>
+      <svg width="22" height="22" viewBox="0 0 24 24" aria-hidden="true" style="flex-shrink:0">
+        <rect x="2" y="2" width="17" height="13" rx="3" fill="oklch(56% 0.17 185)"/>
+        <path d="M5 15 L3 20 L8 18.5Z" fill="oklch(56% 0.17 185)"/>
+        <circle cx="6.5"  cy="8.5" r="1.25" fill="white"/>
+        <circle cx="10.5" cy="8.5" r="1.25" fill="white"/>
+        <circle cx="14.5" cy="8.5" r="1.25" fill="white"/>
+      </svg>
       <span class="dash-wordmark">Lorem</span>
       <div class="dash-sep"></div>
       <span class="dash-page-title">Dashboard</span>
