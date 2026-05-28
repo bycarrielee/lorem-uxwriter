@@ -604,6 +604,7 @@ button.submit-btn {
 .message-row-bot {
   display: flex;
   justify-content: flex-start;
+  width: 100%;
 }
 
 .skeleton-wrap {
@@ -662,7 +663,12 @@ button.submit-btn {
   display: flex;
   flex-direction: column;
   gap: 9px;
-  max-width: 75%;
+  flex-basis: 75%;
+  flex-grow: 0;
+  flex-shrink: 0;
+  max-width: 480px;
+  min-width: 0;
+  box-sizing: border-box;
   animation: fadeUp 200ms ease-out both;
 }
 
