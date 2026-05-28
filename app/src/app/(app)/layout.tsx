@@ -7,7 +7,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
     <div className="app-root">
       {/* Topbar */}
       <header className="topbar">
-        <div className="topbar-logo">
+        <a href="/editor" className="topbar-logo">
           <div className="topbar-brand-icon">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true">
               <rect x="2" y="2" width="17" height="13" rx="3" fill="white" fillOpacity="0.9" />
@@ -21,7 +21,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
             <span className="topbar-logo-name">Lorem</span>
             <span className="topbar-logo-sub">UX Writing Assistant</span>
           </div>
-        </div>
+        </a>
         <div className="topbar-actions">
           <TopbarLink href="/changelog">Changelog</TopbarLink>
           <a
