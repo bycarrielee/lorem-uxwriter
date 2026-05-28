@@ -185,7 +185,7 @@ export function SessionList() {
                   <button
                     type="button"
                     className="session-btn"
-                    onClick={() => router.push(`/editor/${s.id}`)}
+                    onClick={() => router.push(`/assistant/${s.id}`)}
                   >
                     <span className="session-btn-text">
                       {s.name ?? 'Untitled session'}

@@ -7,7 +7,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
     <div className="app-root">
       {/* Topbar */}
       <header className="topbar">
-        <a href="/editor" className="topbar-logo">
+        <a href="/assistant" className="topbar-logo">
           <div className="topbar-brand-icon">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true">
               <rect x="2" y="2" width="17" height="13" rx="3" fill="white" fillOpacity="0.9" />
@@ -43,7 +43,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
           <nav className="sidebar-nav">
             <div className="sidebar-section-label">Workspace</div>
             <NavItem
-              href="/editor"
+              href="/assistant"
               label="Assistant"
               icon={<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>}
             />
