@@ -1203,7 +1203,7 @@ button.submit-btn {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 4px 8px 6px;
+  padding: 4px 16px 6px;
   flex-shrink: 0;
 }
 
