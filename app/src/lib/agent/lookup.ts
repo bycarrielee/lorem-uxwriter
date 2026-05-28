@@ -108,7 +108,12 @@ export async function lookupContext(
               .eq('scope', 'global')
               .eq('element_type', resolvedElementType)
               .eq('status', 'active')
-              .or(terms.map((t) => `context.ilike.%${t}%`).join(','))
+              .or(
+                [
+                  ...terms.map((t) => `context.ilike.%${t}%`),
+                  ...terms.map((t) => `tags.cs.{${t}}`),
+                ].join(','),
+              )
               .limit(queryLimit)
           : Promise.resolve({ data: null }),
       ])
@@ -140,7 +145,7 @@ export async function lookupContext(
     .from('patterns')
     .select('id, element_type, scope, content')
 
-  if (elementType) patternQuery.eq('element_type', elementType)
+  if (resolvedElementType) patternQuery.eq('element_type', resolvedElementType)
 
   const { data: patterns } = await patternQuery.or(patternConditions.join(','))
 
