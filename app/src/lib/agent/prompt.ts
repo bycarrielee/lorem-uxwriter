@@ -1,5 +1,6 @@
 import type { AgentRequest } from './types'
 import type { LookupResult } from './lookup'
+import type { FigmaTextNode } from '@/lib/figma/extract'
 
 export function serializeCopy(copy: unknown): string {
   if (typeof copy === 'string') return copy
@@ -50,7 +51,21 @@ INTENT DETECTION:
 - "review": Input reads as draft or finished copy (e.g. "Your session has expired")
 - "generate": Input reads as a description or request (e.g. "write a timeout error for a grant form")
 
-MULTI-PART COPY: When the element type requires multiple parts (e.g. modal: heading + body + button), use " | " to separate them in suggestion: "Heading: ... | Body: ... | Button: ..."`)
+MULTI-PART COPY: When the element type requires multiple parts (e.g. modal: heading + body + button), use " | " to separate them in suggestion with no trailing separator: "Heading text | Body text | Primary button | Secondary button"
+
+PATTERN PRECEDENCE:
+The ELEMENT PATTERNS section contains tables of approved example copy. When your suggestion scenario matches a table row exactly, use that string verbatim from the "Copy" or "Good example" column. Do not paraphrase, extend, or add sentences. These are the authorised strings for Singapore government digital services.
+
+Error messages — two rules that override general judgement:
+1. Passive voice means removing the user as subject entirely. The pattern is [field or what] + [past participle]. "The password entered is incorrect" — not "The password you entered is incorrect". Removing "you" is required, not optional.
+2. Contact details: Only include a support contact when the error is persistent AND no self-service path exists. Never add contact details to session timeouts, file upload errors, validation errors, or payment failures on first attempt.
+
+Button labels: The ELEMENT PATTERNS section lists specific approved labels (e.g. "Confirm payment", "Submit application"). When the user's scenario matches one, use that exact string. When reviewing a standalone destructive word (Delete, Remove, Cancel) without context about what is affected, do not substitute another standalone word — explain that the label must name what is being deleted and give an example.
+
+RATIONALE HONESTY:
+Your rationale must accurately describe whether the suggestion follows the guidelines, not justify choices that violate them. If you deviated from an approved pattern (e.g. no exact match existed, context required a change), say so explicitly. Only list guidelines in "guidelines_met" that the suggestion actually satisfies.
+
+FIGMA FRAME REVIEW: When the input contains "STRINGS TO REVIEW:", respond with is_copy_response: true. Do not use the suggestion field. Instead, populate figma_review as a JSON array of objects with keys: elementName (string), original (string), proposed (string, same as original if no change needed), changed (boolean, true only if proposed differs from original), rationale (string explaining why it was changed or why it's fine). Set message to a 1-2 sentence summary of the frame's overall copy health. Set source_type to null, suggestion to "", character_count to 0, rationale to [], guidelines_met to [], confidence to null, confidence_reason to "".`)
 
   const foundationOrder = ['voice', 'style', 'accessibility', 'localisation', 'terminology'] as const
   for (const type of foundationOrder) {
@@ -96,4 +111,26 @@ export function buildUserMessage(request: AgentRequest): string {
       : 'No context provided — infer from the input.\n\n'
 
   return `${contextBlock}Input:\n${request.input}`
+}
+
+export function buildFigmaUserMessage(
+  nodes: FigmaTextNode[],
+  frameInfo: { name: string; nodeId: string },
+  request: AgentRequest,
+): string {
+  const contextParts: string[] = [`Frame: ${frameInfo.name} (${frameInfo.nodeId})`]
+  if (request.product_id)   contextParts.push(`Product: ${request.product_id}`)
+  if (request.element_type) contextParts.push(`Element type: ${request.element_type}`)
+  contextParts.push(`Total strings: ${nodes.length}`)
+
+  const nodeList = nodes
+    .map((n, i) => `[${i + 1}] [${n.name}] — ${n.characters}`)
+    .join('\n')
+
+  return `${contextParts.join('\n')}
+
+STRINGS TO REVIEW:
+${nodeList}
+
+Review every string above for UX writing quality (clarity, tone, grammar, Singapore government style). For each string, provide an entry in the figma_review array.`
 }

@@ -1,9 +1,15 @@
 import { NextRequest, NextResponse } from 'next/server'
 import Anthropic from '@anthropic-ai/sdk'
 import { createClient } from '@/lib/supabase/server'
+import { createServiceClient } from '@/lib/supabase/service'
 import { lookupContext } from '@/lib/agent/lookup'
-import { buildSystemPrompt, buildUserMessage, serializeCopy } from '@/lib/agent/prompt'
+import { buildSystemPrompt, buildUserMessage, buildFigmaUserMessage, serializeCopy } from '@/lib/agent/prompt'
 import type { AgentRequest } from '@/lib/agent/types'
+import { isFigmaUrl, parseFigmaUrl } from '@/lib/figma/parse'
+import { fetchFigmaTextNodes } from '@/lib/figma/extract'
+
+const COST_PER_INPUT_TOKEN  = 0.000003  // $3/1M tokens (Claude Sonnet)
+const COST_PER_OUTPUT_TOKEN = 0.000015  // $15/1M tokens
 
 const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY })
 
@@ -28,13 +34,16 @@ Examples of in_scope: false
 
 Respond with only valid JSON, no explanation outside it: { "in_scope": true or false, "reason": "one sentence" }`
 
-async function classifyScope(input: string): Promise<boolean> {
+async function classifyScope(input: string, elementType?: string): Promise<boolean> {
+  // Include element_type in the classifier input so single-word or short inputs
+  // (e.g. "Remove" with element_type "buttons") are not incorrectly rejected.
+  const classifierInput = elementType ? `[Element type: ${elementType}]\n${input}` : input
   try {
     const result = await anthropic.messages.create({
       model: 'bedrock.claude-sonnet-4-5',
       max_tokens: 64,
       system: CLASSIFIER_SYSTEM,
-      messages: [{ role: 'user', content: input }],
+      messages: [{ role: 'user', content: classifierInput }],
     })
     const text = result.content[0].type === 'text' ? result.content[0].text : '{}'
     const stripped = text.replace(/^```(?:json)?\s*/i, '').replace(/\s*```$/, '').trim()
@@ -56,31 +65,97 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: 'Invalid JSON body' }, { status: 400 })
   }
 
+  const clientId         = typeof body.client_id === 'string' ? body.client_id : 'unknown'
+  const metricsSessionId = typeof body.metrics_session_id === 'string' ? body.metrics_session_id : null
+
+  let apiStatus: 'success' | 'error' | 'timeout' = 'error'
+  let apiErrorCode: string | null = null
+  let inputTokens: number | null = null
+  let outputTokens: number | null = null
+  const callStart = Date.now()
+  const serviceClient = createServiceClient()
+
   if (!body.input || typeof body.input !== 'string' || body.input.trim().length === 0) {
     return NextResponse.json({ error: 'input is required' }, { status: 400 })
   }
 
-  const inScope = await classifyScope(body.input)
+  const inScope = await classifyScope(body.input, body.element_type)
   if (!inScope) {
     return NextResponse.json({ error: 'out_of_scope' }, { status: 422 })
   }
 
-  const context = await lookupContext(body.element_type ?? null, body.product_id ?? null, body.input)
+  // Figma URL interception
+  let figmaFrameName: string | null = null
+  let isFigmaRequest = false
+
+  const figmaParsed = isFigmaUrl(body.input) ? parseFigmaUrl(body.input) : null
+  let effectiveInput = body.input
+  let userMessage: string
+
+  if (figmaParsed) {
+    const clientToken = typeof body.figma_access_token === 'string' ? body.figma_access_token : undefined
+    const figmaResult = await fetchFigmaTextNodes(figmaParsed.fileKey, figmaParsed.nodeId, clientToken)
+
+    if ('error' in figmaResult) {
+      const errorMap: Record<string, { status: number; message: string }> = {
+        no_token:       { status: 502, message: 'Figma integration is not configured' },
+        not_found:      { status: 404, message: 'Figma frame not found. Check the URL and that the file is shared.' },
+        no_text_nodes:  { status: 422, message: 'No text found in this Figma frame.' },
+        api_error:      { status: 502, message: `Figma API error: ${figmaResult.detail ?? 'unknown'}` },
+      }
+      const mapped = errorMap[figmaResult.error] ?? { status: 502, message: 'Figma error' }
+      return NextResponse.json({ error: mapped.message }, { status: mapped.status })
+    }
+
+    isFigmaRequest = true
+    figmaFrameName = figmaResult.frameInfo.name
+    effectiveInput = `Review Figma frame UX copy: ${figmaResult.nodes.slice(0, 5).map((n) => n.characters).join(', ')}`
+    userMessage = buildFigmaUserMessage(figmaResult.nodes, figmaResult.frameInfo, body)
+  } else {
+    userMessage = buildUserMessage(body)
+  }
+
+  const context = await lookupContext(body.element_type ?? null, body.product_id ?? null, effectiveInput)
   const systemPrompt = buildSystemPrompt(context)
-  const userMessage  = buildUserMessage(body)
 
   let rawContent: string
   try {
     const message = await anthropic.messages.create({
       model: 'bedrock.claude-sonnet-4-5',
-      max_tokens: 1024,
+      max_tokens: isFigmaRequest ? 4096 : 1024,
       system: systemPrompt,
       messages: [{ role: 'user', content: userMessage }],
     })
     rawContent = message.content[0].type === 'text' ? message.content[0].text : ''
+    inputTokens  = message.usage?.input_tokens  ?? null
+    outputTokens = message.usage?.output_tokens ?? null
+    apiStatus    = 'success'
   } catch (err) {
     console.error('Claude API error', err)
+    apiStatus    = 'error'
+    apiErrorCode = err instanceof Error ? err.message.slice(0, 100) : 'unknown'
     return NextResponse.json({ error: 'Agent service unavailable' }, { status: 502 })
+  } finally {
+    const durationMs = Date.now() - callStart
+    const costUsd =
+      inputTokens !== null && outputTokens !== null
+        ? inputTokens * COST_PER_INPUT_TOKEN + outputTokens * COST_PER_OUTPUT_TOKEN
+        : null
+    try {
+      await serviceClient.from('api_calls').insert({
+        client_id: clientId,
+        session_id: metricsSessionId,
+        model: 'bedrock.claude-sonnet-4-5',
+        status: apiStatus,
+        error_code: apiErrorCode,
+        duration_ms: durationMs,
+        input_tokens: inputTokens,
+        output_tokens: outputTokens,
+        cost_usd: costUsd,
+      })
+    } catch (loggingErr) {
+      console.error('api_calls logging failed (non-critical)', loggingErr)
+    }
   }
 
   // Strip markdown fences if present
@@ -99,7 +174,8 @@ export async function POST(request: NextRequest) {
 
   // Validate library_match: suggestion must be word-for-word identical to a retrieved entry.
   // If not, correct source_type so the badge is never misleading.
-  if (parsed.source_type === 'library_match' && typeof parsed.suggestion === 'string') {
+  // Skip for Figma responses (figma_review is set, suggestion is empty).
+  if (!isFigmaRequest && parsed.source_type === 'library_match' && typeof parsed.suggestion === 'string') {
     const suggestion = parsed.suggestion as string
     const isVerified = context.copyMatches.some(
       (m) => serializeCopy(m.copy) === suggestion,
@@ -113,7 +189,9 @@ export async function POST(request: NextRequest) {
   let sessionId = body.session_id ?? null
 
   if (!sessionId) {
-    const sessionName = body.input.trim().slice(0, 60)
+    const sessionName = isFigmaRequest && figmaFrameName
+      ? `Figma: ${figmaFrameName}`.slice(0, 60)
+      : body.input.trim().slice(0, 60)
     const { data: session } = await supabase
       .from('sessions')
       .insert({ product_id: body.product_id ?? null, name: sessionName })

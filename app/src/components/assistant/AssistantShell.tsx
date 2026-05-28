@@ -5,10 +5,17 @@ import { LandingCard } from './LandingCard'
 import { UserBubble } from './UserBubble'
 import { BotCard } from './BotCard'
 import { BotTextBubble } from './BotTextBubble'
+import { FigmaReviewCard } from './FigmaReviewCard'
+import { FigmaTokenModal } from './FigmaTokenModal'
 import { SkeletonLoader } from './SkeletonLoader'
 import { FollowUpBar } from './FollowUpBar'
 import { VersionHistoryPanel } from './VersionHistoryPanel'
 import type { AgentRequest, AgentResponse } from '@/lib/agent/types'
+import { isFigmaUrl } from '@/lib/figma/parse'
+import { useMetrics } from '@/lib/metrics/context'
+import { getClientId } from '@/lib/metrics/analytics'
+
+const FIGMA_TOKEN_KEY = 'lorem_figma_token'
 
 export type Message =
   | { role: 'user'; text: string }
@@ -29,9 +36,14 @@ export function AssistantShell({ products: _products, initialSessionId, initialM
   const [scopeError, setScopeError] = useState<string | null>(null)
   const [sessionId, setSessionId] = useState<string | null>(initialSessionId ?? null)
   const [sessionTitle, setSessionTitle] = useState<string>(initialTitle ?? '')
+  const { sessionId: metricsSessionId } = useMetrics()
 
   const [versionPanelOpen, setVersionPanelOpen] = useState(false)
   const [versionPanelIndex, setVersionPanelIndex] = useState(0)
+
+  // Figma token modal
+  const [figmaModalOpen, setFigmaModalOpen] = useState(false)
+  const [pendingFigmaReq, setPendingFigmaReq] = useState<AgentRequest | null>(null)
 
   const messagesEndRef = useRef<HTMLDivElement>(null)
   const [showScrollBtn, setShowScrollBtn] = useState(false)
@@ -56,7 +68,34 @@ export function AssistantShell({ products: _products, initialSessionId, initialM
     )
     .map((m) => m.response)
 
+  function getStoredFigmaToken(): string | null {
+    try {
+      return localStorage.getItem(FIGMA_TOKEN_KEY)
+    } catch {
+      return null
+    }
+  }
+
+  function storeFigmaToken(token: string) {
+    try {
+      localStorage.setItem(FIGMA_TOKEN_KEY, token)
+    } catch {
+      // localStorage unavailable — token used for this session only
+    }
+  }
+
   async function submit(req: AgentRequest) {
+    // If Figma URL and no stored token → prompt for token first
+    if (isFigmaUrl(req.input) && !req.figma_access_token) {
+      const stored = getStoredFigmaToken()
+      if (!stored) {
+        setPendingFigmaReq(req)
+        setFigmaModalOpen(true)
+        return
+      }
+      req = { ...req, figma_access_token: stored }
+    }
+
     setScopeError(null)
     setLoading(true)
     setError(null)
@@ -74,7 +113,7 @@ export function AssistantShell({ products: _products, initialSessionId, initialM
       const res = await fetch('/api/agent', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ ...req, session_id: sessionId ?? undefined }),
+        body: JSON.stringify({ ...req, session_id: sessionId ?? undefined, client_id: getClientId(), metrics_session_id: metricsSessionId ?? undefined }),
       })
 
       if (!res.ok) {
@@ -94,7 +133,7 @@ export function AssistantShell({ products: _products, initialSessionId, initialM
 
       // Auto-open version panel to latest if already open
       if (versionPanelOpen) {
-        setVersionPanelIndex(assistantResponses.length) // will be length after the new message appends
+        setVersionPanelIndex(assistantResponses.length)
       }
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Something went wrong')
@@ -104,6 +143,20 @@ export function AssistantShell({ products: _products, initialSessionId, initialM
     } finally {
       setLoading(false)
     }
+  }
+
+  function handleTokenSave(token: string) {
+    storeFigmaToken(token)
+    setFigmaModalOpen(false)
+    if (pendingFigmaReq) {
+      setPendingFigmaReq(null)
+      submit({ ...pendingFigmaReq, figma_access_token: token })
+    }
+  }
+
+  function handleTokenModalClose() {
+    setFigmaModalOpen(false)
+    setPendingFigmaReq(null)
   }
 
   function openVersionPanel(index: number) {
@@ -120,116 +173,143 @@ export function AssistantShell({ products: _products, initialSessionId, initialM
   }
 
   if (state === 'landing') {
-    return <LandingCard onSubmit={submit} loading={loading} scopeError={scopeError} onClearScopeError={() => setScopeError(null)} />
+    return (
+      <>
+        <LandingCard onSubmit={submit} loading={loading} scopeError={scopeError} onClearScopeError={() => setScopeError(null)} />
+        <FigmaTokenModal open={figmaModalOpen} onSave={handleTokenSave} onClose={handleTokenModalClose} />
+      </>
+    )
   }
 
   return (
-    <div className="response-root">
-      {/* Thread */}
-      <div className="thread">
-        {/* Conversation header */}
-        <div className="convo-header">
-          <div className="convo-title-group">
-            <div className="convo-title">
-              {sessionTitle || 'New session'}
-            </div>
-            <div className="convo-date">
-              {new Date().toLocaleDateString('en-SG', { day: 'numeric', month: 'short', year: 'numeric' })}
-            </div>
-          </div>
-          <button
-            onClick={() => {
-              const lastIdx = assistantResponses.length - 1
-              if (lastIdx >= 0) openVersionPanel(lastIdx)
-            }}
-            disabled={assistantResponses.length === 0}
-            className={`version-btn${versionPanelOpen ? ' is-active' : ''}`}
-          >
-            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-              <rect x="3" y="3" width="18" height="18" rx="2"/>
-              <line x1="9" y1="3" x2="9" y2="21"/>
-              <line x1="15" y1="3" x2="15" y2="21"/>
-            </svg>
-            Version history
-          </button>
-        </div>
-
-        {/* Messages */}
-        <div
-          ref={scrollRef}
-          onScroll={handleScroll}
-          className="messages-list"
-        >
-          {messages.map((msg, i) => {
-            if (msg.role === 'user') return <UserBubble key={i} text={msg.text} />
-
-            if (!msg.response.is_copy_response) {
-              return <BotTextBubble key={i} text={msg.response.message} />
-            }
-
-            const copyResponseIndex = messages
-              .slice(0, i + 1)
-              .filter((m) => m.role === 'assistant' && m.response.is_copy_response)
-              .length - 1
-            const isLatest = i === messages.length - 1 && !loading
-            return (
-              <div key={i} className="message-row-bot">
-                <BotCard
-                  response={msg.response}
-                  isLatest={isLatest}
-                  onViewRationale={() => openVersionPanel(copyResponseIndex)}
-                  onQuickAction={(action) => handleQuickAction(action, msg.response)}
-                />
+    <>
+      <div className="response-root">
+        {/* Thread */}
+        <div className="thread">
+          {/* Conversation header */}
+          <div className="convo-header">
+            <div className="convo-title-group">
+              <div className="convo-title">
+                {sessionTitle || 'New session'}
               </div>
-            )
-          })}
-
-          {/* Skeleton while loading */}
-          {loading && (
-            <div className="message-row-bot">
-              <div className="skeleton-wrap">
-                <SkeletonLoader />
+              <div className="convo-date">
+                {new Date().toLocaleDateString('en-SG', { day: 'numeric', month: 'short', year: 'numeric' })}
               </div>
             </div>
-          )}
-
-          {/* Error */}
-          {error && (
-            <div className="error-banner">
-              <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="var(--crit)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="error-icon">
-                <circle cx="8" cy="8" r="6" /><path d="M8 5v3.5" /><circle cx="8" cy="10.5" r="0.5" fill="currentColor" />
+            <button
+              onClick={() => {
+                const lastIdx = assistantResponses.length - 1
+                if (lastIdx >= 0) openVersionPanel(lastIdx)
+              }}
+              disabled={assistantResponses.length === 0}
+              className={`version-btn${versionPanelOpen ? ' is-active' : ''}`}
+            >
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                <rect x="3" y="3" width="18" height="18" rx="2"/>
+                <line x1="9" y1="3" x2="9" y2="21"/>
+                <line x1="15" y1="3" x2="15" y2="21"/>
               </svg>
-              <div>
-                <div className="error-title">Something went wrong</div>
-                <div className="error-body">{error}</div>
-              </div>
-            </div>
-          )}
+              Version history
+            </button>
+          </div>
 
-          <div ref={messagesEndRef} />
+          {/* Messages */}
+          <div
+            ref={scrollRef}
+            onScroll={handleScroll}
+            className="messages-list"
+          >
+            {messages.map((msg, i) => {
+              if (msg.role === 'user') return <UserBubble key={i} text={msg.text} />
+
+              if (!msg.response.is_copy_response) {
+                return <BotTextBubble key={i} text={msg.response.message} />
+              }
+
+              // Figma review response — render review table
+              if (msg.response.figma_review && msg.response.figma_review.length > 0) {
+                const frameName = sessionTitle.startsWith('Figma: ')
+                  ? sessionTitle.slice(7)
+                  : 'Frame'
+                return (
+                  <div key={i} className="message-row-bot">
+                    {msg.response.message && (
+                      <BotTextBubble text={msg.response.message} />
+                    )}
+                    <FigmaReviewCard
+                      frameName={frameName}
+                      rows={msg.response.figma_review}
+                    />
+                  </div>
+                )
+              }
+
+              const copyResponseIndex = messages
+                .slice(0, i + 1)
+                .filter((m) => m.role === 'assistant' && m.response.is_copy_response)
+                .length - 1
+              const isLatest = i === messages.length - 1 && !loading
+              return (
+                <div key={i} className="message-row-bot">
+                  <BotCard
+                    response={msg.response}
+                    isLatest={isLatest}
+                    onViewRationale={() => openVersionPanel(copyResponseIndex)}
+                    onQuickAction={(action) => handleQuickAction(action, msg.response)}
+                  />
+                </div>
+              )
+            })}
+
+            {/* Skeleton while loading */}
+            {loading && (
+              <div className="message-row-bot">
+                <div className="skeleton-wrap">
+                  <SkeletonLoader />
+                </div>
+              </div>
+            )}
+
+            {/* Error */}
+            {error && (
+              <div className="error-banner">
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="var(--crit)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="error-icon">
+                  <circle cx="8" cy="8" r="6" /><path d="M8 5v3.5" /><circle cx="8" cy="10.5" r="0.5" fill="currentColor" />
+                </svg>
+                <div>
+                  <div className="error-title">Something went wrong</div>
+                  <div className="error-body">{error}</div>
+                </div>
+              </div>
+            )}
+
+            <div ref={messagesEndRef} />
+          </div>
+
+          {/* Scroll-to-bottom button */}
+          <button
+            className={`scroll-to-bottom${showScrollBtn ? ' is-visible' : ''}`}
+            onClick={() => messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })}
+            aria-label="Jump to latest message"
+          >
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg>
+            Latest
+          </button>
+
+          <FollowUpBar onSubmit={submit} loading={loading} sessionId={sessionId} scopeError={scopeError} onClearScopeError={() => setScopeError(null)} />
         </div>
 
-        {/* Scroll-to-bottom button */}
-        <button
-          className={`scroll-to-bottom${showScrollBtn ? ' is-visible' : ''}`}
-          onClick={() => messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })}
-          aria-label="Jump to latest message"
-        >
-          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg>
-          Latest
-        </button>
-
-        <FollowUpBar onSubmit={submit} loading={loading} sessionId={sessionId} scopeError={scopeError} onClearScopeError={() => setScopeError(null)} />
+        {/* Version history panel */}
+        <VersionHistoryPanel
+          open={versionPanelOpen}
+          responses={assistantResponses}
+          activeIndex={versionPanelIndex}
+          onClose={() => setVersionPanelOpen(false)}
+          onSelectVersion={setVersionPanelIndex}
+        />
       </div>
 
-      {/* Version history panel */}
-      <VersionHistoryPanel
-        open={versionPanelOpen}
-        responses={assistantResponses}
-        activeIndex={versionPanelIndex}
-        onClose={() => setVersionPanelOpen(false)}
-        onSelectVersion={setVersionPanelIndex}
-      />
-    </div>
+      <FigmaTokenModal open={figmaModalOpen} onSave={handleTokenSave} onClose={handleTokenModalClose} />
+    </>
   )
 }

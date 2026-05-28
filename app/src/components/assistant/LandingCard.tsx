@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import type { AgentRequest } from '@/lib/agent/types'
+import { isFigmaUrl } from '@/lib/figma/parse'
 
 const TRY_CHIPS = [
   'Review this button copy',
@@ -19,6 +20,7 @@ interface Props {
 
 export function LandingCard({ onSubmit, loading, scopeError, onClearScopeError }: Props) {
   const [input, setInput] = useState('')
+  const isFigma = isFigmaUrl(input)
 
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
@@ -51,7 +53,7 @@ export function LandingCard({ onSubmit, loading, scopeError, onClearScopeError }
             Ask <em>Lorem</em>
           </h1>
           <p className="card-subtitle">
-            Paste a draft or describe what you need — Lorem checks approved patterns first.
+            Paste a draft, describe what you need, or paste a Figma frame URL to review all copy at once.
           </p>
         </div>
 
@@ -59,13 +61,18 @@ export function LandingCard({ onSubmit, loading, scopeError, onClearScopeError }
         <textarea
           value={input}
           onChange={(e) => { setInput(e.target.value); onClearScopeError?.() }}
-          placeholder={'e.g. "Your session will expire in 5 minutes" or "write a timeout error for a grant form"'}
+          placeholder={'e.g. "Your session will expire in 5 minutes", "write a timeout error", or paste a Figma frame URL'}
           onKeyDown={(e) => {
             if (e.key === 'Enter' && (e.metaKey || e.ctrlKey)) handleSubmit(e as unknown as React.FormEvent)
           }}
           className={`landing-textarea${scopeError ? ' is-error' : ''}`}
-          aria-describedby={scopeError ? 'landing-scope-error' : undefined}
+          aria-describedby={scopeError ? 'landing-scope-error' : isFigma ? 'landing-figma-hint' : undefined}
         />
+        {isFigma && !scopeError && (
+          <p id="landing-figma-hint" className="input-figma-hint" aria-live="polite">
+            Figma frame detected — Lorem will extract and review all text strings.
+          </p>
+        )}
         {scopeError && (
           <p id="landing-scope-error" className="input-scope-error" aria-live="polite">
             {scopeError}

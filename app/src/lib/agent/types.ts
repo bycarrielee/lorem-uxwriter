@@ -5,11 +5,24 @@ export type SourceType  = Database['public']['Enums']['source_type']
 
 export type Confidence = 'High' | 'Medium-High' | 'Medium' | 'Low'
 
+export type FigmaReviewRow = {
+  elementName: string
+  original: string
+  proposed: string
+  changed: boolean
+  rationale: string
+}
+
 export interface AgentRequest {
   input: string
   product_id?: string
   element_type?: ElementType
   session_id?: string
+  // Metrics — optional, never required for core functionality
+  client_id?: string
+  metrics_session_id?: string
+  // Figma — client-provided PAT; never stored in session messages
+  figma_access_token?: string
 }
 
 export interface AgentResponse {
@@ -28,6 +41,7 @@ export interface AgentResponse {
   confidence_reason: string
   session_id: string
   message_id: string
+  figma_review?: FigmaReviewRow[] | null
 }
 
 export const ELEMENT_TYPE_OPTIONS: Array<{ value: ElementType; label: string }> = [
