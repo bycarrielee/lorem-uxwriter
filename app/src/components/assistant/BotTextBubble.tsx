@@ -4,6 +4,13 @@ import type { ReactNode } from 'react'
 
 interface Props { text: string }
 
+function renderInline(line: string): ReactNode[] {
+  const parts = line.split('**')
+  return parts.map((part, i) =>
+    i % 2 === 1 ? <strong key={i}>{part}</strong> : part
+  )
+}
+
 function renderText(text: string): ReactNode[] {
   // Split into lines, then group into paragraphs and bullet lists
   const lines = text.split('\n')
@@ -16,7 +23,7 @@ function renderText(text: string): ReactNode[] {
     if (bulletItems.length === 0) return
     blocks.push(
       <ul key={key++} className="bot-text-list">
-        {bulletItems.map((item, i) => <li key={i}>{item}</li>)}
+        {bulletItems.map((item, i) => <li key={i}>{renderInline(item)}</li>)}
       </ul>
     )
     bulletItems = []
@@ -27,7 +34,7 @@ function renderText(text: string): ReactNode[] {
     blocks.push(
       <p key={key++} className="bot-text-para">
         {paraLines.map((line, i) => (
-          <span key={i}>{line}{i < paraLines.length - 1 && <br />}</span>
+          <span key={i}>{renderInline(line)}{i < paraLines.length - 1 && <br />}</span>
         ))}
       </p>
     )
