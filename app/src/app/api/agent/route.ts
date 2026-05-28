@@ -79,16 +79,20 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: 'input is required' }, { status: 400 })
   }
 
-  const inScope = await classifyScope(body.input, body.element_type)
-  if (!inScope) {
-    return NextResponse.json({ error: 'out_of_scope' }, { status: 422 })
-  }
-
-  // Figma URL interception
+  // Figma URL interception — must happen before scope classification
+  // (Figma URLs are not UX copy text and would be rejected by the classifier)
   let figmaFrameName: string | null = null
   let isFigmaRequest = false
 
   const figmaParsed = isFigmaUrl(body.input) ? parseFigmaUrl(body.input) : null
+
+  // Only run scope classifier for non-Figma inputs
+  if (!figmaParsed) {
+    const inScope = await classifyScope(body.input, body.element_type)
+    if (!inScope) {
+      return NextResponse.json({ error: 'out_of_scope' }, { status: 422 })
+    }
+  }
   let effectiveInput = body.input
   let userMessage: string
 
