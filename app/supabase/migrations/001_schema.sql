@@ -29,7 +29,7 @@ create table public.foundations (
 );
 
 -- Patterns
-create type element_type as enum ('buttons', 'errors', 'forms', 'alerts', 'modals', 'navigation', 'content', 'states');
+create type element_type as enum ('buttons', 'errors', 'forms', 'alerts', 'modals', 'content', 'states', 'links', 'push-notifications', 'release-notes');
 
 create table public.patterns (
   id uuid primary key default uuid_generate_v4(),

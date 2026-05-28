@@ -227,7 +227,7 @@ export type Database = {
       content_scope: 'global' | 'product'
       copy_status: 'active' | 'deprecated' | 'draft' | 'review'
       copy_tone: 'neutral' | 'friendly' | 'serious' | 'empathetic' | 'urgent' | 'positive' | 'cautionary'
-      element_type: 'buttons' | 'errors' | 'forms' | 'alerts' | 'modals' | 'navigation' | 'content' | 'states'
+      element_type: 'buttons' | 'errors' | 'forms' | 'alerts' | 'modals' | 'content' | 'states' | 'links' | 'push-notifications' | 'release-notes'
       foundation_type: 'voice' | 'style' | 'accessibility' | 'localisation' | 'terminology'
       journey_stage: 'onboarding' | 'task-completion' | 'error-recovery' | 'success' | 'decision-point' | 'information'
       source_type: 'library_match' | 'adapted' | 'ai_generated' | 'ai_generated_low_confidence'

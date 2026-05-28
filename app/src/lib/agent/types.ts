@@ -31,12 +31,14 @@ export interface AgentResponse {
 }
 
 export const ELEMENT_TYPE_OPTIONS: Array<{ value: ElementType; label: string }> = [
-  { value: 'buttons',    label: 'Buttons' },
-  { value: 'errors',     label: 'Error messages' },
-  { value: 'forms',      label: 'Form labels' },
-  { value: 'alerts',     label: 'Alerts' },
-  { value: 'modals',     label: 'Modals' },
-  { value: 'navigation', label: 'Navigation' },
-  { value: 'content',    label: 'Content' },
-  { value: 'states',     label: 'States' },
+  { value: 'buttons',            label: 'Buttons' },
+  { value: 'errors',             label: 'Error messages' },
+  { value: 'forms',              label: 'Form labels' },
+  { value: 'alerts',             label: 'Alerts' },
+  { value: 'modals',             label: 'Modals' },
+  { value: 'states',             label: 'States' },
+  { value: 'links',              label: 'Links' },
+  { value: 'content',            label: 'Content' },
+  { value: 'push-notifications', label: 'Push notifications' },
+  { value: 'release-notes',      label: 'Release notes' },
 ]
