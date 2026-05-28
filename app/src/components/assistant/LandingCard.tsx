@@ -4,11 +4,10 @@ import { useState } from 'react'
 import type { AgentRequest } from '@/lib/agent/types'
 import { isFigmaUrl } from '@/lib/figma/parse'
 
-const TRY_CHIPS = [
-  'Review this button copy',
-  'Write an error message',
-  'Fix this modal text',
-  'Shorten this label',
+const TRY_CHIPS: Array<{ label: string; prefix: string }> = [
+  { label: 'Make this clearer',      prefix: 'Make this clearer: ' },
+  { label: 'Shorten, more concise',  prefix: 'Shorten: ' },
+  { label: 'Suggest alternatives',   prefix: 'Suggest alternatives: ' },
 ]
 
 interface Props {
@@ -28,8 +27,8 @@ export function LandingCard({ onSubmit, loading, scopeError, onClearScopeError }
     onSubmit({ input: input.trim() })
   }
 
-  function handleChip(chip: string) {
-    setInput(chip)
+  function handleChip(prefix: string) {
+    setInput(prefix)
   }
 
   return (
@@ -53,7 +52,7 @@ export function LandingCard({ onSubmit, loading, scopeError, onClearScopeError }
             Ask <em>Lorem</em>
           </h1>
           <p className="card-subtitle">
-            Paste a draft, describe what you need, or paste a Figma frame URL to review all copy at once.
+            Paste a draft or describe what you need. Lorem will suggest existing copy or write something new.
           </p>
         </div>
 
@@ -84,12 +83,12 @@ export function LandingCard({ onSubmit, loading, scopeError, onClearScopeError }
           <span className="try-label">Try</span>
           {TRY_CHIPS.map((chip) => (
             <button
-              key={chip}
+              key={chip.label}
               type="button"
-              onClick={() => handleChip(chip)}
+              onClick={() => handleChip(chip.prefix)}
               className="chip"
             >
-              {chip}
+              {chip.label}
             </button>
           ))}
         </div>
