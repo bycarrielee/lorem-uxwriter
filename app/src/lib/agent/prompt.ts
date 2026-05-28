@@ -1,7 +1,7 @@
 import type { AgentRequest } from './types'
 import type { LookupResult } from './lookup'
 
-function serializeCopy(copy: unknown): string {
+export function serializeCopy(copy: unknown): string {
   if (typeof copy === 'string') return copy
   if (typeof copy === 'object' && copy !== null) {
     return Object.entries(copy as Record<string, unknown>)
@@ -41,9 +41,9 @@ RESPONSE TYPE RULES:
 - When responding conversationally (asking a clarifying question, explaining a rejection, or giving information without a copy suggestion): set "is_copy_response": false, "message": "<your response>", "source_type": null, "suggestion": "", "character_count": 0, "rationale": [], "guidelines_met": [], "confidence": null, "confidence_reason": "".
 
 SOURCE TYPE RULES:
-- library_match: Suggestion taken directly from a library entry with no changes.
-- adapted: A library entry was found and adjusted for the user's context.
-- ai_generated: No library entry matched; generated from patterns and foundations.
+- library_match: Your suggestion text is word-for-word identical to one of the LIBRARY MATCHES listed below. Do not use this if you generated or inferred the copy yourself, even if library entries exist.
+- adapted: A library entry was found and you modified it to fit the user's context.
+- ai_generated: No library entry matched; copy generated from patterns and foundations.
 - ai_generated_low_confidence: No library entry and no pattern; foundations only.
 
 INTENT DETECTION:
@@ -78,7 +78,7 @@ MULTI-PART COPY: When the element type requires multiple parts (e.g. modal: head
       return parts.join('\n')
     })
     sections.push(
-      `--- LIBRARY MATCHES ---\nThese are approved copy strings. Prefer using them directly (library_match) or adapting them (adapted) over generating new copy.\n\n${matchLines.join('\n\n')}`,
+      `--- LIBRARY MATCHES ---\nThese are approved copy strings. If an entry fits the user's need, use it verbatim as your suggestion and set source_type to "library_match". Do not shorten, paraphrase, or reword library entries — the approved text must be used exactly as written. Only set source_type to "adapted" if the user's specific context genuinely requires a change (e.g. different product name, different tense, a variation not covered by any entry). If no entry is relevant, generate from patterns and foundations instead.\n\n${matchLines.join('\n\n')}`,
     )
   }
 

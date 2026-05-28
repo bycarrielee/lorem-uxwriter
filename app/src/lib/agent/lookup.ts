@@ -68,18 +68,6 @@ export async function lookupContext(
       }
     }
 
-    if (!globalMatches) {
-      const { data: fallbackMatches } = await supabase
-        .from('copy_entries')
-        .select('id, copy, context, rationale, scope, product_id, tone, usage_examples')
-        .eq('scope', 'global')
-        .eq('element_type', elementType)
-        .eq('status', 'active')
-        .limit(remaining + existingIds.size)
-
-      globalMatches = fallbackMatches
-    }
-
     if (globalMatches) {
       for (const m of globalMatches) {
         if (!existingIds.has(m.id) && copyMatches.length < 5) copyMatches.push(m)

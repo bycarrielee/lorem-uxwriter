@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import Anthropic from '@anthropic-ai/sdk'
 import { createClient } from '@/lib/supabase/server'
 import { lookupContext } from '@/lib/agent/lookup'
-import { buildSystemPrompt, buildUserMessage } from '@/lib/agent/prompt'
+import { buildSystemPrompt, buildUserMessage, serializeCopy } from '@/lib/agent/prompt'
 import type { AgentRequest } from '@/lib/agent/types'
 
 const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY })
@@ -95,6 +95,18 @@ export async function POST(request: NextRequest) {
 
   if (!parsed.character_count && parsed.is_copy_response && typeof parsed.suggestion === 'string') {
     parsed.character_count = (parsed.suggestion as string).length
+  }
+
+  // Validate library_match: suggestion must be word-for-word identical to a retrieved entry.
+  // If not, correct source_type so the badge is never misleading.
+  if (parsed.source_type === 'library_match' && typeof parsed.suggestion === 'string') {
+    const suggestion = parsed.suggestion as string
+    const isVerified = context.copyMatches.some(
+      (m) => serializeCopy(m.copy) === suggestion,
+    )
+    if (!isVerified) {
+      parsed.source_type = context.copyMatches.length > 0 ? 'adapted' : 'ai_generated'
+    }
   }
 
   // Session management
