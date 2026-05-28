@@ -65,7 +65,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: 'out_of_scope' }, { status: 422 })
   }
 
-  const context = await lookupContext(body.element_type ?? null, body.product_id ?? null)
+  const context = await lookupContext(body.element_type ?? null, body.product_id ?? null, body.input)
   const systemPrompt = buildSystemPrompt(context)
   const userMessage  = buildUserMessage(body)
 

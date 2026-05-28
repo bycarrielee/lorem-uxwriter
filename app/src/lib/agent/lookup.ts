@@ -29,6 +29,7 @@ export interface LookupResult {
 export async function lookupContext(
   elementType: ElementType | null,
   productId: string | null,
+  userQuery?: string,
 ): Promise<LookupResult> {
   const supabase = await createClient()
 
@@ -50,13 +51,34 @@ export async function lookupContext(
     const existingIds = new Set(copyMatches.map((m) => m.id))
     const remaining = 5 - copyMatches.length
 
-    const { data: globalMatches } = await supabase
-      .from('copy_entries')
-      .select('id, copy, context, rationale, scope, product_id, tone, usage_examples')
-      .eq('scope', 'global')
-      .eq('element_type', elementType)
-      .eq('status', 'active')
-      .limit(remaining + existingIds.size)
+    let globalMatches: LookupResult['copyMatches'] | null = null
+
+    if (userQuery) {
+      const { data: searchMatches } = await supabase
+        .from('copy_entries')
+        .select('id, copy, context, rationale, scope, product_id, tone, usage_examples')
+        .eq('scope', 'global')
+        .eq('element_type', elementType)
+        .eq('status', 'active')
+        .textSearch('context', userQuery, { type: 'websearch', config: 'english' })
+        .limit(remaining + existingIds.size)
+
+      if (searchMatches && searchMatches.length > 0) {
+        globalMatches = searchMatches
+      }
+    }
+
+    if (!globalMatches) {
+      const { data: fallbackMatches } = await supabase
+        .from('copy_entries')
+        .select('id, copy, context, rationale, scope, product_id, tone, usage_examples')
+        .eq('scope', 'global')
+        .eq('element_type', elementType)
+        .eq('status', 'active')
+        .limit(remaining + existingIds.size)
+
+      globalMatches = fallbackMatches
+    }
 
     if (globalMatches) {
       for (const m of globalMatches) {
