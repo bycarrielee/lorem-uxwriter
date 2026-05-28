@@ -657,6 +657,29 @@ button.submit-btn {
   animation: fadeUp 200ms ease-out both;
 }
 
+.bot-text-bubble .bot-text-para {
+  margin: 0;
+}
+
+.bot-text-bubble .bot-text-para + .bot-text-para,
+.bot-text-bubble .bot-text-para + .bot-text-list,
+.bot-text-bubble .bot-text-list + .bot-text-para,
+.bot-text-bubble .bot-text-list + .bot-text-list {
+  margin-top: 8px;
+}
+
+.bot-text-bubble .bot-text-list {
+  margin: 0;
+  padding-left: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.bot-text-bubble .bot-text-list li {
+  line-height: 1.5;
+}
+
 /* ─── Bot card ────────────────────────────────────────────────────────── */
 .bot-card {
   background: var(--surface-card);
