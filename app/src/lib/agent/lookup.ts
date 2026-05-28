@@ -26,6 +26,20 @@ export interface LookupResult {
   }>
 }
 
+// Infer element_type from the user query when none is explicitly provided.
+// Only infers when a phrase clearly signals the type — avoids injecting the
+// wrong library entries for ambiguous queries.
+function inferElementType(query: string): ElementType | null {
+  const q = query.toLowerCase()
+  if (/\b(form\s+label|field\s+label|label\s+for|form\s+field|field\s+name)\b/.test(q)) return 'forms'
+  if (/\b(error\s+message|error\s+for|validation\s+error|field\s+error|inline\s+error)\b/.test(q)) return 'errors'
+  if (/\b(button\s+(label|copy|text)|btn\s+label|cta\s+(text|copy))\b/.test(q)) return 'buttons'
+  if (/\bmodal\b/.test(q)) return 'modals'
+  if (/\b(alert\s+(message|copy|text)|banner\s+(message|copy))\b/.test(q)) return 'alerts'
+  if (/\b(push\s+notification|push\s+notif)\b/.test(q)) return 'push-notifications'
+  return null
+}
+
 // Extract meaningful content words from a query, stripping element-type words
 // and common filler words so only identifiers like "NRIC", "postal", "email" remain.
 function extractKeyTerms(query: string): string[] {
@@ -50,18 +64,21 @@ export async function lookupContext(
   // Copy entries: product-scoped first, then global. Deduplicate. Limit 5.
   const copyMatches: LookupResult['copyMatches'] = []
 
-  if (productId && elementType) {
+  // Fall back to query-inferred type when the caller didn't supply one
+  const resolvedElementType = elementType ?? (userQuery ? inferElementType(userQuery) : null)
+
+  if (productId && resolvedElementType) {
     const { data: productMatches } = await supabase
       .from('copy_entries')
       .select('id, copy, context, rationale, scope, product_id, tone, usage_examples')
       .eq('product_id', productId)
-      .eq('element_type', elementType)
+      .eq('element_type', resolvedElementType)
       .eq('status', 'active')
       .limit(3)
     if (productMatches) copyMatches.push(...productMatches)
   }
 
-  if (elementType) {
+  if (resolvedElementType) {
     const existingIds = new Set(copyMatches.map((m) => m.id))
     const remaining = 5 - copyMatches.length
 
@@ -80,7 +97,7 @@ export async function lookupContext(
           .from('copy_entries')
           .select('id, copy, context, rationale, scope, product_id, tone, usage_examples')
           .eq('scope', 'global')
-          .eq('element_type', elementType)
+          .eq('element_type', resolvedElementType)
           .eq('status', 'active')
           .textSearch('context', userQuery, { type: 'websearch', config: 'english' })
           .limit(queryLimit),
@@ -89,7 +106,7 @@ export async function lookupContext(
               .from('copy_entries')
               .select('id, copy, context, rationale, scope, product_id, tone, usage_examples')
               .eq('scope', 'global')
-              .eq('element_type', elementType)
+              .eq('element_type', resolvedElementType)
               .eq('status', 'active')
               .or(terms.map((t) => `context.ilike.%${t}%`).join(','))
               .limit(queryLimit)
