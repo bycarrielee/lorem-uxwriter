@@ -26,6 +26,20 @@ export interface LookupResult {
   }>
 }
 
+// Extract meaningful content words from a query, stripping element-type words
+// and common filler words so only identifiers like "NRIC", "postal", "email" remain.
+function extractKeyTerms(query: string): string[] {
+  const skip = new Set([
+    'form', 'label', 'field', 'error', 'button', 'modal', 'alert', 'link',
+    'hint', 'message', 'text', 'copy', 'what', 'should', 'give', 'write',
+    'generate', 'need', 'want', 'create', 'suggest', 'the', 'for', 'with',
+    'this', 'that', 'have', 'from', 'make', 'get', 'please', 'help', 'can',
+    'you', 'use', 'and', 'but', 'not', 'are', 'was', 'will', 'would', 'its',
+  ])
+  return [...new Set((query.toLowerCase().match(/[a-z]+/g) ?? []))]
+    .filter((w) => w.length > 2 && !skip.has(w))
+}
+
 export async function lookupContext(
   elementType: ElementType | null,
   productId: string | null,
@@ -54,18 +68,44 @@ export async function lookupContext(
     let globalMatches: LookupResult['copyMatches'] | null = null
 
     if (userQuery) {
-      const { data: searchMatches } = await supabase
-        .from('copy_entries')
-        .select('id, copy, context, rationale, scope, product_id, tone, usage_examples')
-        .eq('scope', 'global')
-        .eq('element_type', elementType)
-        .eq('status', 'active')
-        .textSearch('context', userQuery, { type: 'websearch', config: 'english' })
-        .limit(remaining + existingIds.size)
+      const terms = extractKeyTerms(userQuery)
+      const queryLimit = remaining + existingIds.size
 
-      if (searchMatches && searchMatches.length > 0) {
-        globalMatches = searchMatches
+      // Run both searches in parallel:
+      // 1. Websearch on context — strict AND match, highest quality
+      // 2. ilike on context for each key term — catches queries where
+      //    element-type words ("field", "label") don't appear in context
+      const [{ data: strictMatches }, { data: termMatches }] = await Promise.all([
+        supabase
+          .from('copy_entries')
+          .select('id, copy, context, rationale, scope, product_id, tone, usage_examples')
+          .eq('scope', 'global')
+          .eq('element_type', elementType)
+          .eq('status', 'active')
+          .textSearch('context', userQuery, { type: 'websearch', config: 'english' })
+          .limit(queryLimit),
+        terms.length > 0
+          ? supabase
+              .from('copy_entries')
+              .select('id, copy, context, rationale, scope, product_id, tone, usage_examples')
+              .eq('scope', 'global')
+              .eq('element_type', elementType)
+              .eq('status', 'active')
+              .or(terms.map((t) => `context.ilike.%${t}%`).join(','))
+              .limit(queryLimit)
+          : Promise.resolve({ data: null }),
+      ])
+
+      // Merge: strict matches first (higher relevance), then term matches
+      const seen = new Set<string>()
+      const merged: LookupResult['copyMatches'] = []
+      for (const row of [...(strictMatches ?? []), ...(termMatches ?? [])]) {
+        if (!seen.has(row.id)) {
+          seen.add(row.id)
+          merged.push(row)
+        }
       }
+      if (merged.length > 0) globalMatches = merged
     }
 
     if (globalMatches) {

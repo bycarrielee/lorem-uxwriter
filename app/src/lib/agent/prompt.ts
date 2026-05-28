@@ -78,7 +78,7 @@ MULTI-PART COPY: When the element type requires multiple parts (e.g. modal: head
       return parts.join('\n')
     })
     sections.push(
-      `--- LIBRARY MATCHES ---\nThese are approved copy strings. If an entry fits the user's need, use it verbatim as your suggestion and set source_type to "library_match". Do not shorten, paraphrase, or reword library entries — the approved text must be used exactly as written. Only set source_type to "adapted" if the user's specific context genuinely requires a change (e.g. different product name, different tense, a variation not covered by any entry). If no entry is relevant, generate from patterns and foundations instead.\n\n${matchLines.join('\n\n')}`,
+      `--- LIBRARY MATCHES ---\nApproved copy strings retrieved for this request. You MUST use one of these entries as your suggestion — do not generate new copy when library matches are provided. Pick the entry that best fits the user's need and copy its text exactly as written into "suggestion". Do not shorten, paraphrase, or reword it. Set source_type to "library_match". Only set source_type to "adapted" if the user's context genuinely requires a small, necessary change (e.g. different product name, different tense) — and even then, keep changes minimal.\n\n${matchLines.join('\n\n')}`,
     )
   }
 
