@@ -5,9 +5,10 @@ import type { AgentRequest } from '@/lib/agent/types'
 import { isFigmaUrl } from '@/lib/figma/parse'
 
 const TRY_CHIPS: Array<{ label: string; prefix: string }> = [
-  { label: 'Make this clearer',      prefix: 'Make this clearer: ' },
-  { label: 'Shorten, more concise',  prefix: 'Shorten: ' },
-  { label: 'Suggest alternatives',   prefix: 'Suggest alternatives: ' },
+  { label: 'Make this clearer',    prefix: 'Make this clearer: ' },
+  { label: 'Shorten',              prefix: 'Shorten: ' },
+  { label: 'Suggest alternatives', prefix: 'Suggest alternatives: ' },
+  { label: 'Review this',          prefix: 'Review this: ' },
 ]
 
 interface Props {
@@ -60,7 +61,7 @@ export function LandingCard({ onSubmit, loading, scopeError, onClearScopeError }
         <textarea
           value={input}
           onChange={(e) => { setInput(e.target.value); onClearScopeError?.() }}
-          placeholder={'e.g. "Your session will expire in 5 minutes", "write a timeout error", or paste a Figma frame URL'}
+          placeholder={'Review this error message: File upload failed. Please try again.'}
           onKeyDown={(e) => {
             if (e.key === 'Enter' && (e.metaKey || e.ctrlKey)) handleSubmit(e as unknown as React.FormEvent)
           }}

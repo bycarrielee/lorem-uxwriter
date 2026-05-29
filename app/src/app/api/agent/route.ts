@@ -11,6 +11,7 @@ import { fetchFigmaTextNodes } from '@/lib/figma/extract'
 const COST_PER_INPUT_TOKEN  = 0.000003  // $3/1M tokens (Claude Sonnet)
 const COST_PER_OUTPUT_TOKEN = 0.000015  // $15/1M tokens
 
+// Shared Anthropic client — used when no user key is provided
 const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY })
 
 const CLASSIFIER_SYSTEM = `You are a scope classifier for a UX writing assistant tool used by Singapore government practitioners.
@@ -68,10 +69,17 @@ export async function POST(request: NextRequest) {
   const clientId         = typeof body.client_id === 'string' ? body.client_id : 'unknown'
   const metricsSessionId = typeof body.metrics_session_id === 'string' ? body.metrics_session_id : null
 
+  // User-provided key overrides the shared key — never stored server-side
+  const userApiKey    = typeof body.user_api_key === 'string' && body.user_api_key.trim() ? body.user_api_key.trim() : null
+  const callClient    = userApiKey ? new Anthropic({ apiKey: userApiKey }) : anthropic
+  const limitUsd      = parseFloat(process.env.ANTHROPIC_BUDGET_LIMIT_USD   ?? '37')
+  const warningPct    = parseFloat(process.env.ANTHROPIC_BUDGET_WARNING_PCT ?? '80')
+
   let apiStatus: 'success' | 'error' | 'timeout' = 'error'
   let apiErrorCode: string | null = null
   let inputTokens: number | null = null
   let outputTokens: number | null = null
+  let costUsd: number | null = null
   const callStart = Date.now()
   const serviceClient = createServiceClient()
 
@@ -113,8 +121,11 @@ export async function POST(request: NextRequest) {
 
     isFigmaRequest = true
     figmaFrameName = figmaResult.frameInfo.name
-    effectiveInput = `Review Figma frame UX copy: ${figmaResult.nodes.slice(0, 5).map((n) => n.characters).join(', ')}`
-    userMessage = buildFigmaUserMessage(figmaResult.nodes, figmaResult.frameInfo, body)
+    // Cap at 50 nodes — beyond this the response reliably exceeds max_tokens
+    // and JSON.parse fails on the truncated output.
+    const cappedNodes = figmaResult.nodes.slice(0, 50)
+    effectiveInput = `Review Figma frame UX copy: ${cappedNodes.slice(0, 5).map((n) => n.characters).join(', ')}`
+    userMessage = buildFigmaUserMessage(cappedNodes, figmaResult.frameInfo, body)
   } else {
     userMessage = buildUserMessage(body)
   }
@@ -124,27 +135,40 @@ export async function POST(request: NextRequest) {
 
   let rawContent: string
   try {
-    const message = await anthropic.messages.create({
+    const message = await callClient.messages.create({
       model: 'bedrock.claude-sonnet-4-5',
-      max_tokens: isFigmaRequest ? 4096 : 1024,
+      max_tokens: isFigmaRequest ? 8192 : 1024,
       system: systemPrompt,
       messages: [{ role: 'user', content: userMessage }],
     })
     rawContent = message.content[0].type === 'text' ? message.content[0].text : ''
     inputTokens  = message.usage?.input_tokens  ?? null
     outputTokens = message.usage?.output_tokens ?? null
+    costUsd =
+      inputTokens !== null && outputTokens !== null
+        ? inputTokens * COST_PER_INPUT_TOKEN + outputTokens * COST_PER_OUTPUT_TOKEN
+        : null
     apiStatus    = 'success'
   } catch (err) {
     console.error('Claude API error', err)
     apiStatus    = 'error'
     apiErrorCode = err instanceof Error ? err.message.slice(0, 100) : 'unknown'
+    // Surface user-key-specific errors for the client to show targeted messages
+    if (userApiKey) {
+      const msg = err instanceof Error ? err.message.toLowerCase() : ''
+      if (msg.includes('401') || msg.includes('unauthorized') || msg.includes('authentication')) {
+        return NextResponse.json({ error: 'user_key_invalid' }, { status: 401 })
+      }
+      if (msg.includes('429') || msg.includes('rate limit')) {
+        return NextResponse.json({ error: 'user_key_rate_limited' }, { status: 429 })
+      }
+      if (msg.includes('402') || msg.includes('credit')) {
+        return NextResponse.json({ error: 'user_key_out_of_credits' }, { status: 402 })
+      }
+    }
     return NextResponse.json({ error: 'Agent service unavailable' }, { status: 502 })
   } finally {
     const durationMs = Date.now() - callStart
-    const costUsd =
-      inputTokens !== null && outputTokens !== null
-        ? inputTokens * COST_PER_INPUT_TOKEN + outputTokens * COST_PER_OUTPUT_TOKEN
-        : null
     try {
       await serviceClient.from('api_calls').insert({
         client_id: clientId,
@@ -160,6 +184,38 @@ export async function POST(request: NextRequest) {
     } catch (loggingErr) {
       console.error('api_calls logging failed (non-critical)', loggingErr)
     }
+  }
+
+  // Increment shared budget — only on success, only when using the shared key
+  if (!userApiKey && costUsd !== null) {
+    try {
+      await serviceClient.rpc('increment_budget_cost', { delta: costUsd })
+    } catch (budgetErr) {
+      console.error('budget increment failed (non-critical)', budgetErr)
+    }
+  }
+
+  // Fetch current budget status to include in response
+  let budget: { status: 'ok' | 'warning' | 'exceeded'; used_usd: number; limit_usd: number } = {
+    status: 'ok',
+    used_usd: 0,
+    limit_usd: limitUsd,
+  }
+  try {
+    const { data: budgetRow } = await serviceClient
+      .from('budget_usage')
+      .select('cost_usd')
+      .eq('id', 1)
+      .single()
+    const usedUsd          = parseFloat(String(budgetRow?.cost_usd ?? '0'))
+    const warningThreshold = limitUsd * (warningPct / 100)
+    budget = {
+      status:    usedUsd >= limitUsd ? 'exceeded' : usedUsd >= warningThreshold ? 'warning' : 'ok',
+      used_usd:  usedUsd,
+      limit_usd: limitUsd,
+    }
+  } catch {
+    // Fail silently — client defaults to 'ok'
   }
 
   // Strip markdown fences if present
@@ -229,5 +285,5 @@ export async function POST(request: NextRequest) {
     messageId = msg?.id ?? null
   }
 
-  return NextResponse.json({ ...parsed, session_id: sessionId, message_id: messageId })
+  return NextResponse.json({ ...parsed, session_id: sessionId, message_id: messageId, budget })
 }

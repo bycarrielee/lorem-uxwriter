@@ -7,15 +7,18 @@ import { BotCard } from './BotCard'
 import { BotTextBubble } from './BotTextBubble'
 import { FigmaReviewCard } from './FigmaReviewCard'
 import { FigmaTokenModal } from './FigmaTokenModal'
+import { BudgetBanner } from './BudgetBanner'
+import { ApiKeyModal } from './ApiKeyModal'
 import { SkeletonLoader } from './SkeletonLoader'
 import { FollowUpBar } from './FollowUpBar'
 import { VersionHistoryPanel } from './VersionHistoryPanel'
-import type { AgentRequest, AgentResponse } from '@/lib/agent/types'
+import type { AgentRequest, AgentResponse, BudgetStatus } from '@/lib/agent/types'
 import { isFigmaUrl } from '@/lib/figma/parse'
 import { useMetrics } from '@/lib/metrics/context'
 import { getClientId } from '@/lib/metrics/analytics'
 
 const FIGMA_TOKEN_KEY = 'lorem_figma_token'
+const API_KEY         = 'lorem_api_key'
 
 export type Message =
   | { role: 'user'; text: string }
@@ -44,6 +47,12 @@ export function AssistantShell({ products: _products, initialSessionId, initialM
   // Figma token modal
   const [figmaModalOpen, setFigmaModalOpen] = useState(false)
   const [pendingFigmaReq, setPendingFigmaReq] = useState<AgentRequest | null>(null)
+
+  // Budget / API key state
+  const [budgetStatus, setBudgetStatus]       = useState<BudgetStatus>('ok')
+  const [warningDismissed, setWarningDismissed] = useState(false)
+  const [apiKeyModalOpen, setApiKeyModalOpen]  = useState(false)
+  const [pendingApiKeyReq, setPendingApiKeyReq] = useState<AgentRequest | null>(null)
 
   const messagesEndRef = useRef<HTMLDivElement>(null)
   const [showScrollBtn, setShowScrollBtn] = useState(false)
@@ -136,10 +145,17 @@ export function AssistantShell({ products: _products, initialSessionId, initialM
         setVersionPanelIndex(assistantResponses.length)
       }
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Something went wrong')
+      const errMsg = err instanceof Error ? err.message : 'Something went wrong'
       // Remove the optimistic user message on error
       setMessages((prev) => prev.slice(0, -1))
-      if (messages.length === 0) setState('landing')
+      if (wasLanding) {
+        // Return to landing and surface the error there — setError() only
+        // renders in the response-state JSX so it would be invisible otherwise.
+        setState('landing')
+        setScopeError(errMsg)
+      } else {
+        setError(errMsg)
+      }
     } finally {
       setLoading(false)
     }
