@@ -39,7 +39,7 @@ export function AssistantShell({ products: _products, initialSessionId, initialM
   const [scopeError, setScopeError] = useState<string | null>(null)
   const [sessionId, setSessionId] = useState<string | null>(initialSessionId ?? null)
   const [sessionTitle, setSessionTitle] = useState<string>(initialTitle ?? '')
-  const { sessionId: metricsSessionId } = useMetrics()
+  const { sessionId: metricsSessionId, trackEvent } = useMetrics()
 
   const [versionPanelOpen, setVersionPanelOpen] = useState(false)
   const [versionPanelIndex, setVersionPanelIndex] = useState(0)
@@ -92,6 +92,20 @@ export function AssistantShell({ products: _products, initialSessionId, initialM
       // localStorage unavailable — token used for this session only
     }
   }
+  function getStoredApiKey(): string | null {
+    try { return localStorage.getItem(API_KEY) } catch { return null }
+  }
+  function storeApiKey(key: string) {
+    try { localStorage.setItem(API_KEY, key) } catch { /* unavailable */ }
+  }
+
+  // Fetch budget status on mount
+  useEffect(() => {
+    fetch('/api/budget')
+      .then((r) => r.ok ? r.json() : null)
+      .then((data) => { if (data?.status) setBudgetStatus(data.status) })
+      .catch(() => { /* fail silently */ })
+  }, [])
 
   async function submit(req: AgentRequest) {
     // If Figma URL and no stored token → prompt for token first
@@ -103,6 +117,17 @@ export function AssistantShell({ products: _products, initialSessionId, initialM
         return
       }
       req = { ...req, figma_access_token: stored }
+    }
+
+    // Budget exceeded: require user API key
+    const storedApiKey = getStoredApiKey()
+    if (budgetStatus === 'exceeded' && !storedApiKey && !req.user_api_key) {
+      setPendingApiKeyReq(req)
+      setApiKeyModalOpen(true)
+      return
+    }
+    if (storedApiKey && !req.user_api_key) {
+      req = { ...req, user_api_key: storedApiKey }
     }
 
     setScopeError(null)
@@ -127,17 +152,31 @@ export function AssistantShell({ products: _products, initialSessionId, initialM
 
       if (!res.ok) {
         const body = await res.json().catch(() => ({}))
-        if (res.status === 422 && (body as { error?: string }).error === 'out_of_scope') {
+        const errCode = (body as { error?: string }).error
+        if (res.status === 422 && errCode === 'out_of_scope') {
           setMessages((prev) => prev.slice(0, -1))
           if (wasLanding) setState('landing')
           setScopeError('Lorem is a UX writing assistant. Try a UX copy question.')
+          trackEvent('user_error', { message: 'Lorem is a UX writing assistant. Try a UX copy question.', http_status: 422 })
           return
         }
-        throw new Error((body as { error?: string }).error ?? `Request failed (${res.status})`)
+        if (res.status === 401 && errCode === 'user_key_invalid') {
+          throw new Error("That key didn't work. Check it and try again.")
+        }
+        if (res.status === 429 && errCode === 'user_key_rate_limited') {
+          throw new Error('Your key has hit its own rate limit. Try again shortly.')
+        }
+        if (res.status === 402 && errCode === 'user_key_out_of_credits') {
+          throw new Error('Your API key has run out of credits. Check equip.tech.gov.sg to find out when your quota resets.')
+        }
+        const httpError = new Error(errCode ?? `Request failed (${res.status})`)
+        ;(httpError as Error & { httpStatus: number }).httpStatus = res.status
+        throw httpError
       }
 
       const data = (await res.json()) as AgentResponse
       if (data.session_id) setSessionId(data.session_id)
+      if (data.budget?.status) setBudgetStatus(data.budget.status)
       setMessages((prev) => [...prev, { role: 'assistant', response: data }])
 
       // Auto-open version panel to latest if already open
@@ -146,6 +185,11 @@ export function AssistantShell({ products: _products, initialSessionId, initialM
       }
     } catch (err) {
       const errMsg = err instanceof Error ? err.message : 'Something went wrong'
+      const httpStatus =
+        err instanceof Error && 'httpStatus' in err
+          ? (err as Error & { httpStatus: number }).httpStatus
+          : null
+      trackEvent('user_error', { message: errMsg, http_status: httpStatus })
       // Remove the optimistic user message on error
       setMessages((prev) => prev.slice(0, -1))
       if (wasLanding) {
@@ -175,6 +219,20 @@ export function AssistantShell({ products: _products, initialSessionId, initialM
     setPendingFigmaReq(null)
   }
 
+  function handleApiKeySave(key: string) {
+    storeApiKey(key)
+    setApiKeyModalOpen(false)
+    if (pendingApiKeyReq) {
+      const req = pendingApiKeyReq
+      setPendingApiKeyReq(null)
+      submit({ ...req, user_api_key: key })
+    }
+  }
+  function handleApiKeyModalClose() {
+    setApiKeyModalOpen(false)
+    setPendingApiKeyReq(null)
+  }
+
   function openVersionPanel(index: number) {
     setVersionPanelIndex(index)
     setVersionPanelOpen(true)
@@ -188,17 +246,43 @@ export function AssistantShell({ products: _products, initialSessionId, initialM
     submit({ input: prompt, session_id: sessionId ?? undefined })
   }
 
+  const showBudgetBanner = budgetStatus !== 'ok' && !(budgetStatus === 'warning' && warningDismissed)
+  const budgetExceeded   = budgetStatus === 'exceeded'
+
   if (state === 'landing') {
     return (
       <>
-        <LandingCard onSubmit={submit} loading={loading} scopeError={scopeError} onClearScopeError={() => setScopeError(null)} />
+        {showBudgetBanner && (
+          <BudgetBanner
+            status={budgetStatus as 'warning' | 'exceeded'}
+            onAddKey={() => setApiKeyModalOpen(true)}
+            onDismiss={budgetStatus === 'warning' ? () => setWarningDismissed(true) : undefined}
+          />
+        )}
+        <LandingCard
+          onSubmit={submit}
+          loading={loading}
+          scopeError={scopeError}
+          onClearScopeError={() => setScopeError(null)}
+          budgetExceeded={budgetExceeded}
+        />
         <FigmaTokenModal open={figmaModalOpen} onSave={handleTokenSave} onClose={handleTokenModalClose} />
+        <ApiKeyModal open={apiKeyModalOpen} onSave={handleApiKeySave} onClose={handleApiKeyModalClose} />
       </>
     )
   }
 
   return (
     <>
+      {/* Budget banner — full width, above response area */}
+      {showBudgetBanner && (
+        <BudgetBanner
+          status={budgetStatus as 'warning' | 'exceeded'}
+          onAddKey={() => setApiKeyModalOpen(true)}
+          onDismiss={budgetStatus === 'warning' ? () => setWarningDismissed(true) : undefined}
+        />
+      )}
+
       <div className="response-root">
         {/* Thread */}
         <div className="thread">
@@ -312,7 +396,14 @@ export function AssistantShell({ products: _products, initialSessionId, initialM
             Latest
           </button>
 
-          <FollowUpBar onSubmit={submit} loading={loading} sessionId={sessionId} scopeError={scopeError} onClearScopeError={() => setScopeError(null)} />
+          <FollowUpBar
+            onSubmit={submit}
+            loading={loading}
+            sessionId={sessionId}
+            scopeError={scopeError}
+            onClearScopeError={() => setScopeError(null)}
+            budgetExceeded={budgetExceeded}
+          />
         </div>
 
         {/* Version history panel */}
@@ -326,6 +417,7 @@ export function AssistantShell({ products: _products, initialSessionId, initialM
       </div>
 
       <FigmaTokenModal open={figmaModalOpen} onSave={handleTokenSave} onClose={handleTokenModalClose} />
+      <ApiKeyModal open={apiKeyModalOpen} onSave={handleApiKeySave} onClose={handleApiKeyModalClose} />
     </>
   )
 }

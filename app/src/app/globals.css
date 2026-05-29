@@ -2417,3 +2417,97 @@ button.submit-btn {
   opacity: 0.45;
   cursor: not-allowed;
 }
+
+/* ─── Error log ──────────────────────────────────────── */
+.elog-page { padding: 28px 32px; overflow-y: auto; background: var(--surface-white); }
+.elog-header { margin-bottom: 24px; }
+.elog-title { font-size: 18px; font-weight: 600; letter-spacing: -0.01em; color: var(--text-primary); }
+.elog-sub { font-size: 13px; color: var(--text-tertiary); margin-top: 3px; }
+
+.elog-wrap { display: flex; flex-direction: column; gap: 12px; }
+.elog-toolbar { display: flex; align-items: center; gap: 12px; }
+.elog-search { flex: 1; max-width: 320px; height: 32px; padding: 0 10px; border: 1px solid var(--border-default); border-radius: var(--r-md, 6px); background: var(--surface-white); font-size: 13px; color: var(--text-primary); font-family: inherit; outline: none; }
+.elog-search:focus { border-color: var(--color-primary); }
+.elog-count { font-size: 12px; color: var(--text-tertiary); margin-left: auto; }
+.elog-empty { padding: 40px; text-align: center; font-size: 13px; color: var(--text-tertiary); }
+
+.elog-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+.elog-table th { text-align: left; padding: 8px 12px; font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; color: var(--text-tertiary); border-bottom: 1px solid var(--border-default); white-space: nowrap; }
+.elog-table td { padding: 10px 12px; border-bottom: 1px solid var(--border-subtle, #F1F5F9); vertical-align: middle; }
+.elog-table tr:last-child td { border-bottom: none; }
+.elog-table tr:hover td { background: var(--surface-base); }
+
+.elog-time { white-space: nowrap; color: var(--text-tertiary); font-size: 12px; width: 120px; }
+.elog-badge { display: inline-block; padding: 2px 7px; border-radius: 999px; font-size: 11px; font-weight: 600; letter-spacing: 0.04em; white-space: nowrap; }
+.elog-badge--server  { background: #FEE2E2; color: #B91C1C; }
+.elog-badge--notfound { background: #FEF3C7; color: #92400E; }
+.elog-badge--client  { background: #EDE9FE; color: #5B21B6; }
+.elog-badge--network { background: #F1F5F9; color: #64748B; }
+.elog-message { color: var(--text-secondary); font-size: 13px; }
+.elog-action { width: 32px; }
+.elog-open { display: flex; align-items: center; justify-content: center; width: 24px; height: 24px; border-radius: var(--r-sm, 4px); color: var(--text-tertiary); transition: background 0.1s, color 0.1s; }
+.elog-open:hover { background: var(--surface-hover); color: var(--text-primary); }
+.elog-no-link { display: block; width: 24px; height: 24px; }
+
+/* ─── Budget banner ──────────────────────────────────── */
+.budget-banner {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 20px;
+  font-family: var(--font-ui);
+  font-size: 13px;
+  font-weight: 400;
+  line-height: 1.4;
+  flex-shrink: 0;
+}
+.budget-banner-warning {
+  background: oklch(98% 0.06 80);
+  border-bottom: 1px solid oklch(82% 0.12 72);
+  color: oklch(44% 0.18 65);
+}
+.budget-banner-warning svg { color: oklch(52% 0.18 65); flex-shrink: 0; }
+.budget-banner-exceeded {
+  background: var(--crit-bg);
+  border-bottom: 1px solid var(--crit-bd);
+  color: var(--crit-txt);
+}
+.budget-banner-exceeded svg { color: var(--crit); flex-shrink: 0; }
+.budget-banner-text { flex: 1; }
+.budget-banner-link {
+  background: none;
+  border: none;
+  padding: 0;
+  font: inherit;
+  font-weight: 500;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  cursor: pointer;
+  color: inherit;
+}
+.budget-banner-link:hover { opacity: 0.8; }
+.budget-banner-dismiss {
+  background: none;
+  border: none;
+  padding: 4px;
+  border-radius: var(--r-md);
+  color: inherit;
+  opacity: 0.6;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+}
+.budget-banner-dismiss:hover { opacity: 1; }
+
+/* Budget exceeded submit button — visually disabled but clickable */
+.submit-btn.is-budget-exceeded,
+.send-btn.is-budget-exceeded {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+/* Override the normal :disabled styling so the budget-exceeded class takes precedence */
+.submit-btn.is-budget-exceeded:not(:disabled),
+.send-btn.is-budget-exceeded:not(:disabled) {
+  pointer-events: auto;
+}
