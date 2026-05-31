@@ -16,6 +16,8 @@ import type { AgentRequest, AgentResponse, BudgetStatus } from '@/lib/agent/type
 import { isFigmaUrl } from '@/lib/figma/parse'
 import { useMetrics } from '@/lib/metrics/context'
 import { getClientId } from '@/lib/metrics/analytics'
+import { convertFigmaRows } from '@/types/figma-review'
+import type { ReviewStatus } from '@/types/figma-review'
 
 const FIGMA_TOKEN_KEY = 'lorem_figma_token'
 const API_KEY         = 'lorem_api_key'
@@ -100,7 +102,14 @@ export function AssistantShell({ products: _products, initialSessionId, initialM
   }
 
   // Fetch budget status on mount
+  // Debug override: ?budget=warning or ?budget=exceeded skips the real fetch
   useEffect(() => {
+    const params = new URLSearchParams(window.location.search)
+    const debugBudget = params.get('budget')
+    if (debugBudget === 'warning' || debugBudget === 'exceeded') {
+      setBudgetStatus(debugBudget)
+      return
+    }
     fetch('/api/budget')
       .then((r) => r.ok ? r.json() : null)
       .then((data) => { if (data?.status) setBudgetStatus(data.status) })
@@ -331,6 +340,11 @@ export function AssistantShell({ products: _products, initialSessionId, initialM
                 const frameName = sessionTitle.startsWith('Figma: ')
                   ? sessionTitle.slice(7)
                   : 'Frame'
+                const strings = convertFigmaRows(msg.response.figma_review)
+                const handleOpenReview = (filter: ReviewStatus | 'all') => {
+                  // TODO: Implement opening the review panel/sheet
+                  console.log('Opening review with filter:', filter)
+                }
                 return (
                   <div key={i} className="message-row-bot">
                     {msg.response.message && (
@@ -338,7 +352,8 @@ export function AssistantShell({ products: _products, initialSessionId, initialM
                     )}
                     <FigmaReviewCard
                       frameName={frameName}
-                      rows={msg.response.figma_review}
+                      strings={strings}
+                      onOpen={handleOpenReview}
                     />
                   </div>
                 )
