@@ -1,8 +1,8 @@
 'use client'
 
 import React, { useState, useEffect } from 'react'
-import type { ReviewString, ReviewStatus, Suggestion, SuggestionVia } from '@/types/figma-review'
-import { getVisibleStrings, nextSuggestionId } from '@/types/figma-review'
+import type { ReviewString, ReviewStatus, Suggestion } from '@/types/figma-review'
+import { getVisibleStrings } from '@/types/figma-review'
 
 type TabKey = 'all' | 'library' | 'adapted' | 'suggestion' | 'no-change'
 
@@ -13,6 +13,7 @@ interface Props {
   onStringsChange: (strings: ReviewString[]) => void
   onClose: () => void
   onDiscussInChat: (el: string, stringIndex: number) => void
+  onQuickReply: (prompt: string) => void
   showToast: (msg: string, actionLabel?: string, onAction?: () => void) => void
   initialTab?: ReviewStatus | 'all'
 }
@@ -41,13 +42,13 @@ export function FigmaReviewPanel({
   onStringsChange,
   onClose,
   onDiscussInChat,
+  onQuickReply,
   showToast,
   initialTab,
 }: Props) {
   const [tab, setTab] = useState<TabKey>('all')
   const [query, setQuery] = useState('')
   const [expandedIdx, setExpandedIdx] = useState<number | null>(null)
-  const [loadingQR, setLoadingQR] = useState<string | null>(null)
 
   // Reset state when panel closes; apply initialTab when it opens
   useEffect(() => {
@@ -55,7 +56,6 @@ export function FigmaReviewPanel({
       setTab('all')
       setQuery('')
       setExpandedIdx(null)
-      setLoadingQR(null)
     } else if (initialTab) {
       setTab(initialTab)
     }
@@ -98,32 +98,11 @@ export function FigmaReviewPanel({
     showToast('Copied ✓')
   }
 
-  async function handleQuickReply(strIdx: number, kind: string) {
-    const key = `${strIdx}-${kind}`
-    setLoadingQR(key)
-    await new Promise((resolve) => setTimeout(resolve, 700))
+  function handleQuickReply(strIdx: number, kind: string) {
     const str = strings.find((s) => s.i === strIdx)
-    if (!str) {
-      setLoadingQR(null)
-      return
-    }
-    const via: SuggestionVia = 'quick-reply'
-    const newSugg: Suggestion = {
-      id: nextSuggestionId(),
-      copy: `${kind} version of: ${str.suggestions[str.suggestions.length - 1]?.copy ?? ''}`,
-      rationale: `Generated via quick reply: ${kind}`,
-      source: str.status,
-      via,
-      libId: null,
-    }
-    const next = strings.map((s) =>
-      s.i === strIdx
-        ? { ...s, suggestions: [...s.suggestions, newSugg] }
-        : s
-    )
-    onStringsChange(next)
-    setLoadingQR(null)
-    showToast(`Added "${newSugg.copy}" ✓`)
+    if (!str) return
+    const copy = str.suggestions[str.suggestions.length - 1]?.copy ?? ''
+    onQuickReply(`${kind} version of: ${copy}`)
   }
 
   function handleDiscuss(strIdx: number) {
@@ -377,23 +356,18 @@ export function FigmaReviewPanel({
                           <div className="fp-detail-footer">
                             <div className="fp-detail-quick">
                               <span className="fp-detail-quick-label">Quick reply</span>
-                              {(['Alternative', 'Shorter', 'Clearer'] as const).map((kind) => {
-                                const key = `${str.i}-${kind}`
-                                const isLoading = loadingQR === key
-                                return (
-                                  <button
-                                    key={kind}
-                                    className={`fp-dchip${isLoading ? ' loading' : ''}`}
-                                    disabled={isLoading || loadingQR !== null}
-                                    onClick={(e) => {
-                                      e.stopPropagation()
-                                      handleQuickReply(str.i, kind)
-                                    }}
-                                  >
-                                    {isLoading ? '…' : kind}
-                                  </button>
-                                )
-                              })}
+                              {(['Alternative', 'Shorter', 'Clearer'] as const).map((kind) => (
+                                <button
+                                  key={kind}
+                                  className="fp-dchip"
+                                  onClick={(e) => {
+                                    e.stopPropagation()
+                                    handleQuickReply(str.i, kind)
+                                  }}
+                                >
+                                  {kind}
+                                </button>
+                              ))}
                             </div>
                             <button
                               className="fp-discuss-link"

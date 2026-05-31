@@ -1,8 +1,8 @@
 'use client'
 
 import React, { useState, useEffect } from 'react'
-import type { ReviewString, ReviewStatus, Suggestion, SuggestionVia } from '@/types/figma-review'
-import { getVisibleStrings, nextSuggestionId } from '@/types/figma-review'
+import type { ReviewString, ReviewStatus, Suggestion } from '@/types/figma-review'
+import { getVisibleStrings } from '@/types/figma-review'
 
 type TabKey = 'all' | 'library' | 'adapted' | 'suggestion' | 'no-change'
 
@@ -13,6 +13,7 @@ interface Props {
   onStringsChange: (strings: ReviewString[]) => void
   onClose: () => void
   onDiscussInChat: (el: string, stringIndex: number) => void
+  onQuickReply: (prompt: string) => void
   showToast: (msg: string, actionLabel?: string, onAction?: () => void) => void
   initialTab?: ReviewStatus | 'all'
 }
@@ -41,6 +42,7 @@ export function FigmaReviewSheet({
   onStringsChange,
   onClose,
   onDiscussInChat,
+  onQuickReply,
   showToast,
   initialTab,
 }: Props) {
@@ -48,7 +50,6 @@ export function FigmaReviewSheet({
   const [query, setQuery] = useState('')
   const [cardIdx, setCardIdx] = useState(0)
   const [animDir, setAnimDir] = useState<'right' | 'left'>('right')
-  const [loadingQR, setLoadingQR] = useState<string | null>(null)
 
   // Reset state when sheet closes; apply initialTab when it opens
   useEffect(() => {
@@ -57,7 +58,6 @@ export function FigmaReviewSheet({
       setQuery('')
       setCardIdx(0)
       setAnimDir('right')
-      setLoadingQR(null)
     } else if (initialTab) {
       setTab(initialTab)
       setCardIdx(0)
@@ -125,32 +125,11 @@ export function FigmaReviewSheet({
     showToast('Copied ✓')
   }
 
-  async function handleQuickReply(strI: number, kind: string) {
-    const key = `${strI}-${kind}`
-    setLoadingQR(key)
-    await new Promise((resolve) => setTimeout(resolve, 700))
+  function handleQuickReply(strI: number, kind: string) {
     const str = strings.find((s) => s.i === strI)
-    if (!str) {
-      setLoadingQR(null)
-      return
-    }
-    const via: SuggestionVia = 'quick-reply'
-    const newSugg: Suggestion = {
-      id: nextSuggestionId(),
-      copy: `${kind} version of: ${str.suggestions[str.suggestions.length - 1]?.copy ?? ''}`,
-      rationale: `Generated via quick reply: ${kind}`,
-      source: str.status,
-      via,
-      libId: null,
-    }
-    const next = strings.map((s) =>
-      s.i === strI
-        ? { ...s, suggestions: [...s.suggestions, newSugg] }
-        : s
-    )
-    onStringsChange(next)
-    setLoadingQR(null)
-    showToast(`Added "${newSugg.copy}" ✓`)
+    if (!str) return
+    const copy = str.suggestions[str.suggestions.length - 1]?.copy ?? ''
+    onQuickReply(`${kind} version of: ${copy}`)
   }
 
   function handleDiscuss(strI: number) {
@@ -373,20 +352,15 @@ export function FigmaReviewSheet({
 
               {/* Quick replies */}
               <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
-                {(['Alternative', 'Shorter'] as const).map((kind) => {
-                  const key = `${currentStr.i}-${kind}`
-                  const isLoading = loadingQR === key
-                  return (
-                    <button
-                      key={kind}
-                      className={`chip${isLoading ? ' loading' : ''}`}
-                      disabled={isLoading || loadingQR !== null}
-                      onClick={() => handleQuickReply(currentStr.i, kind)}
-                    >
-                      {isLoading ? '…' : kind}
-                    </button>
-                  )
-                })}
+                {(['Alternative', 'Shorter'] as const).map((kind) => (
+                  <button
+                    key={kind}
+                    className="chip"
+                    onClick={() => handleQuickReply(currentStr.i, kind)}
+                  >
+                    {kind}
+                  </button>
+                ))}
                 <button
                   className="chip"
                   style={{ borderStyle: 'dashed' }}

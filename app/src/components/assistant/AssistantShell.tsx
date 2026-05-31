@@ -518,6 +518,7 @@ export function AssistantShell({ products: _products, initialSessionId, initialM
             onStringsChange={(s) => setReviewStrings(s)}
             onClose={() => setReviewPanelOpen(false)}
             onDiscussInChat={handleDiscussInChat}
+            onQuickReply={(prompt) => submit({ input: prompt })}
             showToast={showToast}
             initialTab={reviewPanelFilter}
           />
@@ -531,6 +532,7 @@ export function AssistantShell({ products: _products, initialSessionId, initialM
             onStringsChange={(s) => setReviewStrings(s)}
             onClose={() => setReviewPanelOpen(false)}
             onDiscussInChat={handleDiscussInChat}
+            onQuickReply={(prompt) => submit({ input: prompt })}
             showToast={showToast}
             initialTab={reviewPanelFilter}
           />
