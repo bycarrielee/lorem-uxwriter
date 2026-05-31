@@ -13,7 +13,8 @@ interface Props {
   onStringsChange: (strings: ReviewString[]) => void
   onClose: () => void
   onDiscussInChat: (el: string, stringIndex: number) => void
-  onQuickReply: (prompt: string) => void
+  onQuickReply: (prompt: string, strIdx: number) => void
+  loadingQuickReplyStr?: number | null
   showToast: (msg: string, actionLabel?: string, onAction?: () => void) => void
   initialTab?: ReviewStatus | 'all'
 }
@@ -43,6 +44,7 @@ export function FigmaReviewSheet({
   onClose,
   onDiscussInChat,
   onQuickReply,
+  loadingQuickReplyStr,
   showToast,
   initialTab,
 }: Props) {
@@ -129,7 +131,7 @@ export function FigmaReviewSheet({
     const str = strings.find((s) => s.i === strI)
     if (!str) return
     const copy = str.suggestions[str.suggestions.length - 1]?.copy ?? ''
-    onQuickReply(`${kind} version of: "${copy}" — element: "${str.el}" in Figma frame "${frameName}"`)
+    onQuickReply(`${kind} version of: "${copy}" — element: "${str.el}" in Figma frame "${frameName}"`, strI)
   }
 
   function handleDiscuss(strI: number) {
@@ -352,15 +354,19 @@ export function FigmaReviewSheet({
 
               {/* Quick replies */}
               <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
-                {(['Alternative', 'Shorter'] as const).map((kind) => (
-                  <button
-                    key={kind}
-                    className="chip"
-                    onClick={() => handleQuickReply(currentStr.i, kind)}
-                  >
-                    {kind}
-                  </button>
-                ))}
+                {(['Alternative', 'Shorter'] as const).map((kind) => {
+                  const isLoading = loadingQuickReplyStr === currentStr.i
+                  return (
+                    <button
+                      key={kind}
+                      className={`chip${isLoading ? ' loading' : ''}`}
+                      disabled={isLoading}
+                      onClick={() => handleQuickReply(currentStr.i, kind)}
+                    >
+                      {isLoading ? '…' : kind}
+                    </button>
+                  )
+                })}
                 <button
                   className="chip"
                   style={{ borderStyle: 'dashed' }}

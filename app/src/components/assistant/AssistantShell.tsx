@@ -68,6 +68,7 @@ export function AssistantShell({ products: _products, initialSessionId, initialM
   const [reviewFrameName, setReviewFrameName] = useState<string>('Frame')
   const [reviewPanelOpen, setReviewPanelOpen] = useState(false)
   const [reviewPanelFilter, setReviewPanelFilter] = useState<ReviewStatus | 'all'>('all')
+  const [loadingQuickReplyStr, setLoadingQuickReplyStr] = useState<number | null>(null)
 
   // Mobile breakpoint — drives panel vs sheet selection
   const [isMobile, setIsMobile] = useState(false)
@@ -132,6 +133,55 @@ export function AssistantShell({ products: _products, initialSessionId, initialM
     setReviewPanelFilter(filter)
     setReviewPanelOpen(true)
     setVersionPanelOpen(false)
+  }
+
+  async function handleFigmaQuickReply(prompt: string, strIdx: number) {
+    setLoadingQuickReplyStr(strIdx)
+    const storedApiKey = getStoredApiKey()
+    try {
+      const res = await fetch('/api/agent', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          input: prompt,
+          session_id: sessionId ?? undefined,
+          client_id: getClientId(),
+          metrics_session_id: metricsSessionId ?? undefined,
+          ...(storedApiKey ? { user_api_key: storedApiKey } : {}),
+        }),
+      })
+      if (!res.ok) {
+        showToast('Could not get suggestion')
+        return
+      }
+      const data = (await res.json()) as AgentResponse
+      if (data.session_id) setSessionId(data.session_id)
+      if (data.budget?.status) setBudgetStatus(data.budget.status)
+      if (!data.is_copy_response || !data.suggestion) {
+        showToast(data.message || 'No alternative found')
+        return
+      }
+      const newSugg = {
+        id: nextSuggestionId(),
+        copy: data.suggestion,
+        rationale: Array.isArray(data.rationale) ? (data.rationale[0] ?? '') : (data.rationale ?? ''),
+        source: (data.source_type === 'library_match' ? 'library'
+          : data.source_type === 'adapted' ? 'adapted'
+          : 'suggestion') as ReviewStatus,
+        via: 'quick-reply' as const,
+        libId: null,
+      }
+      setReviewStrings((prev) =>
+        prev ? prev.map((s) =>
+          s.i === strIdx ? { ...s, suggestions: [...s.suggestions, newSugg] } : s
+        ) : prev
+      )
+      showToast(`Added "${newSugg.copy}" ✓`)
+    } catch {
+      showToast('Could not get suggestion')
+    } finally {
+      setLoadingQuickReplyStr(null)
+    }
   }
 
   function getStoredFigmaToken(): string | null {
@@ -534,7 +584,8 @@ export function AssistantShell({ products: _products, initialSessionId, initialM
             onStringsChange={(s) => setReviewStrings(s)}
             onClose={() => setReviewPanelOpen(false)}
             onDiscussInChat={handleDiscussInChat}
-            onQuickReply={(prompt) => submit({ input: prompt })}
+            onQuickReply={handleFigmaQuickReply}
+            loadingQuickReplyStr={loadingQuickReplyStr}
             showToast={showToast}
             initialTab={reviewPanelFilter}
           />
@@ -548,7 +599,8 @@ export function AssistantShell({ products: _products, initialSessionId, initialM
             onStringsChange={(s) => setReviewStrings(s)}
             onClose={() => setReviewPanelOpen(false)}
             onDiscussInChat={handleDiscussInChat}
-            onQuickReply={(prompt) => submit({ input: prompt })}
+            onQuickReply={handleFigmaQuickReply}
+            loadingQuickReplyStr={loadingQuickReplyStr}
             showToast={showToast}
             initialTab={reviewPanelFilter}
           />

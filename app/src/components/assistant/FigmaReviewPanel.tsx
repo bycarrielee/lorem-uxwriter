@@ -13,7 +13,8 @@ interface Props {
   onStringsChange: (strings: ReviewString[]) => void
   onClose: () => void
   onDiscussInChat: (el: string, stringIndex: number) => void
-  onQuickReply: (prompt: string) => void
+  onQuickReply: (prompt: string, strIdx: number) => void
+  loadingQuickReplyStr?: number | null
   showToast: (msg: string, actionLabel?: string, onAction?: () => void) => void
   initialTab?: ReviewStatus | 'all'
 }
@@ -43,6 +44,7 @@ export function FigmaReviewPanel({
   onClose,
   onDiscussInChat,
   onQuickReply,
+  loadingQuickReplyStr,
   showToast,
   initialTab,
 }: Props) {
@@ -102,7 +104,7 @@ export function FigmaReviewPanel({
     const str = strings.find((s) => s.i === strIdx)
     if (!str) return
     const copy = str.suggestions[str.suggestions.length - 1]?.copy ?? ''
-    onQuickReply(`${kind} version of: "${copy}" — element: "${str.el}" in Figma frame "${frameName}"`)
+    onQuickReply(`${kind} version of: "${copy}" — element: "${str.el}" in Figma frame "${frameName}"`, strIdx)
   }
 
   function handleDiscuss(strIdx: number) {
@@ -356,18 +358,22 @@ export function FigmaReviewPanel({
                           <div className="fp-detail-footer">
                             <div className="fp-detail-quick">
                               <span className="fp-detail-quick-label">Quick reply</span>
-                              {(['Alternative', 'Shorter', 'Clearer'] as const).map((kind) => (
-                                <button
-                                  key={kind}
-                                  className="fp-dchip"
-                                  onClick={(e) => {
-                                    e.stopPropagation()
-                                    handleQuickReply(str.i, kind)
-                                  }}
-                                >
-                                  {kind}
-                                </button>
-                              ))}
+                              {(['Alternative', 'Shorter', 'Clearer'] as const).map((kind) => {
+                                const isLoading = loadingQuickReplyStr === str.i
+                                return (
+                                  <button
+                                    key={kind}
+                                    className={`fp-dchip${isLoading ? ' loading' : ''}`}
+                                    disabled={isLoading}
+                                    onClick={(e) => {
+                                      e.stopPropagation()
+                                      handleQuickReply(str.i, kind)
+                                    }}
+                                  >
+                                    {isLoading ? '…' : kind}
+                                  </button>
+                                )
+                              })}
                             </div>
                             <button
                               className="fp-discuss-link"
