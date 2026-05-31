@@ -510,6 +510,7 @@ export function AssistantShell({ products: _products, initialSessionId, initialM
             onClose={() => setReviewPanelOpen(false)}
             onDiscussInChat={handleDiscussInChat}
             showToast={showToast}
+            initialTab={reviewPanelFilter}
           />
         )}
 
@@ -523,6 +524,7 @@ export function AssistantShell({ products: _products, initialSessionId, initialM
             onClose={() => setReviewPanelOpen(false)}
             onDiscussInChat={handleDiscussInChat}
             showToast={showToast}
+            initialTab={reviewPanelFilter}
           />
         )}
       </div>

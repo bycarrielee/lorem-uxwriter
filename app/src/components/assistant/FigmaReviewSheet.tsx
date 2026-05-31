@@ -14,6 +14,7 @@ interface Props {
   onClose: () => void
   onDiscussInChat: (el: string, stringIndex: number) => void
   showToast: (msg: string, actionLabel?: string, onAction?: () => void) => void
+  initialTab?: ReviewStatus | 'all'
 }
 
 function spillBadge(status: ReviewString['status']) {
@@ -41,6 +42,7 @@ export function FigmaReviewSheet({
   onClose,
   onDiscussInChat,
   showToast,
+  initialTab,
 }: Props) {
   const [tab, setTab] = useState<TabKey>('all')
   const [query, setQuery] = useState('')
@@ -48,7 +50,7 @@ export function FigmaReviewSheet({
   const [animDir, setAnimDir] = useState<'right' | 'left'>('right')
   const [loadingQR, setLoadingQR] = useState<string | null>(null)
 
-  // Reset state when sheet closes
+  // Reset state when sheet closes; apply initialTab when it opens
   useEffect(() => {
     if (!open) {
       setTab('all')
@@ -56,8 +58,11 @@ export function FigmaReviewSheet({
       setCardIdx(0)
       setAnimDir('right')
       setLoadingQR(null)
+    } else if (initialTab) {
+      setTab(initialTab)
+      setCardIdx(0)
     }
-  }, [open])
+  }, [open, initialTab])
 
   const items = getVisibleStrings(strings, tab, query)
 

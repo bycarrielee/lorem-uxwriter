@@ -14,6 +14,7 @@ interface Props {
   onClose: () => void
   onDiscussInChat: (el: string, stringIndex: number) => void
   showToast: (msg: string, actionLabel?: string, onAction?: () => void) => void
+  initialTab?: ReviewStatus | 'all'
 }
 
 function spill(status: ReviewString['status']) {
@@ -41,21 +42,24 @@ export function FigmaReviewPanel({
   onClose,
   onDiscussInChat,
   showToast,
+  initialTab,
 }: Props) {
   const [tab, setTab] = useState<TabKey>('all')
   const [query, setQuery] = useState('')
   const [expandedIdx, setExpandedIdx] = useState<number | null>(null)
   const [loadingQR, setLoadingQR] = useState<string | null>(null)
 
-  // Reset state when panel closes
+  // Reset state when panel closes; apply initialTab when it opens
   useEffect(() => {
     if (!open) {
       setTab('all')
       setQuery('')
       setExpandedIdx(null)
       setLoadingQR(null)
+    } else if (initialTab) {
+      setTab(initialTab)
     }
-  }, [open])
+  }, [open, initialTab])
 
   const visible = getVisibleStrings(strings, tab, query)
 
