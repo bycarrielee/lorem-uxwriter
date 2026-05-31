@@ -102,7 +102,7 @@ export function FigmaReviewPanel({
     const str = strings.find((s) => s.i === strIdx)
     if (!str) return
     const copy = str.suggestions[str.suggestions.length - 1]?.copy ?? ''
-    onQuickReply(`${kind} version of: ${copy}`)
+    onQuickReply(`${kind} version of: "${copy}" — element: "${str.el}" in Figma frame "${frameName}"`)
   }
 
   function handleDiscuss(strIdx: number) {

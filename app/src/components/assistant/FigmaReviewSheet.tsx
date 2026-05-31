@@ -37,7 +37,7 @@ function srcLabel(via: Suggestion['via']) {
 
 export function FigmaReviewSheet({
   open,
-  frameName: _frameName,
+  frameName,
   strings,
   onStringsChange,
   onClose,
@@ -129,7 +129,7 @@ export function FigmaReviewSheet({
     const str = strings.find((s) => s.i === strI)
     if (!str) return
     const copy = str.suggestions[str.suggestions.length - 1]?.copy ?? ''
-    onQuickReply(`${kind} version of: ${copy}`)
+    onQuickReply(`${kind} version of: "${copy}" — element: "${str.el}" in Figma frame "${frameName}"`)
   }
 
   function handleDiscuss(strI: number) {
