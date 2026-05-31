@@ -69,6 +69,15 @@ export function AssistantShell({ products: _products, initialSessionId, initialM
   const [reviewPanelOpen, setReviewPanelOpen] = useState(false)
   const [reviewPanelFilter, setReviewPanelFilter] = useState<ReviewStatus | 'all'>('all')
 
+  // Mobile breakpoint — drives panel vs sheet selection
+  const [isMobile, setIsMobile] = useState(false)
+  useEffect(() => {
+    const check = () => setIsMobile(window.innerWidth <= 768)
+    check()
+    window.addEventListener('resize', check)
+    return () => window.removeEventListener('resize', check)
+  }, [])
+
   // Toast
   const [toastMsg, setToastMsg]         = useState<string | null>(null)
   const [toastAction, setToastAction]   = useState<string | undefined>(undefined)
@@ -500,8 +509,8 @@ export function AssistantShell({ products: _products, initialSessionId, initialM
           onSelectVersion={setVersionPanelIndex}
         />
 
-        {/* Figma review panel — desktop */}
-        {reviewStrings && (
+        {/* Figma review — panel on desktop, sheet on mobile */}
+        {reviewStrings && !isMobile && (
           <FigmaReviewPanel
             open={reviewPanelOpen}
             frameName={reviewFrameName}
@@ -514,8 +523,7 @@ export function AssistantShell({ products: _products, initialSessionId, initialM
           />
         )}
 
-        {/* Figma review sheet — mobile */}
-        {reviewStrings && (
+        {reviewStrings && isMobile && (
           <FigmaReviewSheet
             open={reviewPanelOpen}
             frameName={reviewFrameName}
