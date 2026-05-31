@@ -122,7 +122,7 @@ export function FigmaReviewSheet({
 
   function handleCopy(text: string) {
     navigator.clipboard.writeText(text).catch(() => {})
-    showToast('Copied')
+    showToast('Copied ✓')
   }
 
   async function handleQuickReply(strI: number, kind: string) {
@@ -150,7 +150,7 @@ export function FigmaReviewSheet({
     )
     onStringsChange(next)
     setLoadingQR(null)
-    showToast('Suggestion added')
+    showToast(`Added "${newSugg.copy}" ✓`)
   }
 
   function handleDiscuss(strI: number) {
@@ -221,7 +221,7 @@ export function FigmaReviewSheet({
                   role="tab"
                   aria-selected={tab === key}
                   className={`fr-stab${tab === key ? ' active' : ''}`}
-                  onClick={() => { setTab(key); setCardIdx(0) }}
+                  onClick={() => { setTab(key); setCardIdx(0); setQuery('') }}
                 >
                   {label}
                   <span className="fr-stab-count">{count}</span>
@@ -302,8 +302,8 @@ export function FigmaReviewSheet({
                     onClick={() => handleRemoveString(currentStr.i)}
                     aria-label={`Remove string ${currentStr.el}`}
                   >
-                    <svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" aria-hidden="true">
-                      <path d="M2 2l12 12M14 2L2 14" />
+                    <svg width="12" height="12" viewBox="0 0 14 14" fill="none" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                      <path d="M2 4h10M5 4V2.5A.5.5 0 0 1 5.5 2h3a.5.5 0 0 1 .5.5V4M3 4l.7 7.5A.5.5 0 0 0 4.2 12h5.6a.5.5 0 0 0 .5-.5L11 4" />
                     </svg>
                   </button>
                 </div>
@@ -333,16 +333,18 @@ export function FigmaReviewSheet({
                       >
                         <div className="fp-sugg-header">
                           {srcLabel(sg.via)}
-                          <button
-                            className="fp-sugg-remove-btn"
-                            disabled={isLib || isLastSugg}
-                            onClick={() => handleRemoveSuggestion(currentStr.i, sg.id)}
-                            aria-label="Remove suggestion"
-                          >
-                            <svg width="11" height="11" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" aria-hidden="true">
-                              <path d="M2 2l12 12M14 2L2 14" />
-                            </svg>
-                          </button>
+                          {!isLib && (
+                            <button
+                              className="fp-sugg-remove-btn"
+                              disabled={isLastSugg}
+                              onClick={() => handleRemoveSuggestion(currentStr.i, sg.id)}
+                              aria-label="Remove suggestion"
+                            >
+                              <svg width="10" height="10" viewBox="0 0 14 14" fill="none" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                                <path d="M2 4h10M5 4V2.5A.5.5 0 0 1 5.5 2h3a.5.5 0 0 1 .5.5V4M3 4l.7 7.5A.5.5 0 0 0 4.2 12h5.6a.5.5 0 0 0 .5-.5L11 4" />
+                              </svg>
+                            </button>
+                          )}
                         </div>
                         <div className="fp-sugg-body">
                           <div className="fp-sugg-copy-row">

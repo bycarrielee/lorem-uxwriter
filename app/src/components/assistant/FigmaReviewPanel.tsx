@@ -95,7 +95,7 @@ export function FigmaReviewPanel({
 
   function handleCopy(text: string) {
     navigator.clipboard.writeText(text).catch(() => {})
-    showToast('Copied')
+    showToast('Copied ✓')
   }
 
   async function handleQuickReply(strIdx: number, kind: string) {
@@ -123,7 +123,7 @@ export function FigmaReviewPanel({
     )
     onStringsChange(next)
     setLoadingQR(null)
-    showToast('Suggestion added')
+    showToast(`Added "${newSugg.copy}" ✓`)
   }
 
   function handleDiscuss(strIdx: number) {
@@ -197,8 +197,8 @@ export function FigmaReviewPanel({
               key={key}
               role="tab"
               aria-selected={tab === key}
-              className={`fp-tab${tab === key ? ' is-active' : ''}`}
-              onClick={() => setTab(key)}
+              className={`fp-tab${tab === key ? ' active' : ''}`}
+              onClick={() => { setTab(key); setQuery('') }}
             >
               {label}
               <span className="fp-tab-count">{count}</span>
@@ -247,7 +247,7 @@ export function FigmaReviewPanel({
               <th />
               <th className="fp-th-element">Element</th>
               <th>Copy</th>
-              <th className="fp-th-status">Status</th>
+              <th className="fp-th-status">Confidence</th>
               <th className="fp-th-actions" />
             </tr>
           </thead>
@@ -264,16 +264,13 @@ export function FigmaReviewPanel({
                     style={{ cursor: 'pointer' }}
                   >
                     <td>{str.i + 1}</td>
-                    <td className="fp-td-element">
-                      {str.el}
+                    <td className="fp-td-element">{str.el}</td>
+                    <td className={str.chatAnchor ? 'fp-from-chat-dot' : undefined}>
+                      {topSugg?.copy ?? '—'}
                       {str.suggestions.length > 1 && (
-                        <span className="fp-multi-indicator">{str.suggestions.length}</span>
-                      )}
-                      {str.chatAnchor && (
-                        <span className="fp-from-chat-dot" aria-label="From chat" />
+                        <span className="fp-multi-indicator">+{str.suggestions.length - 1}</span>
                       )}
                     </td>
-                    <td>{topSugg?.copy ?? '—'}</td>
                     <td>{spill(str.status)}</td>
                     <td>
                       <button
@@ -284,8 +281,8 @@ export function FigmaReviewPanel({
                         }}
                         aria-label={`Remove string ${str.el}`}
                       >
-                        <svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" aria-hidden="true">
-                          <path d="M2 2l12 12M14 2L2 14" />
+                        <svg width="12" height="12" viewBox="0 0 14 14" fill="none" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                          <path d="M2 4h10M5 4V2.5A.5.5 0 0 1 5.5 2h3a.5.5 0 0 1 .5.5V4M3 4l.7 7.5A.5.5 0 0 0 4.2 12h5.6a.5.5 0 0 0 .5-.5L11 4" />
                         </svg>
                       </button>
                     </td>
@@ -304,55 +301,62 @@ export function FigmaReviewPanel({
                           )}
 
                           {/* Suggestions list */}
-                          <div className="fp-sugg-list">
-                            <div className="fp-sugg-header">
-                              <span className="fp-detail-label">Suggestions</span>
-                            </div>
-                            {str.suggestions.map((sg) => (
-                              <div
-                                key={sg.id}
-                                className={`fp-sugg-item${sg.via === 'chat' ? ' from-chat' : ''}`}
-                              >
-                                <div className="fp-sugg-body">
-                                  <div className="fp-sugg-copy-row">
-                                    <span className="fp-sugg-copy-text">{sg.copy}</span>
-                                    <button
-                                      className="fp-copy-btn"
-                                      onClick={() => handleCopy(sg.copy)}
-                                      aria-label="Copy text"
-                                    >
-                                      <svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-                                        <rect x="5" y="5" width="9" height="9" rx="1" />
-                                        <path d="M2 11V2h9" />
-                                      </svg>
-                                    </button>
-                                    <button
-                                      className="fp-sugg-remove-btn"
-                                      disabled={sg.source === 'library' || str.suggestions.length === 1}
-                                      onClick={() => handleRemoveSuggestion(str.i, sg.id)}
-                                      aria-label="Remove suggestion"
-                                    >
-                                      <svg width="11" height="11" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" aria-hidden="true">
-                                        <path d="M2 2l12 12M14 2L2 14" />
-                                      </svg>
-                                    </button>
+                          <div>
+                            <span className="fp-detail-label">Suggestions</span>
+                            <div className="fp-sugg-list">
+                              {str.suggestions.map((sg) => {
+                                const isLastSugg = str.suggestions.length === 1
+                                return (
+                                  <div
+                                    key={sg.id}
+                                    className={`fp-sugg-item${sg.via === 'chat' ? ' from-chat' : ''}`}
+                                  >
+                                    <div className="fp-sugg-header">
+                                      {srcLabel(sg.via)}
+                                      {sg.source !== 'library' && (
+                                        <button
+                                          className="fp-sugg-remove-btn"
+                                          disabled={isLastSugg}
+                                          onClick={() => handleRemoveSuggestion(str.i, sg.id)}
+                                          aria-label="Remove suggestion"
+                                        >
+                                          <svg width="10" height="10" viewBox="0 0 14 14" fill="none" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                                            <path d="M2 4h10M5 4V2.5A.5.5 0 0 1 5.5 2h3a.5.5 0 0 1 .5.5V4M3 4l.7 7.5A.5.5 0 0 0 4.2 12h5.6a.5.5 0 0 0 .5-.5L11 4" />
+                                          </svg>
+                                        </button>
+                                      )}
+                                    </div>
+                                    <div className="fp-sugg-body">
+                                      <div className="fp-sugg-copy-row">
+                                        <span className="fp-sugg-copy-text">{sg.copy}</span>
+                                        <button
+                                          className="fp-copy-btn"
+                                          onClick={() => handleCopy(sg.copy)}
+                                          aria-label="Copy text"
+                                        >
+                                          <svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                                            <rect x="5" y="5" width="9" height="9" rx="1" />
+                                            <path d="M2 11V2h9" />
+                                          </svg>
+                                        </button>
+                                      </div>
+                                      {sg.rationale && (
+                                        <div className="fp-sugg-rationale">{sg.rationale}</div>
+                                      )}
+                                      {sg.libId && (
+                                        <a
+                                          href={`#lib-${sg.libId}`}
+                                          className="fp-lib-link"
+                                          onClick={(e) => e.stopPropagation()}
+                                        >
+                                          View in library
+                                        </a>
+                                      )}
+                                    </div>
                                   </div>
-                                  {sg.rationale && (
-                                    <div className="fp-sugg-rationale">{sg.rationale}</div>
-                                  )}
-                                  {sg.libId && (
-                                    <a
-                                      href={`#lib-${sg.libId}`}
-                                      className="fp-lib-link"
-                                      onClick={(e) => e.stopPropagation()}
-                                    >
-                                      View in library
-                                    </a>
-                                  )}
-                                  {srcLabel(sg.via)}
-                                </div>
-                              </div>
-                            ))}
+                                )
+                              })}
+                            </div>
                           </div>
 
                           {/* From-chat bar */}
