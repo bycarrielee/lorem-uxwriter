@@ -1,7 +1,8 @@
 'use client'
 
-import { useState, useRef } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import type { AgentRequest } from '@/lib/agent/types'
+import { useMetrics } from '@/lib/metrics/context'
 
 interface Props {
   onSubmit: (req: AgentRequest) => void
@@ -9,14 +10,43 @@ interface Props {
   sessionId: string | null
   scopeError?: string | null
   onClearScopeError?: () => void
+  budgetExceeded?: boolean
+  prefillValue?: string
+  focusTrigger?: number
+  onPrefillConsumed?: () => void
 }
 
-export function FollowUpBar({ onSubmit, loading, sessionId, scopeError, onClearScopeError }: Props) {
+export function FollowUpBar({ onSubmit, loading, sessionId, scopeError, onClearScopeError, budgetExceeded, prefillValue, focusTrigger, onPrefillConsumed }: Props) {
   const [input, setInput] = useState('')
   const textareaRef = useRef<HTMLTextAreaElement>(null)
+  const { trackInteraction } = useMetrics()
+
+  // Sync prefill value into input
+  useEffect(() => {
+    if (prefillValue !== undefined) {
+      setInput(prefillValue)
+      if (textareaRef.current) {
+        textareaRef.current.style.height = '36px'
+        textareaRef.current.style.height = Math.min(textareaRef.current.scrollHeight, 120) + 'px'
+      }
+      onPrefillConsumed?.()
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [prefillValue])
+
+  // Focus when trigger changes
+  useEffect(() => {
+    if (!focusTrigger) return
+    textareaRef.current?.focus()
+    const len = textareaRef.current?.value.length ?? 0
+    textareaRef.current?.setSelectionRange(len, len)
+  }, [focusTrigger])
 
   function handleSubmit() {
-    if (!input.trim() || loading) return
+    if (loading) return
+    // When budget exceeded: allow empty input through so submit() can open the API key modal
+    if (!input.trim() && !budgetExceeded) return
+    if (input.trim()) trackInteraction('follow_up_sent')
     onSubmit({ input: input.trim(), session_id: sessionId ?? undefined })
     setInput('')
     if (textareaRef.current) {
@@ -55,8 +85,8 @@ export function FollowUpBar({ onSubmit, loading, sessionId, scopeError, onClearS
         />
         <button
           onClick={handleSubmit}
-          disabled={!input.trim() || loading}
-          className="send-btn"
+          disabled={budgetExceeded ? false : (!input.trim() || loading)}
+          className={`send-btn${budgetExceeded ? ' is-budget-exceeded' : ''}`}
         >
           <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
             <path d="M14 2L2 8l4 2 2 4 6-12z" />
