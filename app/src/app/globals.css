@@ -611,6 +611,9 @@ button.submit-btn {
 
 .message-row-bot {
   display: flex;
+  flex-direction: column;
+  gap: 16px;
+  align-self: flex-start;
   justify-content: flex-start;
   width: 100%;
 }
@@ -897,7 +900,7 @@ button.submit-btn {
 }
 
 .bubble-user {
-  max-width: 65%;
+  max-width: min(480px, 75%);
   background: var(--bubble-user-bg);
   color: var(--bubble-user-text);
   border-radius: 16px 16px 4px 16px;
@@ -906,6 +909,8 @@ button.submit-btn {
   font-size: 14px;
   font-weight: 400;
   line-height: 1.5;
+  word-break: break-all;
+  overflow-wrap: break-word;
 }
 
 /* ─── Source tag ──────────────────────────────────────────────────────── */
@@ -3257,6 +3262,15 @@ button.submit-btn {
 .fr-sheet-btn-primary { background: var(--color-primary); color: #fff; border: none; }
 .fr-sheet-btn-primary:hover { background: var(--color-primary-hover); }
 .fr-sheet-btn-secondary { background: var(--surface-base); color: var(--text-secondary); border: 1px solid var(--border-default); }
+
+/* Panel on desktop only, sheet on mobile only */
+@media (min-width: 769px) {
+  .fr-sheet,
+  .fr-sheet-backdrop { display: none !important; }
+}
+@media (max-width: 768px) {
+  .fp-panel { display: none !important; }
+}
 
 /* Print stylesheet for PDF export */
 @media print {
