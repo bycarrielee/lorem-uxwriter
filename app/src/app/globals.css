@@ -2992,7 +2992,7 @@ button.submit-btn {
   align-items: center;
   justify-content: space-between;
   gap: 8px;
-  padding-top: 4px;
+  padding: 8px 16px 12px 16px;
   flex-wrap: wrap;
 }
 .fp-detail-quick { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
