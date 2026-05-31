@@ -251,7 +251,6 @@ export function FigmaReviewPanel({
             {visible.map((str) => {
               const isExpanded = expandedIdx === str.i || expandedIdx === -99
               const topSugg = str.suggestions[str.suggestions.length - 1]
-              const qrKey = `${str.i}-`
 
               return (
                 <React.Fragment key={str.i}>
