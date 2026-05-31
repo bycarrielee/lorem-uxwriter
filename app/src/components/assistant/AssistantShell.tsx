@@ -389,21 +389,37 @@ export function AssistantShell({ products: _products, initialSessionId, initialM
                 {new Date().toLocaleDateString('en-SG', { day: 'numeric', month: 'short', year: 'numeric' })}
               </div>
             </div>
-            <button
-              onClick={() => {
-                const lastIdx = assistantResponses.length - 1
-                if (lastIdx >= 0) openVersionPanel(lastIdx)
-              }}
-              disabled={assistantResponses.length === 0}
-              className={`version-btn${versionPanelOpen ? ' is-active' : ''}`}
-            >
-              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-                <rect x="3" y="3" width="18" height="18" rx="2"/>
-                <line x1="9" y1="3" x2="9" y2="21"/>
-                <line x1="15" y1="3" x2="15" y2="21"/>
-              </svg>
-              Version history
-            </button>
+            {reviewStrings ? (
+              <button
+                onClick={() => openReviewPanel('all')}
+                className={`version-btn${reviewPanelOpen ? ' is-active' : ''}`}
+              >
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                  <path d="M5 5.5A3.5 3.5 0 0 1 8.5 2H12v7H8.5A3.5 3.5 0 0 1 5 5.5z" />
+                  <path d="M12 2h3.5a3.5 3.5 0 1 1 0 7H12V2z" />
+                  <path d="M12 12.5a3.5 3.5 0 1 1 7 0 3.5 3.5 0 1 1-7 0z" />
+                  <path d="M5 19.5A3.5 3.5 0 0 1 8.5 16H12v3.5a3.5 3.5 0 1 1-7 0z" />
+                  <path d="M5 12.5A3.5 3.5 0 0 1 8.5 9H12v7H8.5A3.5 3.5 0 0 1 5 12.5z" />
+                </svg>
+                Figma review
+              </button>
+            ) : (
+              <button
+                onClick={() => {
+                  const lastIdx = assistantResponses.length - 1
+                  if (lastIdx >= 0) openVersionPanel(lastIdx)
+                }}
+                disabled={assistantResponses.length === 0}
+                className={`version-btn${versionPanelOpen ? ' is-active' : ''}`}
+              >
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                  <rect x="3" y="3" width="18" height="18" rx="2"/>
+                  <line x1="9" y1="3" x2="9" y2="21"/>
+                  <line x1="15" y1="3" x2="15" y2="21"/>
+                </svg>
+                Version history
+              </button>
+            )}
           </div>
 
           {/* Messages */}
