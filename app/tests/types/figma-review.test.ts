@@ -1,5 +1,5 @@
-import { describe, it, expect } from 'vitest'
-import { convertFigmaRows, getVisibleStrings, calcProgress } from '@/types/figma-review'
+import { describe, it, expect, beforeEach } from 'vitest'
+import { convertFigmaRows, getVisibleStrings, calcProgress, _resetNextId } from '@/types/figma-review'
 import type { FigmaReviewRow } from '@/lib/agent/types'
 
 const sampleRows: FigmaReviewRow[] = [
@@ -7,6 +7,8 @@ const sampleRows: FigmaReviewRow[] = [
   { elementName: '[2] Form label', original: 'Group Name', proposed: 'Group name', changed: true, rationale: 'Sentence case.' },
   { elementName: '[3] Button', original: 'Cancel', proposed: 'Cancel', changed: false, rationale: 'No change needed.' },
 ]
+
+beforeEach(() => { _resetNextId() })
 
 describe('convertFigmaRows', () => {
   it('produces one ReviewString per row', () => {

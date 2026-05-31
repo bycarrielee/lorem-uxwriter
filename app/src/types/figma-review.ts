@@ -24,6 +24,7 @@ export type ReviewString = {
 
 let _nextId = 1
 export function nextSuggestionId(): number { return _nextId++ }
+export function _resetNextId(): void { _nextId = 1 }
 
 export function convertFigmaRows(rows: FigmaReviewRow[]): ReviewString[] {
   return rows.map((row, i) => {
