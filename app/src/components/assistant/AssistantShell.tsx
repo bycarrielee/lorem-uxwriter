@@ -16,8 +16,11 @@ import type { AgentRequest, AgentResponse, BudgetStatus } from '@/lib/agent/type
 import { isFigmaUrl } from '@/lib/figma/parse'
 import { useMetrics } from '@/lib/metrics/context'
 import { getClientId } from '@/lib/metrics/analytics'
-import { convertFigmaRows } from '@/types/figma-review'
-import type { ReviewStatus } from '@/types/figma-review'
+import type { ReviewString, ReviewStatus } from '@/types/figma-review'
+import { convertFigmaRows, nextSuggestionId } from '@/types/figma-review'
+import { FigmaReviewPanel } from './FigmaReviewPanel'
+import { FigmaReviewSheet } from './FigmaReviewSheet'
+import { ReviewToast } from './ReviewToast'
 
 const FIGMA_TOKEN_KEY = 'lorem_figma_token'
 const API_KEY         = 'lorem_api_key'
@@ -60,6 +63,23 @@ export function AssistantShell({ products: _products, initialSessionId, initialM
   const [showScrollBtn, setShowScrollBtn] = useState(false)
   const scrollRef = useRef<HTMLDivElement>(null)
 
+  // Figma review state
+  const [reviewStrings, setReviewStrings]     = useState<ReviewString[] | null>(null)
+  const [reviewFrameName, setReviewFrameName] = useState<string>('Frame')
+  const [reviewPanelOpen, setReviewPanelOpen] = useState(false)
+  const [reviewPanelFilter, setReviewPanelFilter] = useState<ReviewStatus | 'all'>('all')
+
+  // Toast
+  const [toastMsg, setToastMsg]         = useState<string | null>(null)
+  const [toastAction, setToastAction]   = useState<string | undefined>(undefined)
+  const [toastOnAction, setToastOnAction] = useState<(() => void) | undefined>(undefined)
+  const toastTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+
+  // Discuss-in-chat
+  const [pendingDiscussIdx, setPendingDiscussIdx] = useState<number | null>(null)
+  const [discussPrefill, setDiscussPrefill]       = useState<string | undefined>(undefined)
+  const [discussFocusTrigger, setDiscussFocusTrigger] = useState(0)
+
   // Auto-scroll to bottom on new messages
   useEffect(() => {
     if (!loading) messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
@@ -78,6 +98,32 @@ export function AssistantShell({ products: _products, initialSessionId, initialM
       m.role === 'assistant' && m.response.is_copy_response === true
     )
     .map((m) => m.response)
+
+  function showToast(msg: string, actionLabel?: string, onAction?: () => void) {
+    setToastMsg(msg)
+    setToastAction(actionLabel)
+    setToastOnAction(onAction ? () => onAction : undefined)
+    if (toastTimerRef.current) clearTimeout(toastTimerRef.current)
+    toastTimerRef.current = setTimeout(() => {
+      setToastMsg(null)
+      setToastAction(undefined)
+      setToastOnAction(undefined)
+    }, 5000)
+  }
+
+  function handleDiscussInChat(el: string, idx: number) {
+    setReviewPanelOpen(false)
+    setPendingDiscussIdx(idx)
+    setDiscussPrefill(`[${el}] `)
+    setDiscussFocusTrigger((t) => t + 1)
+    showToast('Type your feedback or copy suggestion ↓')
+  }
+
+  function openReviewPanel(filter: ReviewStatus | 'all') {
+    setReviewPanelFilter(filter)
+    setReviewPanelOpen(true)
+    setVersionPanelOpen(false)
+  }
 
   function getStoredFigmaToken(): string | null {
     try {
@@ -187,6 +233,35 @@ export function AssistantShell({ products: _products, initialSessionId, initialM
       if (data.session_id) setSessionId(data.session_id)
       if (data.budget?.status) setBudgetStatus(data.budget.status)
       setMessages((prev) => [...prev, { role: 'assistant', response: data }])
+
+      // Convert Figma review rows to ReviewString state
+      if (data.figma_review && data.figma_review.length > 0) {
+        setReviewFrameName(userText.slice(0, 60))
+        setReviewStrings(convertFigmaRows(data.figma_review))
+      }
+
+      // Append chat suggestion to panel if discuss-in-chat was active
+      if (pendingDiscussIdx !== null && data.is_copy_response && data.suggestion) {
+        const newSugg = {
+          id: nextSuggestionId(),
+          copy: data.suggestion,
+          rationale: Array.isArray(data.rationale) ? (data.rationale[0] ?? 'Suggestion from chat.') : (data.rationale ?? 'Suggestion from chat.'),
+          source: (data.source_type === 'library_match' ? 'library'
+            : data.source_type === 'adapted' ? 'adapted'
+            : 'suggestion') as ReviewStatus,
+          via: 'chat' as const,
+          libId: null,
+        }
+        setReviewStrings((prev) =>
+          prev ? prev.map((s) =>
+            s.i === pendingDiscussIdx
+              ? { ...s, suggestions: [...s.suggestions, newSugg] }
+              : s
+          ) : prev
+        )
+        setPendingDiscussIdx(null)
+        showToast('Panel updated ✓')
+      }
 
       // Auto-open version panel to latest if already open
       if (versionPanelOpen) {
@@ -335,25 +410,17 @@ export function AssistantShell({ products: _products, initialSessionId, initialM
                 return <BotTextBubble key={i} text={msg.response.message} />
               }
 
-              // Figma review response — render review table
+              // Figma review response — render review card
               if (msg.response.figma_review && msg.response.figma_review.length > 0) {
-                const frameName = sessionTitle.startsWith('Figma: ')
-                  ? sessionTitle.slice(7)
-                  : 'Frame'
-                const strings = convertFigmaRows(msg.response.figma_review)
-                const handleOpenReview = (filter: ReviewStatus | 'all') => {
-                  // TODO: Implement opening the review panel/sheet
-                  console.log('Opening review with filter:', filter)
-                }
                 return (
                   <div key={i} className="message-row-bot">
                     {msg.response.message && (
                       <BotTextBubble text={msg.response.message} />
                     )}
                     <FigmaReviewCard
-                      frameName={frameName}
-                      strings={strings}
-                      onOpen={handleOpenReview}
+                      frameName={reviewFrameName}
+                      strings={reviewStrings ?? []}
+                      onOpen={openReviewPanel}
                     />
                   </div>
                 )
@@ -418,6 +485,9 @@ export function AssistantShell({ products: _products, initialSessionId, initialM
             scopeError={scopeError}
             onClearScopeError={() => setScopeError(null)}
             budgetExceeded={budgetExceeded}
+            prefillValue={discussPrefill}
+            focusTrigger={discussFocusTrigger}
+            onPrefillConsumed={() => setDiscussPrefill(undefined)}
           />
         </div>
 
@@ -429,7 +499,40 @@ export function AssistantShell({ products: _products, initialSessionId, initialM
           onClose={() => setVersionPanelOpen(false)}
           onSelectVersion={setVersionPanelIndex}
         />
+
+        {/* Figma review panel — desktop */}
+        {reviewStrings && (
+          <FigmaReviewPanel
+            open={reviewPanelOpen}
+            frameName={reviewFrameName}
+            strings={reviewStrings}
+            onStringsChange={(s) => setReviewStrings(s)}
+            onClose={() => setReviewPanelOpen(false)}
+            onDiscussInChat={handleDiscussInChat}
+            showToast={showToast}
+          />
+        )}
+
+        {/* Figma review sheet — mobile */}
+        {reviewStrings && (
+          <FigmaReviewSheet
+            open={reviewPanelOpen}
+            frameName={reviewFrameName}
+            strings={reviewStrings}
+            onStringsChange={(s) => setReviewStrings(s)}
+            onClose={() => setReviewPanelOpen(false)}
+            onDiscussInChat={handleDiscussInChat}
+            showToast={showToast}
+          />
+        )}
       </div>
+
+      {/* Toast */}
+      <ReviewToast
+        message={toastMsg}
+        actionLabel={toastAction}
+        onAction={toastOnAction}
+      />
 
       <FigmaTokenModal open={figmaModalOpen} onSave={handleTokenSave} onClose={handleTokenModalClose} />
       <ApiKeyModal open={apiKeyModalOpen} onSave={handleApiKeySave} onClose={handleApiKeyModalClose} />
