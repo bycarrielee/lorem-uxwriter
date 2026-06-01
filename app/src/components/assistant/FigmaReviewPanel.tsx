@@ -13,7 +13,7 @@ interface Props {
   onStringsChange: (strings: ReviewString[]) => void
   onClose: () => void
   onDiscussInChat: (el: string, stringIndex: number) => void
-  onQuickReply: (prompt: string, strIdx: number) => void
+  onQuickReply: (strIdx: number, kind: string, el: string, copy: string) => void
   loadingQuickReplyStr?: number | null
   showToast: (msg: string, actionLabel?: string, onAction?: () => void) => void
   initialTab?: ReviewStatus | 'all'
@@ -104,7 +104,7 @@ export function FigmaReviewPanel({
     const str = strings.find((s) => s.i === strIdx)
     if (!str) return
     const copy = str.suggestions[str.suggestions.length - 1]?.copy ?? ''
-    onQuickReply(`${kind} version of: "${copy}" — element: "${str.el}" in Figma frame "${frameName}"`, strIdx)
+    onQuickReply(strIdx, kind, str.el, copy)
   }
 
   function handleDiscuss(strIdx: number) {

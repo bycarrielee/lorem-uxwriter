@@ -27,7 +27,7 @@ const API_KEY         = 'lorem_api_key'
 
 export type Message =
   | { role: 'user'; text: string }
-  | { role: 'assistant'; response: AgentResponse }
+  | { role: 'assistant'; response: AgentResponse; hideRationale?: boolean }
 
 interface Props {
   products: Array<{ id: string; name: string }>
@@ -135,8 +135,11 @@ export function AssistantShell({ products: _products, initialSessionId, initialM
     setVersionPanelOpen(false)
   }
 
-  async function handleFigmaQuickReply(prompt: string, strIdx: number) {
+  async function handleFigmaQuickReply(strIdx: number, kind: string, el: string, copy: string) {
     setLoadingQuickReplyStr(strIdx)
+    const displayText = `[${strIdx + 1}][${el}] - ${copy}: ${kind}`
+    setMessages((prev) => [...prev, { role: 'user', text: displayText }])
+    const prompt = `${kind} version of: "${copy}" — element: "${el}" in Figma frame "${reviewFrameName}"`
     const storedApiKey = getStoredApiKey()
     try {
       const res = await fetch('/api/agent', {
@@ -151,33 +154,33 @@ export function AssistantShell({ products: _products, initialSessionId, initialM
         }),
       })
       if (!res.ok) {
+        setMessages((prev) => prev.slice(0, -1))
         showToast('Could not get suggestion')
         return
       }
       const data = (await res.json()) as AgentResponse
       if (data.session_id) setSessionId(data.session_id)
       if (data.budget?.status) setBudgetStatus(data.budget.status)
-      if (!data.is_copy_response || !data.suggestion) {
-        showToast(data.message || 'No alternative found')
-        return
+      setMessages((prev) => [...prev, { role: 'assistant', response: data, hideRationale: true }])
+      if (data.is_copy_response && data.suggestion) {
+        const newSugg = {
+          id: nextSuggestionId(),
+          copy: data.suggestion,
+          rationale: Array.isArray(data.rationale) ? (data.rationale[0] ?? '') : (data.rationale ?? ''),
+          source: (data.source_type === 'library_match' ? 'library'
+            : data.source_type === 'adapted' ? 'adapted'
+            : 'suggestion') as ReviewStatus,
+          via: 'quick-reply' as const,
+          libId: null,
+        }
+        setReviewStrings((prev) =>
+          prev ? prev.map((s) =>
+            s.i === strIdx ? { ...s, suggestions: [...s.suggestions, newSugg] } : s
+          ) : prev
+        )
       }
-      const newSugg = {
-        id: nextSuggestionId(),
-        copy: data.suggestion,
-        rationale: Array.isArray(data.rationale) ? (data.rationale[0] ?? '') : (data.rationale ?? ''),
-        source: (data.source_type === 'library_match' ? 'library'
-          : data.source_type === 'adapted' ? 'adapted'
-          : 'suggestion') as ReviewStatus,
-        via: 'quick-reply' as const,
-        libId: null,
-      }
-      setReviewStrings((prev) =>
-        prev ? prev.map((s) =>
-          s.i === strIdx ? { ...s, suggestions: [...s.suggestions, newSugg] } : s
-        ) : prev
-      )
-      showToast(`Added "${newSugg.copy}" ✓`)
     } catch {
+      setMessages((prev) => prev.slice(0, -1))
       showToast('Could not get suggestion')
     } finally {
       setLoadingQuickReplyStr(null)
@@ -511,15 +514,15 @@ export function AssistantShell({ products: _products, initialSessionId, initialM
                   <BotCard
                     response={msg.response}
                     isLatest={isLatest}
-                    onViewRationale={() => openVersionPanel(copyResponseIndex)}
-                    onQuickAction={(action) => handleQuickAction(action, msg.response)}
+                    onViewRationale={msg.hideRationale ? undefined : () => openVersionPanel(copyResponseIndex)}
+                    onQuickAction={msg.hideRationale ? undefined : (action) => handleQuickAction(action, msg.response)}
                   />
                 </div>
               )
             })}
 
             {/* Skeleton while loading */}
-            {loading && (
+            {(loading || loadingQuickReplyStr !== null) && (
               <div className="message-row-bot">
                 <div className="skeleton-wrap">
                   <SkeletonLoader />

@@ -3,21 +3,38 @@
 import { useState } from 'react'
 import { SourceTag } from './SourceTag'
 import type { AgentResponse } from '@/lib/agent/types'
+import { useMetrics } from '@/lib/metrics/context'
+import type { SourceTier } from '@/lib/metrics/analytics'
+
+function mapSourceTier(sourceType: string | null | undefined): SourceTier | undefined {
+  switch (sourceType) {
+    case 'library_match':               return 'library'
+    case 'adapted':                     return 'adapted'
+    case 'ai_generated':                return 'ai'
+    case 'ai_generated_low_confidence': return 'ai_low'
+    default:                            return undefined
+  }
+}
 
 interface Props {
   response: AgentResponse
   versionLabel?: string           // e.g. "V2" — shown when in version context
   isLatest: boolean               // kept for compatibility; quick chips now always shown
-  onViewRationale: () => void
+  onViewRationale?: () => void
   onQuickAction?: (action: 'shorter' | 'alternatives') => void
 }
 
 export function BotCard({ response, versionLabel, isLatest: _isLatest, onViewRationale, onQuickAction }: Props) {
   const [copied, setCopied] = useState(false)
+  const { trackInteraction } = useMetrics()
 
   function handleCopy() {
     navigator.clipboard.writeText(response.suggestion).then(() => {
       setCopied(true)
+      trackInteraction('copied', {
+        source_tier: mapSourceTier(response.source_type),
+        char_count: response.character_count,
+      })
       setTimeout(() => setCopied(false), 2000)
     })
   }
@@ -42,12 +59,17 @@ export function BotCard({ response, versionLabel, isLatest: _isLatest, onViewRat
         <span className="char-count">{response.character_count} characters</span>
         <div className="card-inline-actions">
           {/* View rationale */}
-          <button
-            onClick={onViewRationale}
-            className="icon-btn icon-btn-secondary"
-          >
-            Rationale ›
-          </button>
+          {onViewRationale && (
+            <button
+              onClick={() => {
+                onViewRationale()
+                trackInteraction('rationale_opened', { source_tier: mapSourceTier(response.source_type) })
+              }}
+              className="icon-btn icon-btn-secondary"
+            >
+              Rationale ›
+            </button>
+          )}
           {/* Copy text */}
           <button
             onClick={handleCopy}
@@ -74,7 +96,13 @@ export function BotCard({ response, versionLabel, isLatest: _isLatest, onViewRat
           {(['shorter', 'alternatives'] as const).map((action) => (
             <button
               key={action}
-              onClick={() => onQuickAction(action)}
+              onClick={() => {
+                onQuickAction(action)
+                trackInteraction(
+                  action === 'shorter' ? 'quick_action_shorter' : 'quick_action_alternatives',
+                  { source_tier: mapSourceTier(response.source_type) }
+                )
+              }}
               className="chip"
             >
               {action === 'shorter' ? 'Shorter' : 'Alternatives'}
