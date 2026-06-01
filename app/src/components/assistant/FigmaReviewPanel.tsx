@@ -17,6 +17,7 @@ interface Props {
   loadingQuickReplyStr?: number | null
   showToast: (msg: string, actionLabel?: string, onAction?: () => void) => void
   initialTab?: ReviewStatus | 'all'
+  initialStrI?: number
 }
 
 function spill(status: ReviewString['status']) {
@@ -47,21 +48,23 @@ export function FigmaReviewPanel({
   loadingQuickReplyStr,
   showToast,
   initialTab,
+  initialStrI,
 }: Props) {
   const [tab, setTab] = useState<TabKey>('all')
   const [query, setQuery] = useState('')
   const [expandedIdx, setExpandedIdx] = useState<number | null>(null)
 
-  // Reset state when panel closes; apply initialTab when it opens
+  // Reset state when panel closes; apply initialTab/initialStrI when it opens
   useEffect(() => {
     if (!open) {
       setTab('all')
       setQuery('')
       setExpandedIdx(null)
-    } else if (initialTab) {
-      setTab(initialTab)
+    } else {
+      if (initialTab) setTab(initialTab)
+      if (initialStrI !== undefined) setExpandedIdx(initialStrI)
     }
-  }, [open, initialTab])
+  }, [open, initialTab, initialStrI])
 
   const visible = getVisibleStrings(strings, tab, query)
 

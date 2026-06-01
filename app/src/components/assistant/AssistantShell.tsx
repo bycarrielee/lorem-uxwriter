@@ -27,7 +27,7 @@ const API_KEY         = 'lorem_api_key'
 
 export type Message =
   | { role: 'user'; text: string }
-  | { role: 'assistant'; response: AgentResponse; hideRationale?: boolean }
+  | { role: 'assistant'; response: AgentResponse; figmaStrI?: number }
 
 interface Props {
   products: Array<{ id: string; name: string }>
@@ -69,6 +69,7 @@ export function AssistantShell({ products: _products, initialSessionId, initialM
   const [reviewPanelOpen, setReviewPanelOpen] = useState(false)
   const [reviewPanelFilter, setReviewPanelFilter] = useState<ReviewStatus | 'all'>('all')
   const [loadingQuickReplyStr, setLoadingQuickReplyStr] = useState<number | null>(null)
+  const [reviewPanelStrI, setReviewPanelStrI] = useState<number | null>(null)
 
   // Mobile breakpoint — drives panel vs sheet selection
   const [isMobile, setIsMobile] = useState(false)
@@ -129,8 +130,9 @@ export function AssistantShell({ products: _products, initialSessionId, initialM
     showToast('Type your feedback or copy suggestion ↓')
   }
 
-  function openReviewPanel(filter: ReviewStatus | 'all') {
+  function openReviewPanel(filter: ReviewStatus | 'all', strI?: number) {
     setReviewPanelFilter(filter)
+    setReviewPanelStrI(strI ?? null)
     setReviewPanelOpen(true)
     setVersionPanelOpen(false)
   }
@@ -161,7 +163,7 @@ export function AssistantShell({ products: _products, initialSessionId, initialM
       const data = (await res.json()) as AgentResponse
       if (data.session_id) setSessionId(data.session_id)
       if (data.budget?.status) setBudgetStatus(data.budget.status)
-      setMessages((prev) => [...prev, { role: 'assistant', response: data, hideRationale: true }])
+      setMessages((prev) => [...prev, { role: 'assistant', response: data, figmaStrI: strIdx }])
       if (data.is_copy_response && data.suggestion) {
         const newSugg = {
           id: nextSuggestionId(),
@@ -514,8 +516,12 @@ export function AssistantShell({ products: _products, initialSessionId, initialM
                   <BotCard
                     response={msg.response}
                     isLatest={isLatest}
-                    onViewRationale={msg.hideRationale ? undefined : () => openVersionPanel(copyResponseIndex)}
-                    onQuickAction={msg.hideRationale ? undefined : (action) => handleQuickAction(action, msg.response)}
+                    onViewRationale={
+                      msg.figmaStrI !== undefined
+                        ? () => openReviewPanel('all', msg.figmaStrI)
+                        : () => openVersionPanel(copyResponseIndex)
+                    }
+                    onQuickAction={(action) => handleQuickAction(action, msg.response)}
                   />
                 </div>
               )
@@ -591,6 +597,7 @@ export function AssistantShell({ products: _products, initialSessionId, initialM
             loadingQuickReplyStr={loadingQuickReplyStr}
             showToast={showToast}
             initialTab={reviewPanelFilter}
+            initialStrI={reviewPanelStrI ?? undefined}
           />
         )}
 
@@ -606,6 +613,7 @@ export function AssistantShell({ products: _products, initialSessionId, initialM
             loadingQuickReplyStr={loadingQuickReplyStr}
             showToast={showToast}
             initialTab={reviewPanelFilter}
+            initialStrI={reviewPanelStrI ?? undefined}
           />
         )}
       </div>

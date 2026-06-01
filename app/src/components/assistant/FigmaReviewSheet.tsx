@@ -17,6 +17,7 @@ interface Props {
   loadingQuickReplyStr?: number | null
   showToast: (msg: string, actionLabel?: string, onAction?: () => void) => void
   initialTab?: ReviewStatus | 'all'
+  initialStrI?: number
 }
 
 function spillBadge(status: ReviewString['status']) {
@@ -47,24 +48,33 @@ export function FigmaReviewSheet({
   loadingQuickReplyStr,
   showToast,
   initialTab,
+  initialStrI,
 }: Props) {
   const [tab, setTab] = useState<TabKey>('all')
   const [query, setQuery] = useState('')
   const [cardIdx, setCardIdx] = useState(0)
   const [animDir, setAnimDir] = useState<'right' | 'left'>('right')
 
-  // Reset state when sheet closes; apply initialTab when it opens
+  // Reset state when sheet closes; apply initialTab/initialStrI when it opens
   useEffect(() => {
     if (!open) {
       setTab('all')
       setQuery('')
       setCardIdx(0)
       setAnimDir('right')
-    } else if (initialTab) {
-      setTab(initialTab)
-      setCardIdx(0)
+    } else {
+      const openTab: TabKey = initialTab ?? 'all'
+      if (initialTab) setTab(initialTab)
+      if (initialStrI !== undefined) {
+        const openItems = getVisibleStrings(strings, openTab, '')
+        const pos = openItems.findIndex((it) => it.i === initialStrI)
+        setCardIdx(pos >= 0 ? pos : 0)
+      } else {
+        setCardIdx(0)
+      }
     }
-  }, [open, initialTab])
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [open, initialTab, initialStrI])
 
   const items = getVisibleStrings(strings, tab, query)
 
