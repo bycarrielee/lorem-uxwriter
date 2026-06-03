@@ -1,0 +1,3578 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Lorem — Assistant</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,400&family=DM+Mono:wght@400;500&family=DM+Serif+Display:ital@0;1&display=swap" rel="stylesheet">
+  <style>
+    /* ─── Design tokens ──────────────────────────────────────────────── */
+    :root {
+      /* ── Surfaces ── */
+      --surface-base:  #F7F8FA;
+      --surface-card:  #F0EDE8;
+      --surface-input: #EDE8E0;
+      --surface-white: #FFFFFF;
+
+      /* ── Borders ── */
+      --border-default:    #E0E5EA;
+      --border-input:      #D9D2C8;
+      --border-tag:        #C4B9AE;
+      --border-tag-accent: #B8AA9E;
+
+      /* ── Text ── */
+      --text-primary:   #1E2D3A;
+      --text-secondary: #6B8499;
+      --text-tertiary:  #94A3B8;
+      --text-chip:      #4A5D6B;
+      --text-inverse:   #FFFFFF;
+
+      /* ── Interactive ── */
+      --color-primary:       #3B5BA5;
+      --color-primary-hover: #334F94;
+      --color-primary-ghost: rgba(59, 91, 165, 0.06);
+
+      /* ── Tabs ── */
+      --tab-inactive-text:    #6B8499;
+      --tab-hover-text:       #1E2D3A;
+      --tab-active-text:      #1E2D3A;
+      --tab-active-indicator: #3B5BA5;
+      --tab-rail:             #E0E5EA;
+
+      /* ── Navigation ── */
+      --nav-text-resting: #6B8499;
+      --nav-text-active:  #1E2D3A;
+      --nav-bg-hover:     #EAECEE;
+      --nav-bg-selected:  #FFFFFF;
+
+      /* ── Chat bubbles ── */
+      --bubble-bot-bg:    #F0EDE8;
+      --bubble-bot-text:  #1E2D3A;
+      --bubble-user-bg:   #3A5068;
+      --bubble-user-text: #EDF2F6;
+
+      /* ── Tags ── */
+      --tag-default-bg:     transparent;
+      --tag-default-border: #C4B9AE;
+      --tag-default-text:   #1E2D3A;
+      --tag-accent-bg:      #E8E2D9;
+      --tag-accent-border:  #B8AA9E;
+      --tag-accent-text:    #4A5D6B;
+
+      /* ── Source labels (semantic provenance — do not repurpose) ── */
+      --lib-bg:  oklch(97% 0.05 162);  --lib-txt: oklch(48% 0.16 162); --lib-bd:  oklch(88% 0.06 162);
+      --ada-bg:  #E8E2D9;              --ada-txt: #4A5D6B;             --ada-bd:  #B8AA9E;
+      --ai-bg:   oklch(99% 0.05 80);   --ai-txt:  oklch(55% 0.16 72);  --ai-bd:   oklch(83% 0.10 72);
+      --ail-bg:  oklch(99% 0.04 55);   --ail-txt: oklch(58% 0.18 45);  --ail-bd:  oklch(85% 0.09 55);
+
+      /* ── Critical ── */
+      --crit:    oklch(53% 0.22 27); --crit-bg: oklch(98% 0.04 27); --crit-bd: oklch(85% 0.1 27);
+      --crit-txt: oklch(53% 0.22 27);
+
+      /* ── Provisional (alternatives indicator) ── */
+      --provisional: oklch(65% 0.17 72);
+
+      /* ── Focus ring ── */
+      --signal:        oklch(51% 0.24 264);
+      --signal-subtle: oklch(97% 0.04 264);
+
+      /* ── Legacy aliases (variable references in CSS map to new tokens) ── */
+      --paper:          var(--surface-base);
+      --canvas:         var(--surface-white);
+      --divider:        var(--border-default);
+      --divider-strong: var(--border-default);
+      --txt-1:          var(--text-primary);
+      --txt-2:          var(--text-secondary);
+      --txt-3:          var(--text-tertiary);
+      --txt-inv:        var(--text-inverse);
+      --ink:            var(--text-primary);
+      --input-bg:       var(--surface-input);
+      --input-border:   var(--border-input);
+      --tag-border:     var(--border-tag);
+      --tag-accent-border: var(--border-tag-accent);
+      --chip-text:      var(--text-chip);
+      --chip-hover-bg:  var(--tag-accent-bg);
+      --btn-primary-hover:   var(--color-primary-hover);
+      --btn-secondary-hover: var(--color-primary-ghost);
+
+      /* ── Shadows ── */
+      --shd-sm: 0 1px 2px rgba(0,0,0,0.05);
+      --shd-md: 0 4px 6px -1px rgba(0,0,0,.07), 0 2px 4px -1px rgba(0,0,0,.04);
+      --shd-lg: 0 10px 15px -3px rgba(0,0,0,.08), 0 4px 6px -2px rgba(0,0,0,.04);
+      --shadow-sm: var(--shd-sm); --shadow-md: var(--shd-md); --shadow-lg: var(--shd-lg);
+
+      /* ── Radius ── */
+      --r-sm: 4px; --r-md: 6px; --r-lg: 8px; --r-xl: 12px; --r-full: 9999px;
+
+      /* ── Typography ── */
+      --font-ui:      'DM Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      --font-mono:    'DM Mono', 'JetBrains Mono', ui-monospace, monospace;
+      --font-display: 'DM Serif Display', Georgia, serif;
+    }
+
+    /* ─── Reset ──────────────────────────────────────────────────────── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body { height: 100%; overflow: hidden; }
+    body {
+      font-family: var(--font-ui);
+      font-size: .875rem; line-height: 1.5;
+      color: var(--txt-1); background: var(--paper);
+      -webkit-font-smoothing: antialiased;
+      display: flex; flex-direction: column;
+    }
+    :focus:not(:focus-visible) { outline: none; box-shadow: none; }
+    button { font-family: inherit; cursor: pointer; }
+
+    /* ─── App shell ──────────────────────────────────────────────────── */
+    .app { display: flex; flex-direction: column; flex: 1; min-height: 0; overflow: hidden; }
+    .app-body { display: flex; flex: 1; min-height: 0; overflow: hidden; }
+
+    /* ─── App header ─────────────────────────────────────────────────── */
+    .app-header {
+      height: 48px; flex-shrink: 0;
+      background: var(--surface-base);
+      border-bottom: 1px solid var(--border-default);
+      display: flex; align-items: center;
+      padding: 0 20px;
+    }
+    .header-logo { display: flex; align-items: center; gap: 10px; cursor: pointer; }
+    .header-logo__mark { flex-shrink: 0; }
+    .header-logo__text { display: flex; align-items: baseline; gap: 8px; }
+    .header-logo__wordmark {
+      font-family: var(--font-display);
+      font-size: .875rem; font-weight: 600;
+      color: var(--txt-1); letter-spacing: -.01em;
+    }
+    .header-logo__subtitle { font-size: .8125rem; color: var(--text-secondary); }
+
+    /* ─── Sidebar (light) ────────────────────────────────────────────── */
+    .sidebar {
+      width: 228px; flex-shrink: 0;
+      background: var(--paper);
+      border-right: 1px solid var(--divider);
+      display: flex; flex-direction: column;
+      height: 100%; overflow: hidden;
+    }
+    .sidebar-nav { padding: 12px 12px 4px; flex-shrink: 0; }
+    .sidebar-section-label {
+      font-size: .6875rem; font-weight: 600; text-transform: uppercase;
+      letter-spacing: .07em; color: var(--text-secondary);
+      padding: 2px 10px 6px; flex-shrink: 0;
+    }
+    .nav-item {
+      display: flex; align-items: center; gap: 8px;
+      height: 36px; padding: 0 10px;
+      border-radius: var(--nav-pill-radius, 6px);
+      color: var(--nav-text-resting); font-size: .875rem; font-weight: 500;
+      text-decoration: none;
+      transition: background-color 100ms ease-out, color 100ms ease-out;
+      outline: none;
+    }
+    .nav-item:hover { background: var(--nav-bg-hover); color: var(--nav-text-active); }
+    .nav-item.is-active {
+      background: var(--nav-bg-selected); color: var(--nav-text-active); font-weight: 500;
+    }
+    .nav-item:focus-visible { box-shadow: 0 0 0 2px var(--signal) inset; }
+    .nav-item__icon { flex-shrink: 0; color: var(--nav-text-resting); }
+    .nav-item.is-active .nav-item__icon,
+    .nav-item:hover .nav-item__icon { color: var(--nav-text-active); }
+
+    .sidebar-divider { height: 1px; background: var(--divider); margin: 6px 12px; flex-shrink: 0; }
+
+    /* Sidebar section header row */
+    .sidebar-section-header {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 2px 10px 6px; flex-shrink: 0;
+    }
+    .sidebar-section-header .sidebar-section-label { padding: 0; }
+    .sidebar-section-btn {
+      width: 20px; height: 20px; padding: 0; flex-shrink: 0;
+      display: flex; align-items: center; justify-content: center;
+      border-radius: var(--r-sm); background: none; border: none;
+      color: var(--text-secondary); cursor: pointer; outline: none;
+      transition: background-color 100ms ease-out, color 100ms ease-out;
+    }
+    .sidebar-section-btn:hover { background: var(--nav-bg-hover); color: var(--nav-text-active); }
+    .sidebar-section-btn.is-active { color: var(--color-primary); }
+    .sidebar-section-btn:focus-visible { box-shadow: 0 0 0 2px var(--signal); }
+
+    /* Session inline search */
+    .session-search {
+      display: block; width: calc(100% - 16px); margin: 0 8px 6px; flex-shrink: 0;
+      height: 28px; padding: 0 10px;
+      background: var(--surface-white); border: 1px solid var(--border-input);
+      border-radius: var(--r-md); outline: none;
+      font-size: .8125rem; font-family: var(--font-ui); color: var(--text-primary);
+      transition: border-color 100ms ease-out, box-shadow 100ms ease-out;
+    }
+    .session-search:focus { border-color: var(--color-primary); box-shadow: 0 0 0 2px var(--signal-subtle); }
+
+    /* Sessions */
+    .sessions {
+      flex: 1; overflow: hidden; padding: 0 8px 4px;
+    }
+
+    /* View all chats */
+    .session-view-all {
+      display: flex; align-items: center; gap: 5px;
+      height: 30px; padding: 0 10px; margin: 0 8px 8px; flex-shrink: 0;
+      border-radius: var(--r-md);
+      font-size: .8125rem; font-weight: 500; color: var(--color-primary);
+      font-family: var(--font-ui); background: none; border: none;
+      cursor: pointer; text-align: left; outline: none;
+      transition: background-color 100ms ease-out;
+    }
+    .session-view-all:hover { background: var(--color-primary-ghost); }
+    .session-view-all:focus-visible { box-shadow: 0 0 0 2px var(--signal) inset; }
+
+    .session-wrap { position: relative; }
+    .session-item {
+      width: 100%; height: 30px; padding: 0 28px 0 10px;
+      border-radius: var(--r-md);
+      display: flex; align-items: center;
+      font-size: .8125rem; color: var(--txt-3);
+      cursor: pointer; text-align: left;
+      background: none; border: none;
+      transition: background-color 100ms ease-out, color 100ms ease-out;
+      overflow: hidden;
+    }
+    .session-item span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; width: 100%; }
+    .session-item:hover { background: var(--nav-bg-hover); color: var(--nav-text-active); }
+    .session-item.is-active { background: var(--nav-bg-selected); color: var(--nav-text-active); }
+
+    .session-ctx-btn {
+      position: absolute; right: 4px; top: 50%; transform: translateY(-50%);
+      width: 20px; height: 20px;
+      display: flex; align-items: center; justify-content: center;
+      border-radius: var(--r-sm);
+      background: none; border: none;
+      color: var(--txt-3);
+      opacity: 0; pointer-events: none;
+      transition: opacity 100ms ease-out, background-color 100ms ease-out, color 100ms ease-out;
+      outline: none;
+    }
+    .session-wrap:hover .session-ctx-btn { opacity: 1; pointer-events: auto; }
+    .session-ctx-btn:hover { background: var(--nav-bg-hover); color: var(--text-secondary); }
+    .session-ctx-btn:focus-visible { opacity: 1; pointer-events: auto; box-shadow: 0 0 0 2px var(--signal); }
+
+    .session-ctx-menu {
+      position: fixed; z-index: 1000;
+      background: var(--canvas);
+      border: 1px solid var(--divider);
+      border-radius: var(--r-md);
+      box-shadow: var(--shd-md);
+      width: 128px; overflow: hidden;
+      padding: 4px 0;
+    }
+    .session-ctx-menu.hidden { display: none; }
+    .ctx-item {
+      display: block; width: 100%; padding: 6px 12px;
+      font-size: .8125rem; text-align: left;
+      background: none; border: none; cursor: pointer;
+      transition: background-color 100ms ease-out;
+      outline: none;
+    }
+    .ctx-item--default { color: var(--txt-1); }
+    .ctx-item--default:hover { background: var(--paper); }
+    .ctx-item--danger { color: var(--crit); }
+    .ctx-item--danger:hover { background: var(--crit-bg); }
+
+
+    /* ─── Editor ─────────────────────────────────────────────────────── */
+    .editor { flex: 1; display: flex; min-width: 0; height: 100%; overflow: hidden; }
+
+    /* ─── Right panel ────────────────────────────────────────────────── */
+    .rp {
+      flex: 1; display: flex; flex-direction: column;
+      height: 100%; overflow: hidden; min-width: 0;
+    }
+
+    /* ── Empty: Ask Lorem landing ── */
+    .state-empty {
+      flex: 1; display: flex; align-items: center; justify-content: center;
+      background:
+        radial-gradient(ellipse 60% 50% at 50% 60%, rgba(59,91,165,0.05) 0%, transparent 70%),
+        radial-gradient(ellipse 40% 30% at 20% 20%, rgba(26,140,111,0.04) 0%, transparent 60%),
+        var(--surface-base);
+      padding: 32px;
+    }
+    .ask-card {
+      width: 100%; max-width: 560px;
+      background: var(--surface-white);
+      border: 1px solid var(--border-default);
+      border-radius: 16px;
+      padding: 40px;
+      box-shadow: var(--shd-sm);
+      animation: cardIn 300ms cubic-bezier(0.25, 1, 0.5, 1) both;
+    }
+    @keyframes cardIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    .ask-card__hd { text-align: center; margin-bottom: 24px; }
+    .ask-card__logo { display: block; margin: 0 auto 18px; }
+    .ask-card__title {
+      font-family: var(--font-display);
+      font-size: 1.875rem; font-weight: 700; color: var(--txt-1);
+      letter-spacing: -.01em; margin-bottom: 8px; line-height: 1.2;
+    }
+    .ask-card__title em {
+      font-style: italic; color: var(--color-primary);
+    }
+    .ask-card__sub { font-size: .875rem; color: var(--txt-2); line-height: 1.6; max-width: 400px; margin: 0 auto; }
+    .ask-ta {
+      width: 100%; height: 140px; resize: none;
+      padding: 12px 14px;
+      background: var(--surface-base);
+      border: 1px solid var(--border-default);
+      border-radius: var(--r-lg);
+      font-family: inherit; font-size: .875rem; line-height: 1.55;
+      color: var(--txt-1);
+      transition: border-color 100ms ease-out, background-color 100ms ease-out;
+      outline: none;
+    }
+    .ask-ta::placeholder { color: var(--txt-3); }
+    .ask-ta:focus-visible {
+      border-color: var(--color-primary);
+      background: var(--surface-white);
+      box-shadow: 0 0 0 2px var(--signal-subtle);
+    }
+    .ask-chips {
+      display: flex; align-items: center; gap: 6px; flex-wrap: wrap;
+      margin-top: 10px;
+    }
+    .ask-chips__label { font-size: .75rem; color: var(--txt-3); margin-right: 2px; }
+    .btn-ask {
+      margin-top: 14px; width: 100%; height: 36px;
+      background: var(--color-primary); color: var(--text-inverse);
+      border: none; border-radius: var(--r-md);
+      font-size: .875rem; font-weight: 500;
+      display: flex; align-items: center; justify-content: center; gap: 8px;
+      transition: background-color 100ms ease-out;
+      outline: none;
+    }
+    .btn-ask:hover { background: var(--color-primary-hover); }
+    .btn-ask:focus-visible { box-shadow: 0 0 0 2px var(--surface-white), 0 0 0 4px var(--signal); }
+
+    /* ── Loading ── */
+    .state-loading {
+      flex: 1; padding: 32px;
+      display: flex; flex-direction: column; gap: 14px;
+      overflow-y: auto; background: var(--canvas);
+    }
+    .sk {
+      background: linear-gradient(90deg, var(--paper) 25%, var(--divider) 50%, var(--paper) 75%);
+      background-size: 200% 100%;
+      animation: shimmer 1.4s infinite;
+      border-radius: var(--r-sm);
+    }
+    .sk--badge  { height: 24px; width: 148px; border-radius: var(--r-full); }
+    .sk--block  { height: 88px; border-radius: var(--r-lg); border: 1px solid var(--divider); background-color: var(--paper); }
+    .sk--short  { height: 13px; width: 110px; }
+    .sk--action { height: 30px; width: 240px; border-radius: var(--r-md); }
+    .sk-row     { display: flex; align-items: center; gap: 12px; }
+
+    /* ── Response: chat thread + detail panel ── */
+    .state-response {
+      flex: 1; display: flex; flex-direction: row;   /* row: thread + detail side by side */
+      overflow: hidden; background: var(--surface-base);
+    }
+
+    /* Thread (messages + follow-up) */
+    .resp-thread {
+      flex: 1; display: flex; flex-direction: column;
+      overflow: hidden; min-width: 0;
+      position: relative;
+    }
+    .scroll-to-bottom {
+      position: absolute;
+      bottom: 78px; /* above followup bar */
+      left: 50%; transform: translateX(-50%) translateY(6px);
+      display: inline-flex; align-items: center; gap: 5px;
+      height: 30px; padding: 0 12px;
+      background: var(--surface-white);
+      border: 1px solid var(--border-default);
+      border-radius: 99px;
+      box-shadow: var(--shadow-md);
+      font-size: 12px; font-weight: 500; color: var(--text-primary);
+      font-family: var(--font-ui); cursor: pointer; white-space: nowrap;
+      opacity: 0; pointer-events: none;
+      transition: opacity 150ms ease, transform 150ms ease;
+      z-index: 10;
+    }
+    .scroll-to-bottom.is-visible {
+      opacity: 1; pointer-events: auto;
+      transform: translateX(-50%) translateY(0);
+    }
+    .scroll-to-bottom:hover { background: var(--surface-base); }
+
+    /* Conversation header (contains title + inline search) */
+    .resp-header {
+      display: flex; align-items: center; gap: 12px;
+      padding: 0 20px; height: 80px; flex-shrink: 0;
+      border-bottom: 1px solid var(--divider);
+    }
+    .resp-header__info { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px; }
+    .resp-header__title {
+      font-size: 1.125rem; font-weight: 600; color: var(--txt-1);
+      overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+    }
+    .resp-header__meta { font-size: .8125rem; color: var(--txt-3); }
+    .resp-search-wrap { position: relative; flex-shrink: 0; }
+    .resp-search-icon {
+      position: absolute; left: 8px; top: 50%; transform: translateY(-50%);
+      width: 12px; height: 12px; color: var(--txt-3); pointer-events: none;
+    }
+    .resp-search-input {
+      width: 200px; height: 30px; padding: 0 8px 0 26px;
+      background: var(--paper); border: 1px solid var(--divider);
+      border-radius: var(--r-md); font-family: inherit; font-size: .75rem;
+      color: var(--txt-1); outline: none;
+      transition: border-color 100ms ease-out, box-shadow 100ms ease-out, width 150ms ease-out;
+    }
+    .resp-search-input::placeholder { color: var(--txt-3); }
+    .resp-search-input:focus-visible {
+      border-color: var(--signal);
+      box-shadow: 0 0 0 2px var(--signal-subtle);
+      width: 260px;
+    }
+    .resp-search-count {
+      font-size: .75rem; color: var(--txt-3); flex-shrink: 0; white-space: nowrap;
+    }
+    .resp-search-count:empty { display: none; }
+    .msg-highlight { background: var(--ai-bg); border-radius: 2px; }
+    .resp-messages {
+      flex: 1; overflow-y: auto;
+      padding: 24px; display: flex; flex-direction: column; gap: 20px;
+      scrollbar-width: thin; scrollbar-color: var(--divider) transparent;
+    }
+    .resp-messages::-webkit-scrollbar { width: 5px; }
+    .resp-messages::-webkit-scrollbar-thumb { background: var(--divider); border-radius: 4px; }
+
+    /* User bubble */
+    .msg-user { display: flex; justify-content: flex-end; }
+    .msg-user__bubble {
+      max-width: 480px;
+      background: var(--bubble-user-bg);
+      border-radius: 16px 16px 4px 16px;
+      padding: 10px 16px;
+      font-size: .875rem; color: var(--bubble-user-text); line-height: 1.55;
+    }
+
+    /* ── Bot card ── */
+    .msg-assistant { display: flex; justify-content: flex-start; }
+    .msg-assistant + .msg-assistant { margin-top: 4px; }
+
+    .bot-card {
+      background: var(--bubble-bot-bg);
+      border: 1px solid var(--border-default);
+      border-radius: 16px 16px 16px 4px;
+      padding: 12px;
+      display: flex; flex-direction: column; gap: 9px;
+      max-width: 75%;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04);
+      position: relative; z-index: 1;
+    }
+    .bot-card:only-of-type {
+      border-radius: 16px 16px 16px 4px;
+    }
+    .alt-group .bot-card:first-child { border-radius: 16px 16px 10px 4px; }
+    .alt-group .bot-card:last-child  { border-radius: 10px 10px 16px 4px; }
+
+    .alt-group {
+      display: flex; flex-direction: column; gap: 6px;
+      position: relative; max-width: 75%;
+      align-items: stretch;
+    }
+    /* All cards in a group fill the group width so they match */
+    .alt-group .bot-card { width: 100%; max-width: none; }
+    .alt-group::before {
+      content: '';
+      position: absolute; left: 14px; top: 0; bottom: 0; width: 2px;
+      background: linear-gradient(to bottom, transparent 0%, var(--border-input) 8%, var(--border-input) 92%, transparent 100%);
+      z-index: 0; pointer-events: none;
+    }
+
+    .card-top-row {
+      display: flex; align-items: center; justify-content: space-between; gap: 8px;
+    }
+    .alt-label {
+      font-size: 11px; font-weight: 600;
+      letter-spacing: 0.05em; text-transform: uppercase;
+      color: var(--text-secondary);
+    }
+
+    /* Source tag */
+    .source-tag {
+      display: inline-flex; align-items: center; gap: 5px;
+      padding: 3px 9px; border-radius: 99px;
+      font-size: 11.5px; font-weight: 500;
+      font-family: var(--font-ui); width: fit-content;
+    }
+    .source-tag svg { width: 11px; height: 11px; flex-shrink: 0; }
+    .source-tag--ai       { background: var(--ai-bg);           border: 1px solid var(--ai-bd);           color: var(--ai-txt); }
+    .source-tag--adapted  { background: var(--tag-accent-bg);   border: 1px solid var(--tag-accent-border); color: var(--tag-accent-text); }
+    .source-tag--library  { background: var(--lib-bg);          border: 1px solid var(--lib-bd);          color: var(--lib-txt); }
+    .source-tag--ai-low   { background: var(--ail-bg);          border: 1px solid var(--ail-bd);          color: var(--ail-txt); }
+
+    /* Copy box */
+    .suggested-copy-box {
+      background: var(--surface-input);
+      border: 1px solid var(--border-input);
+      border-radius: 7px;
+      padding: 9px 11px;
+      font-family: var(--font-mono);
+      font-size: 13px; font-weight: 400; line-height: 1.55;
+      color: var(--text-primary); width: 100%;
+    }
+
+    /* Meta row */
+    .card-meta-row {
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .char-count {
+      font-size: 11.5px; color: var(--text-secondary);
+      font-variant-numeric: tabular-nums;
+    }
+    .card-inline-actions { display: flex; align-items: center; gap: 4px; }
+
+    /* Inline buttons */
+    .icon-btn {
+      display: inline-flex; align-items: center; gap: 5px;
+      height: 26px; padding: 0 10px; border-radius: 6px;
+      font-size: 12px; font-weight: 500; font-family: var(--font-ui);
+      cursor: pointer; border: none;
+      transition: background 100ms ease;
+      white-space: nowrap;
+    }
+    .icon-btn svg { width: 12px; height: 12px; flex-shrink: 0; }
+    .icon-btn-primary { background: var(--color-primary); color: #fff; }
+    .icon-btn-primary:hover { background: var(--color-primary-hover); }
+    .icon-btn-primary.is-copied { background: var(--lib-txt); }
+    .icon-btn-primary:focus-visible { box-shadow: 0 0 0 2px var(--surface-white), 0 0 0 4px var(--signal); }
+    .icon-btn-secondary { background: transparent; color: var(--color-primary); border: 1.5px solid var(--color-primary); }
+    .icon-btn-secondary:hover { background: var(--color-primary-ghost); }
+    .icon-btn-secondary:focus-visible { box-shadow: 0 0 0 2px var(--surface-white), 0 0 0 4px var(--signal); }
+
+    .card-divider { height: 1px; background: var(--border-input); margin: 0 -12px; }
+
+    /* Quick replies */
+    .quick-actions { display: flex; align-items: center; gap: 6px; flex-wrap: nowrap; overflow: hidden; }
+    .quick-label { font-size: 11px; font-weight: 500; color: var(--text-secondary); }
+    .chip {
+      display: inline-flex; align-items: center;
+      padding: 3px 10px; border-radius: 99px;
+      border: 1px solid var(--border-tag);
+      font-size: 12px; font-weight: 500; color: var(--text-chip);
+      background: transparent; cursor: pointer; font-family: var(--font-ui);
+      transition: background 100ms ease, border-color 100ms ease;
+    }
+    .chip:hover { background: var(--tag-accent-bg); border-color: var(--border-tag-accent); }
+    .chip:focus-visible { box-shadow: 0 0 0 2px var(--surface-white), 0 0 0 4px var(--signal); }
+
+    /* "Show in chat" — version panel */
+    .detail-copy-actions {
+      display: flex; align-items: center; justify-content: space-between; margin-top: 6px;
+    }
+    .detail-copy-actions .copy-count { margin-top: 0; }
+    .btn-show-in-chat {
+      display: inline-flex; align-items: center; gap: 5px;
+      margin-top: 10px; font-size: .75rem; font-weight: 500;
+      color: var(--text-secondary); background: none; border: none; cursor: pointer; padding: 0;
+      transition: color 150ms ease;
+    }
+    .btn-show-in-chat:hover { color: var(--color-primary); }
+
+    @keyframes card-highlight {
+      0%   { box-shadow: 0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04); }
+      25%  { box-shadow: 0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04), 0 0 0 2px var(--color-primary); }
+      100% { box-shadow: 0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04); }
+    }
+    .msg-assistant.is-highlighted .bot-card {
+      animation: card-highlight 1.4s ease-out forwards;
+    }
+
+    .copy-count {
+      font-size: .75rem; color: var(--txt-3); text-align: right; margin-top: 6px;
+    }
+
+    /* Version history button in response header — keep secondary style */
+    .btn-asst-secondary {
+      height: 36px;
+      background: transparent; color: var(--color-primary);
+      border: 1.5px solid var(--color-primary); border-radius: var(--r-md);
+      font-size: .8125rem; font-weight: 500;
+      display: flex; align-items: center; justify-content: center; gap: 6px;
+      transition: background-color 100ms ease-out;
+      outline: none; cursor: pointer;
+    }
+    .btn-asst-secondary:hover { background: var(--color-primary-ghost); }
+    .btn-asst-secondary.is-active { background: var(--color-primary-ghost); }
+    .btn-asst-secondary:focus-visible { box-shadow: 0 0 0 2px var(--surface-white), 0 0 0 4px var(--signal); }
+
+    /* Source label */
+    .source-label {
+      display: inline-flex; align-items: center; gap: 5px;
+      padding: 3px 9px; border-radius: var(--r-full);
+      border: 1px solid; font-size: .75rem; font-weight: 500;
+      width: fit-content; line-height: 1.4;
+    }
+    .source-label svg { width: 10px; height: 10px; flex-shrink: 0; }
+    .sl--library { background: var(--lib-bg); color: var(--lib-txt); border-color: var(--lib-bd); }
+    .sl--adapted { background: var(--tag-accent-bg); color: var(--tag-accent-text); border-color: var(--tag-accent-border); }
+    .sl--ai      { background: var(--ai-bg);  color: var(--ai-txt);  border-color: var(--ai-bd);  }
+    .sl--ai-low  { background: var(--ail-bg); color: var(--ail-txt); border-color: var(--ail-bd); }
+
+    /* Follow-up bar */
+    .resp-followup {
+      flex-shrink: 0;
+      border-top: 1px solid var(--border-default);
+      background: var(--surface-white);
+      padding: 14px 24px;
+      display: flex; gap: 10px; align-items: center;
+    }
+    .followup-ta {
+      flex: 1; resize: none; overflow: hidden;
+      height: 36px; padding: 7px 12px;
+      background: var(--surface-base);
+      border: 1.5px solid var(--border-default);
+      border-radius: var(--r-lg);
+      font-family: inherit; font-size: .875rem; line-height: 1.4;
+      color: var(--txt-1);
+      transition: border-color 100ms ease-out, background-color 100ms ease-out;
+      outline: none;
+    }
+    .followup-ta::placeholder { color: var(--txt-3); }
+    .followup-ta:focus-visible {
+      border-color: var(--color-primary);
+      background: var(--surface-white);
+      box-shadow: 0 0 0 2px var(--signal-subtle);
+    }
+    .btn-send {
+      flex-shrink: 0; height: 36px; padding: 0 16px;
+      background: var(--color-primary); color: var(--text-inverse);
+      border: none; border-radius: var(--r-md);
+      font-size: .875rem; font-weight: 500;
+      display: flex; align-items: center; gap: 7px;
+      transition: background-color 100ms ease-out;
+      outline: none; cursor: pointer;
+    }
+    .btn-send:hover { background: var(--color-primary-hover); }
+    .btn-send:focus-visible { box-shadow: 0 0 0 2px var(--surface-white), 0 0 0 4px var(--signal); }
+
+    /* ── Version history: desktop side panel ── */
+    .resp-detail {
+      width: 0;
+      flex-shrink: 0;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      transition: width 250ms cubic-bezier(0.25, 1, 0.5, 1);
+    }
+    .resp-detail.open { width: 381px; } /* 380px content + 1px border */
+
+    .resp-detail-inner {
+      width: 380px;
+      flex-shrink: 0;
+      border-left: 1px solid var(--border-default);
+      background: var(--surface-white);
+      display: flex; flex-direction: column;
+      flex: 1; overflow: hidden;
+    }
+
+    .detail-hd {
+      display: flex; flex-direction: column;
+      border-bottom: 1px solid var(--border-default);
+      flex-shrink: 0;
+    }
+    .detail-hd__top {
+      display: flex; align-items: center;
+      height: 48px; padding: 0 10px 0 20px;
+    }
+    .detail-hd__title {
+      flex: 1; font-size: .9375rem; font-weight: 600; color: var(--txt-1);
+    }
+    .detail-close-btn {
+      width: 32px; height: 32px;
+      display: flex; align-items: center; justify-content: center;
+      border-radius: var(--r-lg);
+      background: none; border: none;
+      color: var(--text-secondary);
+      transition: background-color 100ms ease-out, color 100ms ease-out;
+      outline: none;
+    }
+    .detail-close-btn:hover { background: var(--nav-bg-hover); color: var(--txt-1); }
+    .detail-close-btn:focus-visible { box-shadow: 0 0 0 2px var(--signal); }
+
+    .detail-body {
+      flex: 1; overflow-y: auto; padding: 20px;
+      display: flex; flex-direction: column; gap: 16px;
+      scrollbar-width: thin; scrollbar-color: var(--divider) transparent;
+    }
+    .detail-body::-webkit-scrollbar { width: 5px; }
+    .detail-body::-webkit-scrollbar-thumb { background: var(--divider); border-radius: 4px; }
+
+    .detail-section { display: flex; flex-direction: column; gap: 8px; }
+    .detail-section__label {
+      font-size: .6875rem; font-weight: 600; text-transform: uppercase;
+      letter-spacing: .07em; color: var(--txt-3);
+    }
+    .detail-copy-preview {
+      background: var(--surface-input);
+      border: 1px solid var(--border-input);
+      border-radius: var(--r-lg);
+      padding: 10px 12px;
+      font-family: var(--font-mono);
+      font-size: .8125rem; line-height: 1.6;
+      color: var(--txt-1);
+    }
+    .detail-divider { height: 1px; background: var(--divider); flex-shrink: 0; }
+    .detail-text {
+      font-size: .8125rem; color: var(--txt-2); line-height: 1.65; max-width: 60ch;
+    }
+    .guidelines { list-style: none; display: flex; flex-direction: column; gap: 7px; }
+    .guideline { display: flex; align-items: flex-start; gap: 8px; font-size: .8125rem; color: var(--txt-2); }
+    .guideline svg { width: 13px; height: 13px; color: var(--lib-txt); flex-shrink: 0; margin-top: 2px; }
+
+    /* ── Version tabs ── */
+    .detail-tabs-wrap {
+      display: flex; align-items: flex-end;
+      padding-top: 8px;
+      border-bottom: 1px solid var(--tab-rail);
+    }
+    .detail-tabs {
+      flex: 1; min-width: 0;
+      display: flex; align-items: flex-end; padding: 0; gap: 0;
+      overflow-x: auto; flex-wrap: nowrap; scrollbar-width: none;
+    }
+    .detail-tabs::-webkit-scrollbar { display: none; }
+    .detail-tabs-arrow {
+      flex-shrink: 0;
+      display: flex; align-items: center;
+      height: 36px; padding: 0 8px;
+      background: var(--surface-white);
+      border: none; cursor: pointer;
+      color: var(--text-secondary);
+      transition: opacity 150ms ease, color 150ms ease;
+    }
+    .detail-tabs-arrow:hover { color: var(--text-primary); }
+    .detail-tabs-arrow.is-hidden { opacity: 0; pointer-events: none; }
+    .detail-tabs-arrow.is-dim    { opacity: 0.3; }
+    .detail-tab {
+      display: inline-flex; align-items: center; gap: 5px;
+      height: 36px; padding: 0 8px;
+      font-size: .8125rem; font-weight: 500; color: var(--tab-inactive-text);
+      background: none; border: none;
+      border-bottom: 2px solid transparent;
+      margin-bottom: -1px;
+      cursor: pointer; outline: none;
+      transition: color 100ms ease-out, border-color 100ms ease-out;
+    }
+    .detail-tab:hover { color: var(--tab-hover-text); }
+    .detail-tab.is-active { color: var(--tab-active-text); border-bottom-color: var(--tab-active-indicator); font-weight: 600; }
+    .detail-tab:focus-visible { box-shadow: 0 0 0 2px var(--surface-white), 0 0 0 4px var(--signal); border-radius: var(--r-sm); }
+    .detail-tab__badge {
+      padding: 2px 8px;
+      background: var(--color-primary); color: white;
+      border-radius: var(--r-full);
+      font-size: .6875rem; font-weight: 500; line-height: 1.4;
+    }
+    .detail-tab.is-active .detail-tab__badge {
+      background: var(--color-primary); color: white;
+    }
+
+    /* ── Version meta ── */
+    .detail-version-meta { display: flex; align-items: center; gap: 8px; }
+    .detail-confidence { font-size: .75rem; color: var(--txt-3); }
+
+    /* ── Alternative group in tab strip ── */
+    .detail-tab-group {
+      display: flex; align-items: flex-end;
+      position: relative;
+    }
+    .detail-tab-group::before {
+      content: '';
+      position: absolute;
+      top: 3px; left: 2px; right: 2px;
+      height: 2px;
+      background: var(--provisional);
+      border-radius: 1px;
+      opacity: 0.45;
+      pointer-events: none;
+    }
+
+    /* ── Alternative badge in version panel ── */
+    .detail-alt-badge {
+      display: inline-block;
+      font-size: 11px; font-weight: 600;
+      text-transform: uppercase; letter-spacing: 0.05em;
+      color: var(--provisional);
+    }
+
+    /* ── Collapsible sections ── */
+    .detail-collapsible { display: flex; flex-direction: column; }
+    .detail-collapsible-btn {
+      width: 100%; display: flex; align-items: center; justify-content: space-between;
+      padding: 2px 0;
+      background: none; border: none; cursor: pointer;
+      outline: none;
+    }
+    .detail-collapsible-btn:focus-visible { box-shadow: 0 0 0 2px var(--signal); border-radius: 2px; }
+    .detail-collapsible__label {
+      font-size: .6875rem; font-weight: 600; text-transform: uppercase;
+      letter-spacing: .07em; color: var(--txt-3);
+    }
+    .detail-chevron {
+      color: var(--txt-3); flex-shrink: 0;
+      transition: transform 200ms ease-out;
+    }
+    .detail-collapsible:not(.is-open) .detail-chevron { transform: rotate(-90deg); }
+    .detail-collapsible__body { margin-top: 10px; }
+    .detail-collapsible:not(.is-open) .detail-collapsible__body { display: none; }
+
+    /* ── Guideline variants ── */
+    .guideline--warn svg { color: var(--ai-txt); }
+    .guideline--fail svg { color: var(--crit); }
+
+    /* ── Inactive copy preview (non-latest versions) ── */
+    .detail-copy-preview--inactive {
+      background: var(--paper);
+      border-color: var(--divider-strong);
+    }
+
+    /* ── Error ── */
+    .state-error { flex: 1; padding: 32px; background: var(--canvas); }
+    .error-card {
+      display: flex; gap: 10px; align-items: flex-start;
+      padding: 14px 16px;
+      background: var(--crit-bg);
+      border: 1px solid var(--crit-bd);
+      border-radius: var(--r-lg);
+    }
+    .error-card svg { width: 16px; height: 16px; color: var(--crit); flex-shrink: 0; margin-top: 1px; }
+    .error-card__title { font-size: .875rem; font-weight: 500; color: var(--crit); margin-bottom: 2px; }
+    .error-card__body  { font-size: .8125rem; color: var(--crit-txt); line-height: 1.55; }
+
+    /* ─── Animations ─────────────────────────────────────────────────── */
+    @keyframes spin    { to { transform: rotate(360deg); } }
+    @keyframes shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
+    @keyframes fadeUp  { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+    .animate-in { animation: fadeUp 200ms ease-out both; }
+
+    /* ─── Utility ────────────────────────────────────────────────────── */
+    [hidden] { display: none !important; }
+
+    /* ─── Mobile hamburger ───────────────────────────────────────────── */
+    .hamburger-btn {
+      display: none;
+      width: 36px; height: 36px;
+      align-items: center; justify-content: center;
+      background: none; border: none; border-radius: var(--r-md);
+      color: var(--text-secondary); cursor: pointer; margin-right: 4px;
+      transition: background-color 100ms ease-out, color 100ms ease-out;
+      outline: none; flex-shrink: 0;
+    }
+    .hamburger-btn:hover { background: var(--nav-bg-hover); color: var(--text-primary); }
+    .hamburger-btn:focus-visible { box-shadow: 0 0 0 2px var(--signal); }
+
+    .sidebar-overlay {
+      display: none; position: fixed; inset: 0; z-index: 30;
+      background: rgba(30, 45, 58, 0.3);
+    }
+    .sidebar-overlay.open { display: block; }
+
+    /* ─── Responsive ─────────────────────────────────────────────────── */
+    @media (max-width: 768px) {
+      .hamburger-btn { display: flex; }
+      .sidebar {
+        position: fixed; top: 48px; left: 0; bottom: 0; z-index: 40;
+        transform: translateX(-100%);
+        transition: transform 220ms cubic-bezier(0.25, 1, 0.5, 1);
+      }
+      .sidebar.is-open { transform: translateX(0); }
+      /* Mobile: bottom sheet modal */
+      .resp-detail {
+        position: fixed; inset: 0;
+        width: auto;
+        display: none;
+        flex-direction: column;
+        align-items: stretch;
+        justify-content: flex-end;
+        background: rgba(30, 45, 58, 0.4);
+        backdrop-filter: blur(2px);
+        z-index: 50;
+        overflow: visible;
+        transition: none;
+      }
+      .resp-detail.open { display: flex; width: auto; }
+      .resp-detail-inner {
+        width: 100%; min-width: 0; max-height: 92vh;
+        border-radius: 16px 16px 0 0;
+        border-left: none;
+        box-shadow: var(--shd-lg);
+        animation: sheetIn 220ms cubic-bezier(0.25, 1, 0.5, 1) both;
+      }
+      @keyframes sheetIn {
+        from { transform: translateY(100%); }
+        to   { transform: translateY(0); }
+      }
+    }
+    @media (max-width: 768px) {
+      /* Conversation header: tighter on tablet */
+      .resp-header { padding: 0 16px; height: 64px; gap: 8px; }
+      .resp-header__title { font-size: 1rem; }
+
+      /* Wider message bubbles on tablet */
+      .msg-user__bubble { max-width: 85%; }
+      .bot-card, .alt-group { max-width: 85%; }
+
+      /* Resp messages: less padding */
+      .resp-messages { padding: 16px; gap: 14px; }
+
+      /* Follow-up bar */
+      .resp-followup { padding: 10px 16px; }
+
+      /* Search inputs: no expand animation (causes layout jump) */
+      .resp-search-input { transition: border-color 100ms ease-out, box-shadow 100ms ease-out; }
+      .resp-search-input:focus-visible { width: 200px; }
+      .lib-search { transition: border-color 100ms ease-out, box-shadow 100ms ease-out; }
+      .lib-search:focus-visible { width: 200px; }
+
+      /* Session context button: always visible on touch devices */
+      .session-ctx-btn { opacity: 1; pointer-events: auto; }
+
+      /* History: reduce from 40px to 20px padding */
+      .hist-header { padding: 20px 20px 0; }
+      .hist-item { padding: 13px 20px; }
+      .hist-empty { padding: 32px 20px; }
+      .hist-pagination { padding: 12px 20px; }
+      .hist-search { max-width: none; width: 100%; }
+
+      /* Changelog */
+      .cl-inner { padding: 24px 20px 40px; }
+
+      /* Library detail */
+      .lib-detail-body { padding: 20px; }
+    }
+
+    @media (max-width: 480px) {
+      /* ── Prevent iOS zoom on all inputs (font-size must be ≥ 16px) ── */
+      input, textarea, select { font-size: 16px; }
+      .session-search  { font-size: 16px; }
+      .resp-search-input { font-size: 16px; }
+      .lib-search      { font-size: 16px; }
+      .hist-search     { font-size: 16px; }
+      .ask-ta          { font-size: 16px; }
+      .followup-ta     { font-size: 16px; }
+
+      /* ── Touch targets: minimum 44px ── */
+      .session-item    { height: 44px; }
+      .nav-item        { height: 44px; }
+      .session-view-all { height: 44px; }
+      .hist-pg-btn     { width: 44px; height: 44px; }
+      .scroll-to-bottom { height: 44px; padding: 0 14px; font-size: 13px; }
+      .sidebar-section-btn { width: 28px; height: 28px; }
+      .btn-send        { height: 44px; }
+      .lib-tab         { padding: 12px 12px; }
+
+      /* ── Proto-nav: scroll horizontally, hide label ── */
+      #proto-nav {
+        overflow-x: auto; -webkit-overflow-scrolling: touch;
+        gap: 4px; padding: 0 8px;
+        scrollbar-width: none;
+      }
+      #proto-nav::-webkit-scrollbar { display: none; }
+      .pnav-label { display: none; }
+      .pnav-btn   { flex-shrink: 0; font-size: 0.6875rem; padding: 0 8px; }
+
+      /* ── Conversation header: stack on tiny screens ── */
+      .resp-header {
+        height: auto; padding: 10px 12px; flex-wrap: wrap; gap: 6px;
+      }
+      .resp-header__info { order: 1; width: 100%; }
+      .resp-search-wrap  { order: 2; flex: 1; }
+      .resp-search-input { width: 100%; }
+      .resp-search-input:focus-visible { width: 100%; }
+      #vhistBtn          { order: 3; flex-shrink: 0; }
+
+      /* ── Message bubbles: near full-width ── */
+      .msg-user__bubble { max-width: 92%; }
+      .bot-card, .alt-group { max-width: 94%; }
+
+      /* ── Resp messages: compact ── */
+      .resp-messages { padding: 12px; gap: 10px; }
+
+      /* ── History screen: tighter padding ── */
+      .hist-header { padding: 16px 16px 0; }
+      .hist-header-top { margin-bottom: 10px; }
+      .hist-item { padding: 13px 16px; }
+      .hist-empty { padding: 24px 16px; }
+      .hist-pagination { padding: 10px 16px; flex-wrap: wrap; gap: 8px; }
+      .hist-search-row { padding-bottom: 12px; }
+
+      /* ── Library: stack list + detail vertically ── */
+      .lib-main { flex-direction: column; overflow-y: auto; }
+      .lib-list-col {
+        width: 100%; flex-shrink: 0;
+        border-right: none;
+        border-bottom: 1px solid var(--divider);
+        max-height: 45vh;
+      }
+      .lib-detail-body { padding: 16px; }
+      .lib-intro { padding: 16px; max-width: 100%; }
+
+      /* ── Changelog: reduce padding ── */
+      .cl-inner { padding: 16px 12px 32px; }
+    }
+
+    @media (max-width: 400px) {
+      .header-logo__subtitle { display: none; }
+    }
+    @media (max-width: 600px) {
+      .ask-card { padding: 28px 20px; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: .01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: .01ms !important;
+      }
+      .sidebar { transition: none; }
+    }
+    /* ─── Prototype nav ──────────────────────────────────────────────── */
+    #proto-nav {
+      height: 36px; flex-shrink: 0;
+      background: oklch(20% 0.014 254);
+      border-bottom: 1px solid oklch(28% 0.016 254);
+      display: flex; align-items: center; gap: 2px; padding: 0 14px;
+    }
+    .pnav-label {
+      font-size: .6875rem; font-weight: 600; text-transform: uppercase;
+      letter-spacing: .07em; color: oklch(45% 0.014 254);
+      margin-right: 10px; user-select: none;
+    }
+    .pnav-btn {
+      height: 24px; padding: 0 10px;
+      background: transparent; border: none; border-radius: var(--r-md);
+      font-size: .75rem; font-weight: 500; color: oklch(62% 0.014 254);
+      cursor: pointer; font-family: inherit;
+      transition: background-color 100ms ease-out, color 100ms ease-out;
+      outline: none;
+    }
+    .pnav-btn:hover { background: oklch(28% 0.015 254); color: oklch(88% 0.008 254); }
+    .pnav-btn.is-active { background: var(--signal); color: white; }
+    .pnav-btn:focus-visible { box-shadow: 0 0 0 2px var(--signal); }
+
+    /* ─── Library ────────────────────────────────────────────────────── */
+    #screen-library { flex: 1; min-height: 0; overflow: hidden; display: flex; flex-direction: column; }
+
+    .lib-content { flex: 1; display: flex; flex-direction: column; min-width: 0; overflow: hidden; background: var(--canvas); }
+
+    .lib-page-header {
+      display: flex; align-items: center; gap: 12px;
+      padding: 14px 20px; flex-shrink: 0;
+      border-bottom: 1px solid var(--divider); background: var(--canvas);
+    }
+    .lib-page-header__info { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px; }
+    .lib-page-header__title {
+      font-size: 1.125rem; font-weight: 600; color: var(--txt-1); line-height: 1.3;
+    }
+    .lib-page-header__sub { font-size: .8125rem; color: var(--txt-3); }
+
+    .lib-tabs { display: flex; border-bottom: 1px solid var(--tab-rail); flex-shrink: 0; background: inherit; padding: 0 2px; }
+    .lib-tab {
+      padding: 10px 14px;
+      font-size: .875rem; font-weight: 500; color: var(--tab-inactive-text);
+      background: none; border: none; border-bottom: 2px solid transparent;
+      margin-bottom: -1px; cursor: pointer; font-family: inherit;
+      transition: color 100ms ease-out, border-color 100ms ease-out; outline: none;
+    }
+    .lib-tab:hover { color: var(--tab-hover-text); }
+    .lib-tab.is-active { color: var(--tab-active-text); border-bottom-color: var(--tab-active-indicator); }
+    .lib-tab:focus-visible { box-shadow: 0 0 0 2px var(--signal); border-radius: 2px; }
+
+    .lib-search-wrap { position: relative; flex-shrink: 0; }
+    .lib-search-icon {
+      position: absolute; left: 8px; top: 50%; transform: translateY(-50%);
+      color: var(--txt-3); pointer-events: none; width: 12px; height: 12px;
+    }
+    .lib-search {
+      height: 30px; padding: 0 8px 0 26px; width: 200px;
+      background: var(--paper); border: 1px solid var(--divider);
+      border-radius: var(--r-md); font-family: inherit; font-size: .75rem; color: var(--txt-1);
+      transition: border-color 100ms ease-out, box-shadow 100ms ease-out, width 150ms ease-out; outline: none;
+    }
+    .lib-search::placeholder { color: var(--txt-3); }
+    .lib-search:focus-visible { border-color: var(--signal); box-shadow: 0 0 0 2px var(--signal-subtle); width: 260px; }
+
+    .lib-main { display: flex; flex: 1; min-height: 0; overflow: hidden; }
+
+    .lib-list-col { width: 320px; flex-shrink: 0; border-right: 1px solid var(--divider); display: flex; flex-direction: column; overflow: hidden; }
+    .lib-list-hd { padding: 9px 16px; border-bottom: 1px solid var(--divider); flex-shrink: 0; }
+    .lib-count { font-size: .75rem; color: var(--txt-3); }
+    .lib-list-scroll { flex: 1; overflow-y: auto; scrollbar-width: thin; scrollbar-color: var(--divider) transparent; }
+
+    .lib-item {
+      display: flex; align-items: flex-start; gap: 10px;
+      padding: 10px 16px; border-bottom: 1px solid var(--divider);
+      cursor: pointer; transition: background-color 100ms ease-out;
+    }
+    .lib-item:hover { background: var(--paper); }
+    .lib-item.is-selected { background: var(--signal-subtle); border-left: 2px solid var(--signal); padding-left: 14px; }
+    .lib-item__copy {
+      font-family: var(--font-mono);
+      font-size: .8125rem; color: var(--txt-1); flex: 1; min-width: 0;
+      line-height: 1.5; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
+    }
+    .lib-item__dot { flex-shrink: 0; width: 6px; height: 6px; border-radius: 50%; margin-top: 6px; }
+    .lib-item__dot--approved { background: var(--lib-txt); }
+    .lib-item__dot--draft    { background: var(--ai-txt); }
+
+    /* Element type badges */
+    .lib-badge { display: inline-block; padding: 1px 6px; font-size: .6875rem; font-weight: 500; border-radius: var(--r-sm); border: 1px solid; flex-shrink: 0; }
+    .lib-item .lib-badge { margin-top: 2px; }
+    .lib-badge--label { background: oklch(97% 0.04 246); color: oklch(42% 0.16 246); border-color: oklch(84% 0.08 246); }
+    .lib-badge--hint  { background: oklch(97% 0.05 310); color: oklch(42% 0.17 310); border-color: oklch(84% 0.09 310); }
+    .lib-badge--error { background: var(--ai-bg); color: var(--ai-txt); border-color: var(--ai-bd); }
+    .lib-badge--modal { background: var(--paper); color: var(--txt-2); border-color: var(--divider-strong); }
+
+    /* Detail pane */
+    .lib-detail-pane { flex: 1; overflow-y: auto; background: var(--canvas); display: flex; align-items: center; justify-content: center; }
+
+    /* Library intro (empty state) */
+    .lib-intro { padding: 32px; max-width: 520px; }
+    .lib-intro__eyebrow {
+      font-size: .6875rem; font-weight: 600; text-transform: uppercase;
+      letter-spacing: .07em; color: var(--txt-3); margin-bottom: 14px;
+    }
+    .lib-intro__title { font-size: 1.125rem; font-weight: 600; color: var(--txt-1); letter-spacing: -.01em; margin-bottom: 10px; line-height: 1.3; }
+    .lib-intro__body { font-size: .875rem; color: var(--txt-2); line-height: 1.7; }
+    .lib-intro__body + .lib-intro__body { margin-top: 10px; }
+    .lib-intro__rule { border: none; border-top: 1px solid var(--divider); margin: 24px 0; }
+    .lib-intro__hint { font-size: .8125rem; color: var(--txt-3); line-height: 1.65; }
+    .lib-intro__hint strong { font-weight: 500; color: var(--txt-2); }
+    .lib-intro__link {
+      color: var(--color-primary); text-decoration: underline; text-decoration-color: var(--border-tag-accent);
+      text-underline-offset: 2px;
+    }
+    .lib-intro__link:hover { text-decoration-color: var(--color-primary); }
+    .lib-intro__prompt {
+      display: inline-flex; align-items: center; gap: 6px;
+      margin-top: 20px; font-size: .8125rem; color: var(--txt-3);
+    }
+
+    /* Detail body sections */
+    .lib-detail-body { padding: 24px 28px; width: 100%; align-self: flex-start; }
+    .lib-detail-hd { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 20px; }
+    .lib-detail-badges { display: flex; align-items: center; flex-wrap: wrap; gap: 6px; }
+    .lib-detail-section { margin-bottom: 24px; }
+    .lib-detail-section-label {
+      font-size: .6875rem; font-weight: 600; text-transform: uppercase;
+      letter-spacing: .07em; color: var(--txt-3); margin-bottom: 8px;
+    }
+    .lib-detail-copy-wrap {
+      background: var(--surface-input); border: 1px solid var(--border-input);
+      border-radius: var(--r-lg); padding: 14px 16px;
+    }
+    .lib-detail-copy { font-family: var(--font-mono); font-size: .8125rem; color: var(--txt-1); line-height: 1.6; }
+    .lib-meta-table { border: 1px solid var(--divider); border-radius: var(--r-lg); overflow: hidden; }
+    .lib-meta-row { display: flex; align-items: baseline; border-bottom: 1px solid var(--divider); }
+    .lib-meta-row:last-child { border-bottom: none; }
+    .lib-meta-key { padding: 9px 14px; font-size: .75rem; color: var(--txt-3); width: 108px; flex-shrink: 0; }
+    .lib-meta-val { padding: 9px 14px; font-size: .8125rem; color: var(--txt-2); flex: 1; min-width: 0; word-break: break-all; }
+
+    /* Screenshot section */
+    .lib-screenshot-placeholder {
+      border: 1.5px dashed var(--divider-strong); border-radius: var(--r-lg);
+      padding: 36px 20px;
+      display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px;
+      background: var(--paper); color: var(--txt-3);
+    }
+    .lib-screenshot-placeholder svg { width: 20px; height: 20px; }
+    .lib-screenshot-placeholder p { font-size: .8125rem; }
+    .lib-screenshot-img { width: 100%; border-radius: var(--r-lg); border: 1px solid var(--divider); display: block; }
+
+    .lib-status-badge { display: inline-block; padding: 1px 7px; font-size: .6875rem; font-weight: 500; border-radius: var(--r-full); border: 1px solid; }
+    .lib-status-badge--approved { background: var(--lib-bg); color: var(--lib-txt); border-color: var(--lib-bd); }
+    .lib-status-badge--draft    { background: var(--ai-bg);  color: var(--ai-txt);  border-color: var(--ai-bd);  }
+    .lib-copy-btn {
+      height: 28px; padding: 0 12px; flex-shrink: 0;
+      background: transparent; border: 1px solid var(--color-primary); border-radius: var(--r-md);
+      font-size: .75rem; font-weight: 500; color: var(--color-primary); font-family: inherit;
+      cursor: pointer; transition: background-color 100ms ease-out, color 100ms ease-out; outline: none;
+    }
+    .lib-copy-btn:hover { background: var(--color-primary-ghost); color: var(--color-primary); }
+    .lib-copy-btn:focus-visible { box-shadow: 0 0 0 2px var(--signal); }
+    .lib-copy-btn.is-copied { background: var(--lib-txt); color: var(--text-inverse); border-color: var(--lib-txt); }
+
+    /* ─── Header right nav ───────────────────────────────────────── */
+    .header-right { display: flex; align-items: center; gap: 4px; margin-left: auto; }
+    .header-nav-link {
+      height: 30px; padding: 0 10px;
+      display: flex; align-items: center;
+      border-radius: var(--r-md);
+      font-size: .8125rem; color: var(--txt-2);
+      text-decoration: none;
+      transition: background-color 100ms ease-out, color 100ms ease-out;
+    }
+    .header-nav-link:hover { background: var(--nav-bg-hover); color: var(--nav-text-active); }
+    .header-nav-link.is-active { background: var(--nav-bg-selected); color: var(--nav-text-active); font-weight: 500; }
+    .header-nav-link:focus-visible { box-shadow: 0 0 0 2px var(--signal) inset; }
+
+    /* ─── History screen ─────────────────────────────────────────── */
+    #screen-history { flex: 1; min-height: 0; overflow: hidden; display: flex; flex-direction: column; }
+
+    .hist-content { flex: 1; display: flex; flex-direction: column; min-width: 0; overflow: hidden; background: var(--surface-white); }
+
+    .hist-header {
+      padding: 28px 40px 0; border-bottom: 1px solid var(--border-default); flex-shrink: 0;
+    }
+    .hist-header-top { display: flex; align-items: baseline; gap: 10px; margin-bottom: 14px; }
+    .hist-title { font-size: 1.125rem; font-weight: 600; color: var(--text-primary); font-family: var(--font-ui); }
+    .hist-count { font-size: 0.8125rem; color: var(--text-secondary); }
+    .hist-search-row { padding-bottom: 16px; }
+    .hist-search {
+      height: 32px; width: 100%; max-width: 300px; padding: 0 12px 0 32px;
+      background: var(--surface-base) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 20 20' fill='none' stroke='%236B8499' stroke-width='1.75' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='8.5' cy='8.5' r='5.5'/%3E%3Cline x1='13.5' y1='13.5' x2='17' y2='17'/%3E%3C/svg%3E") no-repeat 10px center;
+      border: 1px solid var(--border-input); border-radius: var(--r-md); outline: none;
+      font-size: 0.875rem; font-family: var(--font-ui); color: var(--text-primary);
+      transition: border-color 100ms ease-out, box-shadow 100ms ease-out, background-color 100ms ease-out;
+    }
+    .hist-search:focus { border-color: var(--color-primary); box-shadow: 0 0 0 2px var(--signal-subtle); background-color: var(--surface-white); }
+
+    .hist-list { flex: 1; overflow-y: auto; }
+    .hist-item {
+      display: flex; align-items: center; width: 100%;
+      padding: 13px 40px; border-bottom: 1px solid var(--border-default);
+      cursor: pointer; background: none; border-left: none; border-right: none; border-top: none;
+      transition: background-color 100ms ease-out;
+    }
+    .hist-item:hover { background: var(--surface-base); }
+    .hist-item__title { flex: 1; font-size: 0.875rem; font-weight: 500; color: var(--text-primary); font-family: var(--font-ui); text-align: left; }
+    .hist-item__date { font-size: 0.8125rem; color: var(--text-tertiary); flex-shrink: 0; margin-left: 16px; }
+    .hist-item__arrow { flex-shrink: 0; margin-left: 12px; color: var(--text-tertiary); opacity: 0; transition: opacity 100ms ease-out; }
+    .hist-item:hover .hist-item__arrow { opacity: 1; }
+
+    .hist-empty { padding: 48px 40px; font-size: 0.875rem; color: var(--text-secondary); }
+
+    .hist-pagination {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 14px 40px; border-top: 1px solid var(--border-default); flex-shrink: 0;
+      font-size: 0.8125rem; color: var(--text-secondary);
+    }
+    .hist-pg-controls { display: flex; align-items: center; gap: 6px; }
+    .hist-pg-btn {
+      width: 30px; height: 30px; display: flex; align-items: center; justify-content: center;
+      border-radius: var(--r-md); background: none; border: 1px solid var(--border-default);
+      color: var(--text-secondary); cursor: pointer; outline: none;
+      transition: background-color 100ms ease-out, color 100ms ease-out;
+    }
+    .hist-pg-btn:hover:not(:disabled) { background: var(--nav-bg-hover); color: var(--text-primary); }
+    .hist-pg-btn:disabled { opacity: 0.35; cursor: not-allowed; }
+    .hist-pg-btn:focus-visible { box-shadow: 0 0 0 2px var(--signal) inset; }
+
+    /* ─── Changelog screen ───────────────────────────────────────── */
+    #screen-changelog { flex: 1; min-height: 0; overflow: hidden; display: flex; flex-direction: column; }
+    .cl-content { flex: 1; overflow-y: auto; background: var(--canvas); }
+    .cl-inner { max-width: 680px; margin: 0 auto; padding: 36px 32px 56px; }
+
+    .cl-page-hd { margin-bottom: 28px; }
+    .cl-page-title { font-size: 1.125rem; font-weight: 600; letter-spacing: -.02em; color: var(--txt-1); }
+    .cl-page-sub { font-size: .8125rem; color: var(--txt-3); margin-top: 4px; }
+
+    .cl-tabs { display: flex; border-bottom: 1px solid var(--tab-rail); margin-bottom: 24px; }
+    .cl-tab {
+      height: 36px; padding: 0 14px;
+      font-size: .875rem; cursor: pointer; color: var(--tab-inactive-text);
+      background: none; border: none; font-family: inherit;
+      border-bottom: 2px solid transparent; margin-bottom: -1px;
+      transition: color 100ms ease-out, border-color 100ms ease-out; outline: none;
+    }
+    .cl-tab:hover { color: var(--tab-hover-text); }
+    .cl-tab.is-active { color: var(--tab-active-text); border-bottom-color: var(--tab-active-indicator); font-weight: 500; }
+    .cl-tab:focus-visible { box-shadow: 0 0 0 2px var(--signal) inset; }
+    .cl-panel { display: none; }
+    .cl-panel.is-active { display: block; }
+
+    .cl-release { padding: 20px 0; border-bottom: 1px solid var(--divider); }
+    .cl-release:last-child { border-bottom: none; }
+    .cl-release-meta { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; flex-wrap: wrap; }
+    .cl-version { font-size: .75rem; font-weight: 600; font-family: var(--font-mono); color: var(--txt-1); }
+    .cl-badge { font-size: .6875rem; padding: 2px 7px; border-radius: var(--r-full); font-weight: 500; border: 1px solid; }
+    .cl-badge--major { background: var(--ada-bg); color: var(--ada-txt); border-color: var(--ada-bd); }
+    .cl-badge--minor { background: var(--lib-bg); color: var(--lib-txt); border-color: var(--lib-bd); }
+    .cl-badge--patch { background: var(--ai-bg);  color: var(--ai-txt);  border-color: var(--ai-bd);  }
+    .cl-date { font-size: .75rem; color: var(--txt-3); margin-left: auto; }
+    .cl-release-title { font-size: .875rem; font-weight: 600; color: var(--txt-1); margin-bottom: 4px; }
+    .cl-changes { list-style: none; margin-top: 8px; display: flex; flex-direction: column; gap: 2px; }
+    .cl-change { font-size: .8125rem; color: var(--txt-2); display: flex; align-items: baseline; gap: 7px; padding: 2px 0; }
+    .cl-change::before { content: '·'; color: var(--txt-3); flex-shrink: 0; }
+    .cl-tag { font-size: .6875rem; padding: 1px 5px; border-radius: var(--r-sm); flex-shrink: 0; font-family: var(--font-mono); }
+    .cl-tag--feat { background: var(--ada-bg); color: var(--ada-txt); }
+    .cl-tag--fix  { background: var(--crit-bg); color: var(--crit-txt); }
+    .cl-tag--perf { background: var(--ail-bg);  color: var(--ail-txt);  }
+
+    .cl-requests { display: flex; flex-direction: column; }
+    .cl-request { padding: 14px 0; border-bottom: 1px solid var(--divider); display: flex; gap: 14px; align-items: flex-start; }
+    .cl-request:last-child { border-bottom: none; }
+    .cl-vote-btn {
+      display: flex; flex-direction: column; align-items: center; gap: 3px;
+      padding: 6px 10px; border: 1px solid var(--divider-strong); border-radius: var(--r-lg);
+      cursor: pointer; background: var(--canvas); min-width: 44px; flex-shrink: 0;
+      font-family: inherit; transition: background-color 100ms ease-out, border-color 100ms ease-out; outline: none;
+    }
+    .cl-vote-btn:hover { background: var(--paper); }
+    .cl-vote-btn:focus-visible { box-shadow: 0 0 0 2px var(--signal); }
+    .cl-vote-btn.is-voted { border-color: var(--signal); background: var(--signal-subtle); }
+    .cl-vote-arrow { font-size: .75rem; color: var(--txt-3); line-height: 1; }
+    .cl-vote-btn.is-voted .cl-vote-arrow { color: var(--signal); }
+    .cl-vote-count { font-size: .8125rem; font-weight: 600; color: var(--txt-1); line-height: 1; }
+    .cl-vote-btn.is-voted .cl-vote-count { color: var(--signal); }
+    .cl-req-body { flex: 1; min-width: 0; }
+    .cl-req-title { font-size: .875rem; font-weight: 500; color: var(--txt-1); margin-bottom: 2px; }
+    .cl-req-desc { font-size: .8125rem; color: var(--txt-2); line-height: 1.5; }
+    .cl-req-status { display: inline-block; font-size: .6875rem; padding: 2px 7px; border-radius: var(--r-full); margin-top: 6px; border: 1px solid; }
+    .cl-req-status--planned     { background: var(--ada-bg); color: var(--ada-txt); border-color: var(--ada-bd); }
+    .cl-req-status--reviewing   { background: var(--ai-bg);  color: var(--ai-txt);  border-color: var(--ai-bd);  }
+    .cl-req-status--considering { background: var(--paper);  color: var(--txt-3);   border-color: var(--divider); }
+    .cl-new-req { margin-top: 16px; padding-top: 16px; border-top: 1px solid var(--divider); }
+    .cl-new-req p { font-size: .8125rem; color: var(--txt-2); margin-bottom: 8px; }
+    .cl-link-btn {
+      display: inline-flex; align-items: center;
+      font-size: .8125rem; color: var(--color-primary); background: transparent; border: 1px solid var(--color-primary);
+      padding: 5px 12px; border-radius: var(--r-md); cursor: pointer; font-family: inherit; text-decoration: none;
+      transition: background-color 100ms ease-out, color 100ms ease-out; outline: none;
+    }
+    .cl-link-btn:hover { background: var(--color-primary-ghost); color: var(--color-primary); }
+    .cl-link-btn:focus-visible { box-shadow: 0 0 0 2px var(--signal); }
+
+    .cl-quarter { margin-bottom: 24px; }
+    .cl-quarter:last-child { margin-bottom: 0; }
+    .cl-quarter-label { font-size: .6875rem; font-weight: 500; text-transform: uppercase; letter-spacing: .07em; color: var(--txt-3); margin-bottom: 10px; }
+    .cl-road-items { display: flex; flex-direction: column; gap: 2px; }
+    .cl-road-item { display: flex; align-items: center; gap: 10px; padding: 9px 12px; border: 1px solid var(--divider); border-radius: var(--r-lg); background: var(--canvas); }
+    .cl-road-dot { width: 7px; height: 7px; border-radius: var(--r-full); flex-shrink: 0; }
+    .cl-road-dot--done    { background: var(--lib-txt); }
+    .cl-road-dot--active  { background: var(--signal); }
+    .cl-road-dot--planned { background: var(--divider-strong); }
+    .cl-road-name { font-size: .8125rem; color: var(--txt-1); flex: 1; }
+    .cl-road-tag { font-size: .6875rem; padding: 2px 7px; border-radius: var(--r-full); border: 1px solid; flex-shrink: 0; }
+    .cl-road-tag--done    { background: var(--lib-bg); color: var(--lib-txt); border-color: var(--lib-bd); }
+    .cl-road-tag--active  { background: var(--ada-bg); color: var(--ada-txt); border-color: var(--ada-bd); }
+    .cl-road-tag--planned { background: var(--paper);  color: var(--txt-3);   border-color: var(--divider); }
+  </style>
+  <script src="changelog-data.js"></script>
+</head>
+<body>
+
+<!-- ═══════════ PROTOTYPE NAV ═══════════ -->
+<div id="proto-nav" role="navigation" aria-label="Prototype screens">
+  <span class="pnav-label">Prototype</span>
+  <button class="pnav-btn" data-screen="ask" type="button">Ask Lorem</button>
+  <button class="pnav-btn is-active" data-screen="assistant" type="button">Assistant</button>
+  <button class="pnav-btn" data-screen="library" type="button">Library</button>
+  <button class="pnav-btn" data-screen="changelog" type="button">Changelog</button>
+  <button class="pnav-btn" data-screen="long-chat" type="button">Long chat ↕</button>
+</div>
+
+<div class="app" id="screen-assistant">
+
+  <!-- ═══════════ APP HEADER ═══════════ -->
+  <header class="app-header">
+    <button class="hamburger-btn" id="hamburger-main" type="button" aria-label="Open menu" aria-expanded="false" aria-controls="sidebar-main">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/>
+      </svg>
+    </button>
+    <div class="header-logo">
+      <svg class="header-logo__mark" width="22" height="22" viewBox="0 0 24 24" aria-hidden="true">
+        <rect x="2" y="2" width="17" height="13" rx="3" fill="oklch(56% 0.17 185)"/>
+        <path d="M5 15 L3 20 L8 18.5Z" fill="oklch(56% 0.17 185)"/>
+        <circle cx="6.5"  cy="8.5" r="1.25" fill="white"/>
+        <circle cx="10.5" cy="8.5" r="1.25" fill="white"/>
+        <circle cx="14.5" cy="8.5" r="1.25" fill="white"/>
+      </svg>
+      <div class="header-logo__text">
+        <span class="header-logo__wordmark">Lorem</span>
+        <span class="header-logo__subtitle">UX Writing Assistant</span>
+      </div>
+    </div>
+    <div class="header-right">
+      <a class="header-nav-link changelog-link" href="#" id="changelog-link-main">Changelog</a>
+      <a class="header-nav-link" href="https://form.gov.sg/6a1537f8b7792d70c10a0d30" target="_blank" rel="noopener noreferrer">Feedback</a>
+    </div>
+  </header>
+
+  <div class="app-body">
+
+    <!-- Sidebar overlay (mobile) -->
+    <div class="sidebar-overlay" id="sidebar-overlay-main" aria-hidden="true"></div>
+
+    <!-- ═══════════ SIDEBAR ═══════════ -->
+    <aside class="sidebar" id="sidebar-main" aria-label="Navigation">
+
+      <nav class="sidebar-nav" aria-label="Main">
+        <div class="sidebar-section-label">Workspace</div>
+        <a class="nav-item is-active" href="#" id="nav-item-assistant" aria-current="page">
+          <svg class="nav-item__icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/>
+          </svg>
+          Assistant
+        </a>
+        <a class="nav-item" href="#">
+          <svg class="nav-item__icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/>
+          </svg>
+          Library
+        </a>
+      </nav>
+
+      <div class="sidebar-divider"></div>
+
+      <div class="sidebar-section-header">
+        <span class="sidebar-section-label">Assistant history</span>
+        <button class="sidebar-section-btn" id="historySearchBtn" type="button"
+          aria-label="Search conversations" aria-expanded="false" aria-controls="sessionSearch">
+          <svg width="12" height="12" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <circle cx="8.5" cy="8.5" r="5.5"/><line x1="13.5" y1="13.5" x2="17" y2="17"/>
+          </svg>
+        </button>
+      </div>
+      <input class="session-search" id="sessionSearch" type="search" name="session-search" placeholder="Search" aria-label="Search conversations" autocomplete="off" hidden>
+
+      <div class="sessions" role="list">
+        <div class="session-wrap">
+          <button class="session-item" type="button" role="listitem"><span>CPF contribution label</span></button>
+          <button class="session-ctx-btn" type="button" aria-label="Session options" tabindex="-1">
+            <svg width="12" height="12" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><circle cx="4" cy="10" r="1.75"/><circle cx="10" cy="10" r="1.75"/><circle cx="16" cy="10" r="1.75"/></svg>
+          </button>
+          <div class="session-ctx-menu hidden" role="menu">
+            <button class="ctx-item ctx-item--default" role="menuitem" type="button">Rename</button>
+            <button class="ctx-item ctx-item--danger" role="menuitem" type="button">Delete</button>
+          </div>
+        </div>
+        <div class="session-wrap">
+          <button class="session-item" type="button" role="listitem"><span>Error message — OTP timeout</span></button>
+          <button class="session-ctx-btn" type="button" aria-label="Session options" tabindex="-1">
+            <svg width="12" height="12" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><circle cx="4" cy="10" r="1.75"/><circle cx="10" cy="10" r="1.75"/><circle cx="16" cy="10" r="1.75"/></svg>
+          </button>
+          <div class="session-ctx-menu hidden" role="menu">
+            <button class="ctx-item ctx-item--default" role="menuitem" type="button">Rename</button>
+            <button class="ctx-item ctx-item--danger" role="menuitem" type="button">Delete</button>
+          </div>
+        </div>
+        <div class="session-wrap">
+          <button class="session-item" type="button" role="listitem"><span>Confirmation — file upload</span></button>
+          <button class="session-ctx-btn" type="button" aria-label="Session options" tabindex="-1">
+            <svg width="12" height="12" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><circle cx="4" cy="10" r="1.75"/><circle cx="10" cy="10" r="1.75"/><circle cx="16" cy="10" r="1.75"/></svg>
+          </button>
+          <div class="session-ctx-menu hidden" role="menu">
+            <button class="ctx-item ctx-item--default" role="menuitem" type="button">Rename</button>
+            <button class="ctx-item ctx-item--danger" role="menuitem" type="button">Delete</button>
+          </div>
+        </div>
+        <div class="session-wrap">
+          <button class="session-item" type="button" role="listitem"><span>Button copy — SingPass login</span></button>
+          <button class="session-ctx-btn" type="button" aria-label="Session options" tabindex="-1">
+            <svg width="12" height="12" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><circle cx="4" cy="10" r="1.75"/><circle cx="10" cy="10" r="1.75"/><circle cx="16" cy="10" r="1.75"/></svg>
+          </button>
+          <div class="session-ctx-menu hidden" role="menu">
+            <button class="ctx-item ctx-item--default" role="menuitem" type="button">Rename</button>
+            <button class="ctx-item ctx-item--danger" role="menuitem" type="button">Delete</button>
+          </div>
+        </div>
+        <div class="session-wrap">
+          <button class="session-item" type="button" role="listitem"><span>Helper text — NRIC field</span></button>
+          <button class="session-ctx-btn" type="button" aria-label="Session options" tabindex="-1">
+            <svg width="12" height="12" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><circle cx="4" cy="10" r="1.75"/><circle cx="10" cy="10" r="1.75"/><circle cx="16" cy="10" r="1.75"/></svg>
+          </button>
+          <div class="session-ctx-menu hidden" role="menu">
+            <button class="ctx-item ctx-item--default" role="menuitem" type="button">Rename</button>
+            <button class="ctx-item ctx-item--danger" role="menuitem" type="button">Delete</button>
+          </div>
+        </div>
+        <div class="session-wrap">
+          <button class="session-item" type="button" role="listitem"><span>Push notification — claim expiry</span></button>
+          <button class="session-ctx-btn" type="button" aria-label="Session options" tabindex="-1">
+            <svg width="12" height="12" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><circle cx="4" cy="10" r="1.75"/><circle cx="10" cy="10" r="1.75"/><circle cx="16" cy="10" r="1.75"/></svg>
+          </button>
+          <div class="session-ctx-menu hidden" role="menu">
+            <button class="ctx-item ctx-item--default" role="menuitem" type="button">Rename</button>
+            <button class="ctx-item ctx-item--danger" role="menuitem" type="button">Delete</button>
+          </div>
+        </div>
+        <div class="session-wrap">
+          <button class="session-item" type="button" role="listitem"><span>Page title — CPF withdrawal</span></button>
+          <button class="session-ctx-btn" type="button" aria-label="Session options" tabindex="-1">
+            <svg width="12" height="12" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><circle cx="4" cy="10" r="1.75"/><circle cx="10" cy="10" r="1.75"/><circle cx="16" cy="10" r="1.75"/></svg>
+          </button>
+          <div class="session-ctx-menu hidden" role="menu">
+            <button class="ctx-item ctx-item--default" role="menuitem" type="button">Rename</button>
+            <button class="ctx-item ctx-item--danger" role="menuitem" type="button">Delete</button>
+          </div>
+        </div>
+        <div class="session-wrap">
+          <button class="session-item" type="button" role="listitem"><span>Error message — file size exceeded</span></button>
+          <button class="session-ctx-btn" type="button" aria-label="Session options" tabindex="-1">
+            <svg width="12" height="12" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><circle cx="4" cy="10" r="1.75"/><circle cx="10" cy="10" r="1.75"/><circle cx="16" cy="10" r="1.75"/></svg>
+          </button>
+          <div class="session-ctx-menu hidden" role="menu">
+            <button class="ctx-item ctx-item--default" role="menuitem" type="button">Rename</button>
+            <button class="ctx-item ctx-item--danger" role="menuitem" type="button">Delete</button>
+          </div>
+        </div>
+        <div class="session-wrap">
+          <button class="session-item" type="button" role="listitem"><span>Tooltip — document upload</span></button>
+          <button class="session-ctx-btn" type="button" aria-label="Session options" tabindex="-1">
+            <svg width="12" height="12" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><circle cx="4" cy="10" r="1.75"/><circle cx="10" cy="10" r="1.75"/><circle cx="16" cy="10" r="1.75"/></svg>
+          </button>
+          <div class="session-ctx-menu hidden" role="menu">
+            <button class="ctx-item ctx-item--default" role="menuitem" type="button">Rename</button>
+            <button class="ctx-item ctx-item--danger" role="menuitem" type="button">Delete</button>
+          </div>
+        </div>
+        <div class="session-wrap">
+          <button class="session-item" type="button" role="listitem"><span>Navigation label — My applications</span></button>
+          <button class="session-ctx-btn" type="button" aria-label="Session options" tabindex="-1">
+            <svg width="12" height="12" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><circle cx="4" cy="10" r="1.75"/><circle cx="10" cy="10" r="1.75"/><circle cx="16" cy="10" r="1.75"/></svg>
+          </button>
+          <div class="session-ctx-menu hidden" role="menu">
+            <button class="ctx-item ctx-item--default" role="menuitem" type="button">Rename</button>
+            <button class="ctx-item ctx-item--danger" role="menuitem" type="button">Delete</button>
+          </div>
+        </div>
+        <div class="session-wrap">
+          <button class="session-item" type="button" role="listitem"><span>Form label — postal code</span></button>
+          <button class="session-ctx-btn" type="button" aria-label="Session options" tabindex="-1">
+            <svg width="12" height="12" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><circle cx="4" cy="10" r="1.75"/><circle cx="10" cy="10" r="1.75"/><circle cx="16" cy="10" r="1.75"/></svg>
+          </button>
+          <div class="session-ctx-menu hidden" role="menu">
+            <button class="ctx-item ctx-item--default" role="menuitem" type="button">Rename</button>
+            <button class="ctx-item ctx-item--danger" role="menuitem" type="button">Delete</button>
+          </div>
+        </div>
+        <div class="session-wrap">
+          <button class="session-item" type="button" role="listitem"><span>Button copy — Submit claim</span></button>
+          <button class="session-ctx-btn" type="button" aria-label="Session options" tabindex="-1">
+            <svg width="12" height="12" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><circle cx="4" cy="10" r="1.75"/><circle cx="10" cy="10" r="1.75"/><circle cx="16" cy="10" r="1.75"/></svg>
+          </button>
+          <div class="session-ctx-menu hidden" role="menu">
+            <button class="ctx-item ctx-item--default" role="menuitem" type="button">Rename</button>
+            <button class="ctx-item ctx-item--danger" role="menuitem" type="button">Delete</button>
+          </div>
+        </div>
+        <div class="session-wrap">
+          <button class="session-item" type="button" role="listitem"><span>Alert text — session timeout</span></button>
+          <button class="session-ctx-btn" type="button" aria-label="Session options" tabindex="-1">
+            <svg width="12" height="12" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><circle cx="4" cy="10" r="1.75"/><circle cx="10" cy="10" r="1.75"/><circle cx="16" cy="10" r="1.75"/></svg>
+          </button>
+          <div class="session-ctx-menu hidden" role="menu">
+            <button class="ctx-item ctx-item--default" role="menuitem" type="button">Rename</button>
+            <button class="ctx-item ctx-item--danger" role="menuitem" type="button">Delete</button>
+          </div>
+        </div>
+        <div class="session-wrap">
+          <button class="session-item" type="button" role="listitem"><span>Error message — NRIC mismatch</span></button>
+          <button class="session-ctx-btn" type="button" aria-label="Session options" tabindex="-1">
+            <svg width="12" height="12" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><circle cx="4" cy="10" r="1.75"/><circle cx="10" cy="10" r="1.75"/><circle cx="16" cy="10" r="1.75"/></svg>
+          </button>
+          <div class="session-ctx-menu hidden" role="menu">
+            <button class="ctx-item ctx-item--default" role="menuitem" type="button">Rename</button>
+            <button class="ctx-item ctx-item--danger" role="menuitem" type="button">Delete</button>
+          </div>
+        </div>
+        <div class="session-wrap">
+          <button class="session-item" type="button" role="listitem"><span>Page title — MyInfo data</span></button>
+          <button class="session-ctx-btn" type="button" aria-label="Session options" tabindex="-1">
+            <svg width="12" height="12" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><circle cx="4" cy="10" r="1.75"/><circle cx="10" cy="10" r="1.75"/><circle cx="16" cy="10" r="1.75"/></svg>
+          </button>
+          <div class="session-ctx-menu hidden" role="menu">
+            <button class="ctx-item ctx-item--default" role="menuitem" type="button">Rename</button>
+            <button class="ctx-item ctx-item--danger" role="menuitem" type="button">Delete</button>
+          </div>
+        </div>
+        <div class="session-wrap">
+          <button class="session-item" type="button" role="listitem"><span>Form label — date of birth</span></button>
+          <button class="session-ctx-btn" type="button" aria-label="Session options" tabindex="-1">
+            <svg width="12" height="12" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><circle cx="4" cy="10" r="1.75"/><circle cx="10" cy="10" r="1.75"/><circle cx="16" cy="10" r="1.75"/></svg>
+          </button>
+          <div class="session-ctx-menu hidden" role="menu">
+            <button class="ctx-item ctx-item--default" role="menuitem" type="button">Rename</button>
+            <button class="ctx-item ctx-item--danger" role="menuitem" type="button">Delete</button>
+          </div>
+        </div>
+        <div class="session-wrap">
+          <button class="session-item" type="button" role="listitem"><span>Label — income declaration</span></button>
+          <button class="session-ctx-btn" type="button" aria-label="Session options" tabindex="-1">
+            <svg width="12" height="12" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><circle cx="4" cy="10" r="1.75"/><circle cx="10" cy="10" r="1.75"/><circle cx="16" cy="10" r="1.75"/></svg>
+          </button>
+          <div class="session-ctx-menu hidden" role="menu">
+            <button class="ctx-item ctx-item--default" role="menuitem" type="button">Rename</button>
+            <button class="ctx-item ctx-item--danger" role="menuitem" type="button">Delete</button>
+          </div>
+        </div>
+        <div class="session-wrap">
+          <button class="session-item" type="button" role="listitem"><span>Error message — OTP expired</span></button>
+          <button class="session-ctx-btn" type="button" aria-label="Session options" tabindex="-1">
+            <svg width="12" height="12" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><circle cx="4" cy="10" r="1.75"/><circle cx="10" cy="10" r="1.75"/><circle cx="16" cy="10" r="1.75"/></svg>
+          </button>
+          <div class="session-ctx-menu hidden" role="menu">
+            <button class="ctx-item ctx-item--default" role="menuitem" type="button">Rename</button>
+            <button class="ctx-item ctx-item--danger" role="menuitem" type="button">Delete</button>
+          </div>
+        </div>
+        <div class="session-wrap">
+          <button class="session-item" type="button" role="listitem"><span>Button copy — Download PDF</span></button>
+          <button class="session-ctx-btn" type="button" aria-label="Session options" tabindex="-1">
+            <svg width="12" height="12" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><circle cx="4" cy="10" r="1.75"/><circle cx="10" cy="10" r="1.75"/><circle cx="16" cy="10" r="1.75"/></svg>
+          </button>
+          <div class="session-ctx-menu hidden" role="menu">
+            <button class="ctx-item ctx-item--default" role="menuitem" type="button">Rename</button>
+            <button class="ctx-item ctx-item--danger" role="menuitem" type="button">Delete</button>
+          </div>
+        </div>
+      </div>
+
+      <button class="session-view-all" id="sessionViewAll" type="button" hidden>
+        View all
+        <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>
+      </button>
+
+    </aside>
+
+    <!-- ═══════════ EDITOR ═══════════ -->
+    <div class="editor" id="editorArea">
+
+      <!-- Right panel -->
+      <section class="rp" id="rp" aria-label="Copy suggestion" aria-live="polite">
+
+        <!-- ── Empty: Ask Lorem ── -->
+        <div class="state-empty" id="st-empty">
+          <div class="ask-card">
+            <div class="ask-card__hd">
+              <svg class="ask-card__logo" width="44" height="44" viewBox="0 0 44 44" aria-label="Lorem" role="img">
+                <rect width="44" height="44" rx="12" fill="#1A8C6F"/>
+                <rect x="9" y="10" width="18" height="14" rx="3" fill="white"/>
+                <path d="M11 24 L9 30 L15 28Z" fill="white"/>
+                <circle cx="15" cy="17" r="1.5" fill="#1A8C6F"/>
+                <circle cx="18" cy="17" r="1.5" fill="#1A8C6F"/>
+                <circle cx="21" cy="17" r="1.5" fill="#1A8C6F"/>
+              </svg>
+              <h2 class="ask-card__title">Ask <em>Lorem</em></h2>
+              <p class="ask-card__sub">Paste a draft or describe what you need — Lorem checks approved patterns first.</p>
+            </div>
+            <textarea
+              class="ask-ta"
+              id="ask-input"
+              name="ask-input"
+              placeholder="e.g. Review this error message: File upload failed. Please try again."
+              aria-label="Describe what you need or paste your copy"
+            ></textarea>
+            <div class="ask-chips">
+              <span class="ask-chips__label">Try</span>
+<button class="chip" type="button" data-prompt="Make this clearer: ">Make this clearer</button>
+              <button class="chip" type="button" data-prompt="Shorten, more concise: ">Shorten, more concise</button>
+              <button class="chip" type="button" data-prompt="Suggest alternatives: ">Suggest alternatives</button>
+            </div>
+            <button class="btn-ask" id="askBtn" type="button">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M22 2 11 13"/><path d="M22 2 15 22 11 13 2 9l20-7z"/>
+              </svg>
+              Get suggestions
+            </button>
+          </div>
+        </div>
+
+        <!-- ── Loading ── -->
+        <div class="state-loading" id="st-loading" hidden aria-busy="true" aria-label="Generating suggestion">
+          <div class="sk sk--badge"></div>
+          <div class="sk sk--block"></div>
+          <div class="sk-row">
+            <div class="sk sk--short"></div>
+            <div class="sk sk--action"></div>
+          </div>
+          <div style="height:1px;background:var(--border-default);margin-top:6px;"></div>
+          <div class="sk sk--short"></div>
+          <div class="sk sk--short" style="width:160px;"></div>
+        </div>
+
+        <!-- ── Response: chat thread + rationale detail panel ── -->
+        <div class="state-response animate-in" id="st-response" hidden>
+
+          <!-- Thread: messages + follow-up input -->
+          <div class="resp-thread">
+
+            <!-- Conversation header -->
+            <div class="resp-header">
+              <div class="resp-header__info">
+                <h1 class="resp-header__title" id="chatTitle">CPF contribution label</h1>
+                <span class="resp-header__meta">Today</span>
+              </div>
+              <div class="resp-search-wrap" role="search" aria-label="Search this conversation">
+                <svg class="resp-search-icon" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <circle cx="8.5" cy="8.5" r="5.5"/><line x1="13.5" y1="13.5" x2="17" y2="17"/>
+                </svg>
+                <input class="resp-search-input" id="chatSearch" type="search" name="chat-search" placeholder="Search" aria-label="Search messages" autocomplete="off">
+              </div>
+              <span class="resp-search-count" id="chatSearchCount" aria-live="polite"></span>
+              <button class="btn-asst-secondary" id="vhistBtn" type="button" style="flex:none;height:30px;padding:0 10px;font-size:.8125rem;" aria-expanded="false" aria-controls="respDetail">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="9" y1="3" x2="9" y2="21"/><line x1="15" y1="3" x2="15" y2="21"/></svg>
+                Version history
+              </button>
+            </div>
+
+            <div class="resp-messages" id="respMessages">
+
+              <!-- User message -->
+              <div class="msg-user">
+                <div class="msg-user__bubble" id="userBubble">
+                  Label for annual CPF contribution amount field
+                </div>
+              </div>
+
+              <!-- Assistant card -->
+              <div class="msg-assistant">
+                <div class="bot-card">
+                  <span class="source-tag source-tag--adapted" role="status" aria-label="Source: Adapted from library">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="7" y1="17" x2="17" y2="7"/><polyline points="7 7 17 7 17 17"/></svg>
+                    Adapted from library
+                  </span>
+
+                  <div class="suggested-copy-box">Annual CPF contribution</div>
+
+                  <div class="card-meta-row">
+                    <span class="char-count">23 characters</span>
+                    <div class="card-inline-actions">
+                      <button class="icon-btn icon-btn-secondary btn-rationale" type="button" data-version="v12" aria-expanded="false" aria-controls="respDetail">Rationale ›</button>
+                      <button class="icon-btn icon-btn-primary btn-copy" type="button" aria-label="Copy to clipboard">
+                        <span class="copy-default" style="display:flex;align-items:center;gap:5px;">
+                          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+                          Copy
+                        </span>
+                        <span class="copy-done" style="display:none;align-items:center;gap:5px;">
+                          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>
+                          Copied
+                        </span>
+                      </button>
+                    </div>
+                  </div>
+
+                  <div class="card-divider"></div>
+
+                  <div class="quick-actions">
+                    <span class="quick-label">Quick replies</span>
+                    <button class="chip" type="button" data-action="clearer" title="Rewrite the copy to be easier to understand">Clearer</button>
+                    <button class="chip" type="button" data-action="shorter" title="Make the copy shorter and more concise without removing any information">Shorten</button>
+                    <button class="chip" type="button" data-action="alternatives" title="Get 2 more alternatives based on the information provided so far">Alternatives</button>
+                  </div>
+                </div>
+              </div>
+
+            </div><!-- /resp-messages -->
+
+            <!-- Follow-up input -->
+            <div class="resp-followup">
+              <textarea
+                class="followup-ta"
+                id="followupTa"
+                name="followup-message"
+                rows="1"
+                placeholder="Ask for more tweaks. For example: Make it shorter, use a different tone."
+                aria-label="Follow-up message"
+              ></textarea>
+              <button class="btn-send" id="sendBtn" type="button">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <path d="M22 2 11 13"/><path d="M22 2 15 22 11 13 2 9l20-7z"/>
+                </svg>
+                Send
+              </button>
+            </div>
+
+            <button class="scroll-to-bottom" id="scrollToBottom" type="button" aria-label="Jump to latest message">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg>
+              Latest
+            </button>
+          </div><!-- /resp-thread -->
+
+          <!-- ── Version history panel ── -->
+          <div class="resp-detail" id="respDetail" role="dialog" aria-modal="true" aria-label="Version history">
+            <div class="resp-detail-inner">
+
+              <div class="detail-hd">
+                <div class="detail-hd__top">
+                  <span class="detail-hd__title">Version history</span>
+                  <button class="detail-close-btn" id="closeDetailBtn" type="button" aria-label="Close version history">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                  </button>
+                </div>
+                <div class="detail-tabs-wrap">
+                  <button class="detail-tabs-arrow detail-tabs-arrow--left is-hidden" id="tabArrowLeft" type="button" aria-label="Scroll tabs left">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="15 18 9 12 15 6"/></svg>
+                  </button>
+                  <div class="detail-tabs" role="tablist" aria-label="Versions" id="detailTabs">
+                    <button class="detail-tab is-active" id="tab-v12" role="tab" type="button" aria-selected="true" aria-controls="panel-v3" data-tab="v12">V12 <span class="detail-tab__badge">Latest</span></button>
+                    <button class="detail-tab" id="tab-v11" role="tab" type="button" aria-selected="false" aria-controls="panel-v3" data-tab="v11">V11</button>
+                    <button class="detail-tab" id="tab-v10" role="tab" type="button" aria-selected="false" aria-controls="panel-v3" data-tab="v10">V10</button>
+                    <button class="detail-tab" id="tab-v9" role="tab" type="button" aria-selected="false" aria-controls="panel-v3" data-tab="v9">V9</button>
+                    <button class="detail-tab" id="tab-v8" role="tab" type="button" aria-selected="false" aria-controls="panel-v3" data-tab="v8">V8</button>
+                    <button class="detail-tab" id="tab-v7" role="tab" type="button" aria-selected="false" aria-controls="panel-v3" data-tab="v7">V7</button>
+                    <button class="detail-tab" id="tab-v6" role="tab" type="button" aria-selected="false" aria-controls="panel-v3" data-tab="v6">V6</button>
+                    <button class="detail-tab" id="tab-v5" role="tab" type="button" aria-selected="false" aria-controls="panel-v3" data-tab="v5">V5</button>
+                    <button class="detail-tab" id="tab-v4" role="tab" type="button" aria-selected="false" aria-controls="panel-v3" data-tab="v4">V4</button>
+                    <div class="detail-tab-group" role="presentation">
+                      <button class="detail-tab" id="tab-v3" role="tab" type="button" aria-selected="false" aria-controls="panel-v3" data-tab="v3">V3</button>
+                      <button class="detail-tab" id="tab-v2" role="tab" type="button" aria-selected="false" aria-controls="panel-v2" data-tab="v2">V2</button>
+                    </div>
+                    <button class="detail-tab" id="tab-v1" role="tab" type="button" aria-selected="false" aria-controls="panel-v1" data-tab="v1">V1</button>
+                  </div>
+                  <button class="detail-tabs-arrow detail-tabs-arrow--right" id="tabArrowRight" type="button" aria-label="Scroll tabs right">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>
+                  </button>
+                </div>
+              </div>
+
+              <!-- V3 panel — Alternative 1 of 2 -->
+              <div class="detail-body" id="panel-v3" role="tabpanel" aria-labelledby="tab-v12">
+                <div class="detail-section">
+                  <span class="detail-alt-badge">Alternative 1 of 2</span>
+                  <div class="detail-version-meta">
+                    <span class="source-label sl--ai" aria-label="Source: AI-generated">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                      AI-generated
+                    </span>
+                    <span class="detail-confidence">Medium confidence</span>
+                  </div>
+                </div>
+                <div class="detail-section">
+                  <p class="detail-section__label">Suggested copy</p>
+                  <div class="detail-copy-preview">Yearly CPF contribution amount</div>
+                  <div class="detail-copy-actions">
+                    <p class="copy-count">30 characters</p>
+                    <button class="lib-copy-btn" type="button" aria-label="Copy to clipboard"><span class="copy-default" style="display:flex;align-items:center;gap:5px;"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>Copy text</span><span class="copy-done" style="display:none;align-items:center;gap:5px;"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>Copied</span></button>
+                  </div>
+                  <button class="btn-show-in-chat" type="button">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+                    Show in chat
+                  </button>
+                </div>
+                <div class="detail-divider"></div>
+                <div class="detail-collapsible is-open">
+                  <button class="detail-collapsible-btn" type="button" aria-expanded="true">
+                    <span class="detail-collapsible__label">Rationale</span>
+                    <svg class="detail-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg>
+                  </button>
+                  <div class="detail-collapsible__body">
+                    <p class="detail-text">"Yearly" as a natural-language synonym for "annual". Includes "amount" for maximum explicitness. Longer than the preferred form; most useful where the audience is unfamiliar with CPF context.</p>
+                  </div>
+                </div>
+                <div class="detail-divider"></div>
+                <div class="detail-collapsible is-open">
+                  <button class="detail-collapsible-btn" type="button" aria-expanded="true">
+                    <span class="detail-collapsible__label">Guidelines met</span>
+                    <svg class="detail-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg>
+                  </button>
+                  <div class="detail-collapsible__body">
+                    <ul class="guidelines" role="list">
+                      <li class="guideline"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>Sentence case</li>
+                      <li class="guideline"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>No abbreviations</li>
+                      <li class="guideline guideline--warn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="12" y1="5" x2="12" y2="12"/><circle cx="12" cy="16" r="1"/></svg>"Yearly" deviates from approved CPF terminology</li>
+                      <li class="guideline"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>No colon or full stop</li>
+                    </ul>
+                  </div>
+                </div>
+              </div><!-- /panel-v3 -->
+
+              <!-- V2 panel — Alternative 2 of 2 -->
+              <div class="detail-body" id="panel-v2" role="tabpanel" aria-labelledby="tab-v2" hidden>
+                <div class="detail-section">
+                  <span class="detail-alt-badge">Alternative 2 of 2</span>
+                  <div class="detail-version-meta">
+                    <span class="source-label sl--ai" aria-label="Source: AI-generated">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                      AI-generated
+                    </span>
+                    <span class="detail-confidence">Medium confidence</span>
+                  </div>
+                </div>
+                <div class="detail-section">
+                  <p class="detail-section__label">Suggested copy</p>
+                  <div class="detail-copy-preview detail-copy-preview--inactive">CPF annual contribution</div>
+                  <div class="detail-copy-actions">
+                    <p class="copy-count">23 characters</p>
+                    <button class="lib-copy-btn" type="button" aria-label="Copy to clipboard"><span class="copy-default" style="display:flex;align-items:center;gap:5px;"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>Copy text</span><span class="copy-done" style="display:none;align-items:center;gap:5px;"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>Copied</span></button>
+                  </div>
+                  <button class="btn-show-in-chat" type="button">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+                    Show in chat
+                  </button>
+                </div>
+                <div class="detail-divider"></div>
+                <div class="detail-collapsible is-open">
+                  <button class="detail-collapsible-btn" type="button" aria-expanded="true">
+                    <span class="detail-collapsible__label">Rationale</span>
+                    <svg class="detail-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg>
+                  </button>
+                  <div class="detail-collapsible__body">
+                    <p class="detail-text">"CPF" leads rather than modifying "contribution". Mirrors usage in CPF member communications but inverts the approved library noun-phrase order (modifier-then-noun).</p>
+                  </div>
+                </div>
+                <div class="detail-divider"></div>
+                <div class="detail-collapsible is-open">
+                  <button class="detail-collapsible-btn" type="button" aria-expanded="true">
+                    <span class="detail-collapsible__label">Guidelines met</span>
+                    <svg class="detail-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg>
+                  </button>
+                  <div class="detail-collapsible__body">
+                    <ul class="guidelines" role="list">
+                      <li class="guideline"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>Sentence case</li>
+                      <li class="guideline"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>No abbreviations</li>
+                      <li class="guideline"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>Plain language (Flesch-Kincaid ≤8)</li>
+                      <li class="guideline guideline--warn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="12" y1="5" x2="12" y2="12"/><circle cx="12" cy="16" r="1"/></svg>Noun order inverted from library convention</li>
+                      <li class="guideline"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>No colon or full stop</li>
+                    </ul>
+                  </div>
+                </div>
+              </div><!-- /panel-v2 -->
+
+              <!-- V1 panel -->
+              <div class="detail-body" id="panel-v1" role="tabpanel" aria-labelledby="tab-v1" hidden>
+                <div class="detail-section">
+                  <div class="detail-version-meta">
+                    <span class="source-label sl--ai" aria-label="Source: AI-generated">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                      AI-generated
+                    </span>
+                    <span class="detail-confidence">Medium confidence</span>
+                  </div>
+                </div>
+                <div class="detail-section">
+                  <p class="detail-section__label">Suggested copy</p>
+                  <div class="detail-copy-preview detail-copy-preview--inactive">Yearly CPF contribution</div>
+                  <div class="detail-copy-actions">
+                    <p class="copy-count">23 characters</p>
+                    <button class="lib-copy-btn" type="button" aria-label="Copy to clipboard"><span class="copy-default" style="display:flex;align-items:center;gap:5px;"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>Copy text</span><span class="copy-done" style="display:none;align-items:center;gap:5px;"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>Copied</span></button>
+                  </div>
+                  <button class="btn-show-in-chat" type="button">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+                    Show in chat
+                  </button>
+                </div>
+                <div class="detail-divider"></div>
+                <div class="detail-collapsible is-open">
+                  <button class="detail-collapsible-btn" type="button" aria-expanded="true">
+                    <span class="detail-collapsible__label">Rationale</span>
+                    <svg class="detail-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg>
+                  </button>
+                  <div class="detail-collapsible__body">
+                    <p class="detail-text">First draft used "Yearly" as the temporal modifier. "Annual" is preferred in official CPF documentation and is the term used in the approved library entry. Marked medium confidence as the temporal scope is correct but the terminology deviates from the standard.</p>
+                  </div>
+                </div>
+                <div class="detail-divider"></div>
+                <div class="detail-collapsible is-open">
+                  <button class="detail-collapsible-btn" type="button" aria-expanded="true">
+                    <span class="detail-collapsible__label">Guidelines met</span>
+                    <svg class="detail-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg>
+                  </button>
+                  <div class="detail-collapsible__body">
+                    <ul class="guidelines" role="list">
+                      <li class="guideline"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>Sentence case</li>
+                      <li class="guideline"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>Plain language</li>
+                      <li class="guideline guideline--fail"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>"Yearly" deviates from approved CPF terminology</li>
+                      <li class="guideline guideline--fail"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>Not aligned with library entry</li>
+                    </ul>
+                  </div>
+                </div>
+              </div><!-- /panel-v1 -->
+
+            </div><!-- /resp-detail-inner -->
+          </div><!-- /resp-detail -->
+
+        </div><!-- /state-response -->
+
+        <!-- ── Error ── -->
+        <div class="state-error" id="st-error" hidden>
+          <div class="error-card" role="alert">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
+            </svg>
+            <div>
+              <p class="error-card__title">Could not generate a suggestion</p>
+              <p class="error-card__body">Describe what you need, then try again.</p>
+            </div>
+          </div>
+        </div>
+
+      </section>
+    </div>
+  </div>
+</div><!-- /screen-assistant -->
+
+
+<!-- ═══════════ SCREEN: LIBRARY ═══════════ -->
+<div id="screen-library" hidden>
+  <div class="app">
+
+    <header class="app-header">
+      <div class="header-logo">
+        <svg class="header-logo__mark" width="22" height="22" viewBox="0 0 24 24" aria-hidden="true">
+          <rect x="2" y="2" width="17" height="13" rx="3" fill="oklch(56% 0.17 185)"/>
+          <path d="M5 15 L3 20 L8 18.5Z" fill="oklch(56% 0.17 185)"/>
+          <circle cx="6.5"  cy="8.5" r="1.25" fill="white"/>
+          <circle cx="10.5" cy="8.5" r="1.25" fill="white"/>
+          <circle cx="14.5" cy="8.5" r="1.25" fill="white"/>
+        </svg>
+        <div class="header-logo__text">
+          <span class="header-logo__wordmark">Lorem</span>
+          <span class="header-logo__subtitle">UX Writing Assistant</span>
+        </div>
+      </div>
+      <button class="hamburger-btn" id="hamburger-lib" type="button" aria-label="Open menu" aria-expanded="false" aria-controls="sidebar-lib">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/>
+        </svg>
+      </button>
+      <div class="header-right">
+        <a class="header-nav-link changelog-link" href="#" id="changelog-link-lib">Changelog</a>
+        <a class="header-nav-link" href="https://form.gov.sg/6a1537f8b7792d70c10a0d30" target="_blank" rel="noopener noreferrer">Feedback</a>
+      </div>
+    </header>
+
+    <div class="app-body">
+
+      <!-- Sidebar overlay (mobile) -->
+      <div class="sidebar-overlay" id="sidebar-overlay-lib" aria-hidden="true"></div>
+
+      <!-- Sidebar -->
+      <aside class="sidebar" id="sidebar-lib" aria-label="Navigation">
+        <nav class="sidebar-nav" aria-label="Main">
+          <div class="sidebar-section-label">Workspace</div>
+          <a class="nav-item" href="#" id="lib-nav-assistant">
+            <svg class="nav-item__icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/>
+            </svg>
+            Assistant
+          </a>
+          <a class="nav-item is-active" href="#" aria-current="page">
+            <svg class="nav-item__icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/>
+            </svg>
+            Library
+          </a>
+        </nav>
+        <div class="sidebar-divider"></div>
+        <div class="sidebar-section-label">Assistant history</div>
+
+        <div class="sessions" role="list">
+          <div class="session-wrap">
+            <button class="session-item" type="button" role="listitem"><span>CPF contribution label</span></button>
+          </div>
+          <div class="session-wrap">
+            <button class="session-item" type="button" role="listitem"><span>Error message — OTP timeout</span></button>
+          </div>
+          <div class="session-wrap">
+            <button class="session-item" type="button" role="listitem"><span>Confirmation — file upload</span></button>
+          </div>
+        </div>
+      </aside>
+
+      <!-- Library content -->
+      <div class="lib-content">
+
+        <!-- Page header -->
+        <div class="lib-page-header">
+          <div class="lib-page-header__info">
+            <h1 class="lib-page-header__title">Library</h1>
+            <p class="lib-page-header__sub">Approved copy patterns for Singapore government digital services.</p>
+          </div>
+          <div class="lib-search-wrap">
+            <svg class="lib-search-icon" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <circle cx="8.5" cy="8.5" r="5.5"/><line x1="13.5" y1="13.5" x2="17" y2="17"/>
+            </svg>
+            <input class="lib-search" type="search" id="lib-search-input" name="lib-search" placeholder="Search" aria-label="Search library entries" autocomplete="off">
+          </div>
+        </div>
+
+        <!-- Category tabs -->
+        <div class="lib-tabs" role="tablist" aria-label="Categories">
+          <button class="lib-tab is-active" data-lib-tab="all"     role="tab" aria-selected="true"  type="button">All</button>
+          <button class="lib-tab"           data-lib-tab="forms"   role="tab" aria-selected="false" type="button">Forms</button>
+          <button class="lib-tab"           data-lib-tab="modals"  role="tab" aria-selected="false" type="button">Modals</button>
+          <button class="lib-tab"           data-lib-tab="buttons" role="tab" aria-selected="false" type="button">Buttons</button>
+          <button class="lib-tab"           data-lib-tab="errors"  role="tab" aria-selected="false" type="button">Errors</button>
+        </div>
+
+        <!-- List + detail -->
+        <div class="lib-main">
+
+          <div class="lib-list-col">
+            <div class="lib-list-hd">
+              <p class="lib-count" id="lib-count">— entries</p>
+            </div>
+            <div class="lib-list-scroll" id="lib-list" role="listbox" aria-label="Library entries"></div>
+          </div>
+
+          <div class="lib-detail-pane" id="lib-detail"></div>
+
+        </div>
+      </div><!-- /lib-content -->
+
+    </div><!-- /app-body -->
+  </div><!-- /app -->
+</div><!-- /screen-library -->
+
+<!-- ═══════════ CHANGELOG SCREEN ═══════════ -->
+<div id="screen-changelog" hidden>
+  <div class="app">
+
+    <header class="app-header">
+      <div class="header-logo">
+        <svg class="header-logo__mark" width="22" height="22" viewBox="0 0 24 24" aria-hidden="true">
+          <rect x="2" y="2" width="17" height="13" rx="3" fill="oklch(56% 0.17 185)"/>
+          <path d="M5 15 L3 20 L8 18.5Z" fill="oklch(56% 0.17 185)"/>
+          <circle cx="6.5"  cy="8.5" r="1.25" fill="white"/>
+          <circle cx="10.5" cy="8.5" r="1.25" fill="white"/>
+          <circle cx="14.5" cy="8.5" r="1.25" fill="white"/>
+        </svg>
+        <div class="header-logo__text">
+          <span class="header-logo__wordmark">Lorem</span>
+          <span class="header-logo__subtitle">UX Writing Assistant</span>
+        </div>
+      </div>
+      <button class="hamburger-btn" id="hamburger-cl" type="button" aria-label="Open menu" aria-expanded="false" aria-controls="sidebar-cl">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/>
+        </svg>
+      </button>
+      <div class="header-right">
+        <a class="header-nav-link is-active" href="#" aria-current="page">Changelog</a>
+        <a class="header-nav-link" href="https://form.gov.sg/6a1537f8b7792d70c10a0d30" target="_blank" rel="noopener noreferrer">Feedback</a>
+      </div>
+    </header>
+
+    <div class="app-body">
+
+      <!-- Sidebar overlay (mobile) -->
+      <div class="sidebar-overlay" id="sidebar-overlay-cl" aria-hidden="true"></div>
+
+      <!-- Sidebar -->
+      <aside class="sidebar" id="sidebar-cl" aria-label="Navigation">
+        <nav class="sidebar-nav" aria-label="Main">
+          <div class="sidebar-section-label">Workspace</div>
+          <a class="nav-item" href="#" id="cl-nav-assistant">
+            <svg class="nav-item__icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/>
+            </svg>
+            Assistant
+          </a>
+          <a class="nav-item" href="#" id="cl-nav-library">
+            <svg class="nav-item__icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/>
+            </svg>
+            Library
+          </a>
+        </nav>
+        <div class="sidebar-divider"></div>
+        <div class="sidebar-section-label">Assistant history</div>
+
+        <div class="sessions" role="list">
+          <div class="session-wrap">
+            <button class="session-item" type="button" role="listitem"><span>CPF contribution label</span></button>
+          </div>
+          <div class="session-wrap">
+            <button class="session-item" type="button" role="listitem"><span>Error message — OTP timeout</span></button>
+          </div>
+          <div class="session-wrap">
+            <button class="session-item" type="button" role="listitem"><span>Confirmation — file upload</span></button>
+          </div>
+        </div>
+      </aside>
+
+      <!-- Changelog content -->
+      <div class="cl-content">
+        <div class="cl-inner">
+
+          <div class="cl-page-hd">
+            <h1 class="cl-page-title">Changelog &amp; Roadmap</h1>
+            <p class="cl-page-sub">What&#8217;s shipped, what&#8217;s coming, and what you&#8217;ve asked for.</p>
+          </div>
+
+          <div class="cl-tabs" role="tablist" aria-label="Changelog sections">
+            <button class="cl-tab is-active" data-cl-tab="releases" role="tab" aria-selected="true"  type="button">Releases</button>
+            <button class="cl-tab"           data-cl-tab="requests" role="tab" aria-selected="false" type="button">Feature requests</button>
+            <button class="cl-tab"           data-cl-tab="roadmap"  role="tab" aria-selected="false" type="button">Roadmap</button>
+          </div>
+
+          <div id="cl-panel-releases" class="cl-panel is-active" role="tabpanel"></div>
+          <div id="cl-panel-requests" class="cl-panel"           role="tabpanel"></div>
+          <div id="cl-panel-roadmap"  class="cl-panel"           role="tabpanel"></div>
+
+        </div>
+      </div><!-- /cl-content -->
+
+    </div><!-- /app-body -->
+  </div><!-- /app -->
+</div><!-- /screen-changelog -->
+
+<!-- ═══════════ HISTORY SCREEN ═══════════ -->
+<div id="screen-history" hidden>
+  <div class="app">
+
+    <header class="app-header">
+      <div class="header-logo">
+        <svg class="header-logo__mark" width="22" height="22" viewBox="0 0 24 24" aria-hidden="true">
+          <rect x="2" y="2" width="17" height="13" rx="3" fill="oklch(56% 0.17 185)"/>
+          <path d="M5 15 L3 20 L8 18.5Z" fill="oklch(56% 0.17 185)"/>
+          <circle cx="6.5"  cy="8.5" r="1.25" fill="white"/>
+          <circle cx="10.5" cy="8.5" r="1.25" fill="white"/>
+          <circle cx="14.5" cy="8.5" r="1.25" fill="white"/>
+        </svg>
+        <div class="header-logo__text">
+          <span class="header-logo__wordmark">Lorem</span>
+          <span class="header-logo__subtitle">UX Writing Assistant</span>
+        </div>
+      </div>
+      <div class="header-right">
+        <a class="header-nav-link changelog-link" href="#">Changelog</a>
+        <a class="header-nav-link" href="https://form.gov.sg/6a1537f8b7792d70c10a0d30" target="_blank" rel="noopener noreferrer">Feedback</a>
+      </div>
+    </header>
+
+    <div class="app-body">
+
+      <!-- Sidebar -->
+      <aside class="sidebar" aria-label="Navigation">
+        <nav class="sidebar-nav" aria-label="Main">
+          <div class="sidebar-section-label">Workspace</div>
+          <a class="nav-item is-active" href="#" id="hist-nav-assistant" aria-current="page">
+            <svg class="nav-item__icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/>
+            </svg>
+            Assistant
+          </a>
+          <a class="nav-item" href="#" id="hist-nav-library">
+            <svg class="nav-item__icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/>
+            </svg>
+            Library
+          </a>
+        </nav>
+      </aside>
+
+      <!-- History content -->
+      <main class="hist-content" aria-label="Assistant history">
+
+        <div class="hist-header">
+          <div class="hist-header-top">
+            <h1 class="hist-title">Assistant history</h1>
+            <span class="hist-count" id="histCount"></span>
+          </div>
+          <div class="hist-search-row">
+            <input class="hist-search" id="histSearch" type="search" name="hist-search" placeholder="Search sessions" aria-label="Search sessions" autocomplete="off">
+          </div>
+        </div>
+
+        <div class="hist-list" id="histList" role="list"></div>
+
+        <nav class="hist-pagination" id="histPagination" aria-label="Pagination">
+          <span id="histRange"></span>
+          <div class="hist-pg-controls">
+            <button class="hist-pg-btn" id="histPrev" type="button" aria-label="Previous page" disabled>
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="15 18 9 12 15 6"/></svg>
+            </button>
+            <span id="histPageLabel"></span>
+            <button class="hist-pg-btn" id="histNext" type="button" aria-label="Next page">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>
+            </button>
+          </div>
+        </nav>
+
+      </main>
+
+    </div><!-- /app-body -->
+  </div><!-- /app -->
+</div><!-- /screen-history -->
+
+<script>
+  /* ── Long-chat demo state ──────────────────────────────────────── */
+  function loadLongChat() {
+    document.getElementById('screen-assistant').hidden = false;
+    document.getElementById('screen-library').hidden   = true;
+    document.getElementById('screen-changelog').hidden = true;
+    show('response');
+
+    document.getElementById('chatTitle').textContent = 'NRIC field — long session';
+
+    const msgs = document.getElementById('respMessages');
+    msgs.innerHTML = '';
+
+    const exchanges = [
+      {
+        user: 'Label for the NRIC input field',
+        bot:  { copy: 'NRIC / FIN number', chars: 16, tag: 'source-tag--lib', alt: 'Library match' }
+      },
+      {
+        user: 'Make it shorter',
+        bot:  { copy: 'NRIC number', chars: 11, tag: 'source-tag--ada', alt: 'Adapted' }
+      },
+      {
+        user: 'Hint text for the same field',
+        bot:  { copy: 'Enter the 9-character number on your NRIC or FIN card.', chars: 53, tag: 'source-tag--lib', alt: 'Library match' }
+      },
+      {
+        user: 'Give me an alternative hint',
+        bot:  { copy: 'Use the number printed on the front of your NRIC card.', chars: 53, tag: 'source-tag--ai', alt: 'AI-generated' }
+      },
+      {
+        user: 'Error message when the field is left blank',
+        bot:  { copy: 'Enter your NRIC or FIN number.', chars: 30, tag: 'source-tag--lib', alt: 'Library match' }
+      },
+      {
+        user: 'Error message for invalid format',
+        bot:  { copy: 'Enter a valid NRIC or FIN number, for example S1234567A.', chars: 56, tag: 'source-tag--lib', alt: 'Library match' }
+      },
+      {
+        user: 'Make the invalid-format error shorter',
+        bot:  { copy: 'Enter a valid NRIC or FIN number.', chars: 33, tag: 'source-tag--ada', alt: 'Adapted' }
+      },
+      {
+        user: 'Label for the date of birth field',
+        bot:  { copy: 'Date of birth', chars: 13, tag: 'source-tag--lib', alt: 'Library match' }
+      },
+    ];
+
+    exchanges.forEach(({ user, bot }) => {
+      const u = document.createElement('div');
+      u.className = 'msg-user';
+      u.innerHTML = `<div class="msg-user__bubble">${user}</div>`;
+      msgs.appendChild(u);
+
+      const b = document.createElement('div');
+      b.className = 'msg-assistant';
+      b.innerHTML = `
+        <div class="bot-card">
+          <div class="bot-card__copy">${bot.copy}</div>
+          <div class="bot-card__meta">
+            <span class="source-tag ${bot.tag}">${bot.alt}</span>
+            <span class="bot-card__chars">${bot.chars} chars</span>
+          </div>
+        </div>`;
+      msgs.appendChild(b);
+    });
+
+    // Scroll to top so the Latest button is visible
+    msgs.scrollTop = 0;
+    if (window._updateScrollBtn) window._updateScrollBtn();
+  }
+
+  /* ── Prototype nav ─────────────────────────────────────────────── */
+  function showProtoScreen(name) {
+    const onAssistant = name !== 'library' && name !== 'changelog' && name !== 'history';
+    document.getElementById('screen-assistant').hidden  = !onAssistant;
+    if (name === 'long-chat') document.getElementById('screen-assistant').hidden = false;
+    document.getElementById('screen-library').hidden    = name !== 'library';
+    document.getElementById('screen-changelog').hidden  = name !== 'changelog';
+    document.getElementById('screen-history').hidden    = name !== 'history';
+    document.querySelectorAll('.pnav-btn').forEach(btn => {
+      btn.classList.toggle('is-active', btn.dataset.screen === name || (name === 'ask' && btn.dataset.screen === 'ask'));
+    });
+    if (name === 'ask')            show('empty');
+    else if (name === 'assistant') show('response');
+    else if (name === 'library')   renderLibrary();
+    else if (name === 'changelog') renderChangelog();
+    else if (name === 'long-chat') loadLongChat();
+    else if (name === 'history')   renderHistory();
+  }
+
+  document.querySelectorAll('.pnav-btn').forEach(btn => {
+    btn.addEventListener('click', () => showProtoScreen(btn.dataset.screen));
+  });
+
+  document.querySelectorAll('.header-logo').forEach(el => {
+    el.addEventListener('click', () => showProtoScreen('ask'));
+  });
+
+  document.getElementById('lib-nav-assistant').addEventListener('click', e => {
+    e.preventDefault(); showProtoScreen('assistant');
+  });
+
+  document.getElementById('cl-nav-assistant').addEventListener('click', e => {
+    e.preventDefault(); showProtoScreen('assistant');
+  });
+
+  document.getElementById('cl-nav-library').addEventListener('click', e => {
+    e.preventDefault(); showProtoScreen('library');
+  });
+
+  document.querySelectorAll('.changelog-link').forEach(link => {
+    link.addEventListener('click', e => { e.preventDefault(); showProtoScreen('changelog'); });
+  });
+
+  /* ── Library data ───────────────────────────────────────────────── */
+  const LIB_ENTRIES = [
+    {id:'global.forms.email.label',elementType:'form-field-label',status:'approved',value:'Email address',field:'email'},
+    {id:'global.forms.email.hint',elementType:'form-field-hint',status:'draft',value:"We'll use this to send you important updates.",field:'email'},
+    {id:'global.forms.email.errors.required',elementType:'form-field-error',status:'approved',value:'Enter your email address.',field:'email',fieldRef:{id:'global.forms.email',label:'Email address'}},
+    {id:'global.forms.email.errors.invalid',elementType:'form-field-error',status:'approved',value:'Enter a valid email address, like name@example.com.',field:'email',fieldRef:{id:'global.forms.email',label:'Email address'}},
+    {id:'global.forms.email.errors.duplicate',elementType:'form-field-error',status:'draft',value:'An account with this email already exists.',field:'email',fieldRef:{id:'global.forms.email',label:'Email address'}},
+    {id:'global.forms.password.label',elementType:'form-field-label',status:'approved',value:'Password',field:'password'},
+    {id:'global.forms.password.hint',elementType:'form-field-hint',status:'draft',value:'Use 8 or more characters with a mix of letters, numbers, and symbols.',field:'password'},
+    {id:'global.forms.password.errors.required',elementType:'form-field-error',status:'approved',value:'Enter a password.',field:'password',fieldRef:{id:'global.forms.password',label:'Password'}},
+    {id:'global.forms.password.errors.tooShort',elementType:'form-field-error',status:'approved',value:'Password must be at least 8 characters.',field:'password',fieldRef:{id:'global.forms.password',label:'Password'}},
+    {id:'global.forms.password.errors.tooWeak',elementType:'form-field-error',status:'draft',value:'Include numbers and symbols to strengthen your password.',field:'password',fieldRef:{id:'global.forms.password',label:'Password'}},
+    {id:'global.forms.confirmPassword.label',elementType:'form-field-label',status:'approved',value:'Confirm password',field:'confirmPassword'},
+    {id:'global.forms.confirmPassword.errors.mismatch',elementType:'form-field-error',status:'approved',value:'Passwords do not match.',field:'confirmPassword',fieldRef:{id:'global.forms.confirmPassword',label:'Confirm password'}},
+    {id:'global.forms.firstName.label',elementType:'form-field-label',status:'approved',value:'First name',field:'firstName'},
+    {id:'global.forms.firstName.errors.required',elementType:'form-field-error',status:'approved',value:'Enter your first name.',field:'firstName',fieldRef:{id:'global.forms.firstName',label:'First name'}},
+    {id:'global.forms.lastName.label',elementType:'form-field-label',status:'approved',value:'Last name',field:'lastName'},
+    {id:'global.forms.lastName.errors.required',elementType:'form-field-error',status:'approved',value:'Enter your last name.',field:'lastName',fieldRef:{id:'global.forms.lastName',label:'Last name'}},
+    {id:'global.forms.phone.label',elementType:'form-field-label',status:'approved',value:'Phone number',field:'phone'},
+    {id:'global.forms.phone.hint',elementType:'form-field-hint',status:'draft',value:'Include your country code, e.g. +65 9123 4567.',field:'phone'},
+    {id:'global.forms.phone.errors.required',elementType:'form-field-error',status:'approved',value:'Enter your phone number.',field:'phone',fieldRef:{id:'global.forms.phone',label:'Phone number'}},
+    {id:'global.forms.phone.errors.invalid',elementType:'form-field-error',status:'draft',value:'Enter a valid phone number, including your country code.',field:'phone',fieldRef:{id:'global.forms.phone',label:'Phone number'}},
+    {id:'global.forms.dateOfBirth.label',elementType:'form-field-label',status:'approved',value:'Date of birth',field:'dateOfBirth'},
+    {id:'global.forms.dateOfBirth.hint',elementType:'form-field-hint',status:'draft',value:'For example, 15 Jan 1990.',field:'dateOfBirth'},
+    {id:'global.forms.dateOfBirth.errors.required',elementType:'form-field-error',status:'approved',value:'Enter your date of birth.',field:'dateOfBirth',fieldRef:{id:'global.forms.dateOfBirth',label:'Date of birth'}},
+    {id:'global.forms.dateOfBirth.errors.invalid',elementType:'form-field-error',status:'approved',value:'Enter a valid date.',field:'dateOfBirth',fieldRef:{id:'global.forms.dateOfBirth',label:'Date of birth'}},
+    {id:'global.forms.dateOfBirth.errors.underage',elementType:'form-field-error',status:'draft',value:'You must be 18 or older to continue.',field:'dateOfBirth',fieldRef:{id:'global.forms.dateOfBirth',label:'Date of birth'}},
+    {id:'global.forms.postalCode.label',elementType:'form-field-label',status:'approved',value:'Postal code',field:'postalCode'},
+    {id:'global.forms.postalCode.errors.required',elementType:'form-field-error',status:'approved',value:'Enter your postal code.',field:'postalCode',fieldRef:{id:'global.forms.postalCode',label:'Postal code'}},
+    {id:'global.forms.postalCode.errors.invalid',elementType:'form-field-error',status:'draft',value:'Enter a valid 6-digit postal code.',field:'postalCode',fieldRef:{id:'global.forms.postalCode',label:'Postal code'}},
+    {id:'global.forms.country.label',elementType:'form-field-label',status:'approved',value:'Country',field:'country'},
+    {id:'global.forms.country.errors.required',elementType:'form-field-error',status:'approved',value:'Select a country.',field:'country',fieldRef:{id:'global.forms.country',label:'Country'}},
+    {id:'global.modals.sessionExpired.title',elementType:'modal',status:'approved',value:'Your session has expired',isError:true},
+    {id:'global.modals.sessionExpired.body',elementType:'modal',status:'approved',value:"You've been signed out due to inactivity. Sign in again to continue.",isError:true},
+    {id:'global.modals.sessionExpired.primaryCta',elementType:'modal',status:'approved',value:'Sign in again',isError:true},
+    {id:'global.modals.uploadFailed.title',elementType:'modal',status:'approved',value:'Upload failed',isError:true},
+    {id:'global.modals.uploadFailed.body',elementType:'modal',status:'draft',value:'Your file could not be uploaded. Check your connection and try again.',isError:true},
+    {id:'global.modals.confirmDelete.title',elementType:'modal',status:'approved',value:'Delete this item?'},
+    {id:'global.modals.confirmDelete.body',elementType:'modal',status:'approved',value:'This action cannot be undone.'},
+    {id:'global.modals.confirmDelete.primaryCta',elementType:'modal',status:'approved',value:'Yes, delete'},
+    {id:'global.modals.confirmDelete.secondaryCta',elementType:'modal',status:'approved',value:'Cancel'},
+  ];
+
+  const LIB_TYPE_CONFIG = {
+    'form-field-label': { label: 'Label', cls: 'lib-badge--label' },
+    'form-field-hint':  { label: 'Hint',  cls: 'lib-badge--hint'  },
+    'form-field-error': { label: 'Error', cls: 'lib-badge--error' },
+    'modal':            { label: 'Modal', cls: 'lib-badge--modal' },
+  };
+
+  const LIB_TAB_FNS = {
+    all:     null,
+    forms:   e => e.elementType.startsWith('form-'),
+    modals:  e => e.elementType === 'modal',
+    buttons: e => e.id.includes('button') || e.id.includes('btn'),
+    errors:  e => e.elementType === 'form-field-error' || (e.elementType === 'modal' && e.isError),
+  };
+
+  let libTab = 'all', libSearch = '', libSelected = null;
+
+  function getLibEntries() {
+    const tabFn = LIB_TAB_FNS[libTab];
+    const q = libSearch.toLowerCase();
+    return LIB_ENTRIES.filter(e => {
+      if (tabFn && !tabFn(e)) return false;
+      if (q && !e.value.toLowerCase().includes(q) && !e.id.toLowerCase().includes(q) && !(e.field||'').toLowerCase().includes(q)) return false;
+      return true;
+    });
+  }
+
+  function libEsc(s) { return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+
+  function renderLibList(entries) {
+    const container = document.getElementById('lib-list');
+    document.getElementById('lib-count').textContent = entries.length + ' entr' + (entries.length === 1 ? 'y' : 'ies') + ' · Global';
+    if (!entries.length) {
+      container.innerHTML = '<div style="padding:40px 16px;text-align:center;color:var(--text-secondary);font-size:.8125rem;">No entries match your search.</div>';
+      return;
+    }
+    container.innerHTML = entries.map(e => {
+      const tc = LIB_TYPE_CONFIG[e.elementType] || LIB_TYPE_CONFIG['form-field-label'];
+      const dot = e.status === 'draft' ? 'lib-item__dot--draft' : 'lib-item__dot--approved';
+      const selected = libSelected === e.id ? ' is-selected' : '';
+      return `<div class="lib-item${selected}" role="option" aria-selected="${libSelected===e.id}" data-id="${libEsc(e.id)}">`
+        + `<span class="lib-badge ${tc.cls}">${tc.label}</span>`
+        + `<p class="lib-item__copy">${libEsc(e.value)}</p>`
+        + `<span class="lib-item__dot ${dot}" title="${e.status}"></span>`
+        + `</div>`;
+    }).join('');
+    container.querySelectorAll('.lib-item').forEach(el => {
+      el.addEventListener('click', () => { libSelected = el.dataset.id; renderLibrary(); });
+    });
+  }
+
+  function renderLibDetail() {
+    const container = document.getElementById('lib-detail');
+    const entry = libSelected ? LIB_ENTRIES.find(e => e.id === libSelected) : null;
+    if (!entry) {
+      container.innerHTML = `<div class="lib-intro">`
+        + `<h2 class="lib-intro__title">Copy library</h2>`
+        + `<p class="lib-intro__body">This library contains copy that are currently in use for Singapore government digital services, so that they can be reused. This helps us maintain better copy consistency. When you use the Assistant, Lorem checks this library before generating anything new.</p>`
+        + `<p class="lib-intro__body">Help us improve the library by submitting copy in your products using this <a class="lib-intro__link" href="library-schema-sample.json" download="library-schema-sample.json">JSON schema</a>.</p>`
+        + `<p class="lib-intro__prompt">`
+        + `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>`
+        + `Select an entry from the list to view its details`
+        + `</p>`
+        + `</div>`;
+      return;
+    }
+    const tc = LIB_TYPE_CONFIG[entry.elementType] || LIB_TYPE_CONFIG['form-field-label'];
+    const statusCls = entry.status === 'draft' ? 'lib-status-badge--draft' : 'lib-status-badge--approved';
+    const statusLabel = entry.status === 'draft' ? 'Draft' : 'Approved';
+    const idParts = entry.id.split('.');
+    const subtype = idParts[idParts.length - 1];
+    let metaRows = `<div class="lib-meta-row"><span class="lib-meta-key">ID</span><span class="lib-meta-val">${libEsc(entry.id)}</span></div>`
+      + `<div class="lib-meta-row"><span class="lib-meta-key">Element type</span><span class="lib-meta-val">${libEsc(entry.elementType)}</span></div>`
+      + `<div class="lib-meta-row"><span class="lib-meta-key">Scope</span><span class="lib-meta-val">Global</span></div>`
+      + `<div class="lib-meta-row"><span class="lib-meta-key">Subtype</span><span class="lib-meta-val">${libEsc(subtype)}</span></div>`;
+    if (entry.field)    metaRows += `<div class="lib-meta-row"><span class="lib-meta-key">Field</span><span class="lib-meta-val">${libEsc(entry.field)}</span></div>`;
+    if (entry.fieldRef) metaRows += `<div class="lib-meta-row"><span class="lib-meta-key">Field ref</span><span class="lib-meta-val">${libEsc(entry.fieldRef.label)} <span style="color:var(--text-secondary)">(${libEsc(entry.fieldRef.id)})</span></span></div>`;
+    const screenshotHtml = entry.screenshot
+      ? `<img class="lib-screenshot-img" src="${libEsc(entry.screenshot)}" alt="Screenshot of this copy in context" onerror="this.closest('.lib-screenshot-section').querySelector('.lib-screenshot-placeholder').style.display='flex';this.style.display='none'">`
+      : `<div class="lib-screenshot-placeholder"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg><p>No screenshot added</p></div>`;
+    container.innerHTML = `<div class="lib-detail-body">`
+      + `<div class="lib-detail-hd">`
+      + `<div class="lib-detail-badges"><span class="lib-badge ${tc.cls}">${tc.label}</span><span class="lib-status-badge ${statusCls}">${statusLabel}</span></div>`
+      + `<button class="lib-copy-btn" data-copy="${libEsc(entry.value)}" type="button" aria-label="Copy to clipboard"><span class="copy-default" style="display:flex;align-items:center;gap:5px;"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>Copy text</span><span class="copy-done" style="display:none;align-items:center;gap:5px;"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>Copied</span></button>`
+      + `</div>`
+      + `<div class="lib-detail-section">`
+      + `<p class="lib-detail-section-label">Copy</p>`
+      + `<div class="lib-detail-copy-wrap"><p class="lib-detail-copy">${libEsc(entry.value)}</p></div>`
+      + `</div>`
+      + `<div class="lib-detail-section">`
+      + `<p class="lib-detail-section-label">Metadata</p>`
+      + `<div class="lib-meta-table">${metaRows}</div>`
+      + `</div>`
+      + `<div class="lib-detail-section lib-screenshot-section">`
+      + `<p class="lib-detail-section-label">Screenshot</p>`
+      + screenshotHtml
+      + `</div>`
+      + `</div>`;
+    container.querySelector('.lib-copy-btn').addEventListener('click', async function() {
+      try { await navigator.clipboard.writeText(this.dataset.copy); } catch {}
+      const def  = this.querySelector('.copy-default');
+      const done = this.querySelector('.copy-done');
+      if (def && done) {
+        def.style.display = 'none'; done.style.display = 'flex';
+        this.classList.add('is-copied');
+        setTimeout(() => { def.style.display = 'flex'; done.style.display = 'none'; this.classList.remove('is-copied'); }, 2000);
+      }
+    });
+  }
+
+  function renderLibrary() {
+    const entries = getLibEntries();
+    renderLibList(entries);
+    renderLibDetail();
+  }
+
+  // Library tab switching
+  document.querySelectorAll('.lib-tab').forEach(tab => {
+    tab.addEventListener('click', () => {
+      libTab = tab.dataset.libTab;
+      libSelected = null;
+      document.querySelectorAll('.lib-tab').forEach(t => {
+        t.classList.toggle('is-active', t.dataset.libTab === libTab);
+        t.setAttribute('aria-selected', t.dataset.libTab === libTab ? 'true' : 'false');
+      });
+      renderLibrary();
+    });
+  });
+
+  document.getElementById('lib-search-input').addEventListener('input', e => {
+    libSearch = e.target.value; libSelected = null; renderLibrary();
+  });
+
+  /* ── State machine ─────────────────────────────────────────────── */
+  const editor = document.getElementById('editorArea');
+  const STATES = {
+    empty:    document.getElementById('st-empty'),
+    loading:  document.getElementById('st-loading'),
+    response: document.getElementById('st-response'),
+    error:    document.getElementById('st-error'),
+  };
+
+  function show(name) {
+    Object.entries(STATES).forEach(([k, el]) => { el.hidden = k !== name; });
+    // Close rationale panel on state change
+    if (name !== 'response') closeDetail();
+    const el = STATES[name];
+    if (name === 'response' || name === 'error') {
+      el.classList.remove('animate-in');
+      void el.offsetWidth;
+      el.classList.add('animate-in');
+    }
+  }
+
+  showProtoScreen('assistant');
+
+  /* ── Ask Lorem submit ──────────────────────────────────────────── */
+  function triggerSubmit(text) {
+    if (text) document.getElementById('userBubble').textContent = text;
+    show('loading');
+    setTimeout(() => show('response'), 1700);
+  }
+
+  document.getElementById('askBtn').addEventListener('click', () => {
+    const text = document.getElementById('ask-input').value.trim();
+    if (!text) { document.getElementById('ask-input').focus(); return; }
+    triggerSubmit(text);
+  });
+  document.getElementById('ask-input').addEventListener('keydown', e => {
+    if (e.key === 'Enter' && (e.metaKey || e.ctrlKey)) { e.preventDefault(); document.getElementById('askBtn').click(); }
+  });
+
+  /* ── Rationale detail panel ────────────────────────────────────── */
+  const respDetail = document.getElementById('respDetail');
+  let activeRationaleBtn = null;
+  let versionCounter = 3; // V1–V3 pre-seeded
+
+  function switchDetailTab(vId) {
+    document.querySelectorAll('.detail-tab').forEach(t => {
+      t.classList.toggle('is-active', t.dataset.tab === vId);
+      t.setAttribute('aria-selected', t.dataset.tab === vId ? 'true' : 'false');
+    });
+    document.querySelectorAll('.detail-body').forEach(p => {
+      p.hidden = p.id !== 'panel-' + vId;
+    });
+  }
+
+  function openDetail(vId, triggerBtn) {
+    if (activeRationaleBtn && activeRationaleBtn !== triggerBtn) {
+      activeRationaleBtn.classList.remove('is-active');
+      activeRationaleBtn.setAttribute('aria-expanded', 'false');
+    }
+    activeRationaleBtn = triggerBtn;
+    triggerBtn.classList.add('is-active');
+    triggerBtn.setAttribute('aria-expanded', 'true');
+    respDetail.classList.add('open');
+    if (window.innerWidth <= 768) document.body.style.overflow = 'hidden';
+    switchDetailTab(vId);
+  }
+
+  function closeDetail() {
+    respDetail.classList.remove('open');
+    if (window.innerWidth <= 768) document.body.style.overflow = '';
+    if (activeRationaleBtn) {
+      activeRationaleBtn.classList.remove('is-active');
+      activeRationaleBtn.setAttribute('aria-expanded', 'false');
+      activeRationaleBtn = null;
+    }
+  }
+
+  document.getElementById('closeDetailBtn').addEventListener('click', closeDetail);
+
+  // Backdrop click closes modal
+  respDetail.addEventListener('click', e => {
+    if (e.target === respDetail) closeDetail();
+  });
+
+  // "Show in chat" buttons in version history panel
+  respDetail.addEventListener('click', e => {
+    const btn = e.target.closest('.btn-show-in-chat');
+    if (!btn) return;
+    const panel = btn.closest('.detail-body');
+    if (!panel) return;
+    const vId = panel.id.replace('panel-', '');
+    const chatCard = versionChatMap.get(vId);
+    if (!chatCard) return;
+    chatCard.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+    chatCard.classList.remove('is-highlighted');
+    void chatCard.offsetWidth; // force reflow to restart animation
+    chatCard.classList.add('is-highlighted');
+    setTimeout(() => chatCard.classList.remove('is-highlighted'), 1500);
+    if (window.innerWidth <= 768) closeDetail();
+  });
+
+  // Copy text buttons inside version history panel
+  respDetail.addEventListener('click', async e => {
+    const btn = e.target.closest('.lib-copy-btn');
+    if (!btn) return;
+    const copyText = btn.closest('.detail-copy-actions')?.previousElementSibling?.textContent?.trim() ?? '';
+    try { await navigator.clipboard.writeText(copyText); } catch {}
+    const def  = btn.querySelector('.copy-default');
+    const done = btn.querySelector('.copy-done');
+    if (def && done) {
+      def.style.display = 'none'; done.style.display = 'flex';
+      btn.classList.add('is-copied');
+      setTimeout(() => { def.style.display = 'flex'; done.style.display = 'none'; btn.classList.remove('is-copied'); }, 2000);
+    }
+  });
+
+  // Version history button in response header
+  const vhistBtn = document.getElementById('vhistBtn');
+  if (vhistBtn) {
+    vhistBtn.addEventListener('click', () => {
+      if (respDetail.classList.contains('open') && activeRationaleBtn === vhistBtn) {
+        closeDetail();
+      } else {
+        openDetail('v3', vhistBtn);
+      }
+    });
+  }
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Escape' && respDetail.classList.contains('open')) closeDetail();
+  });
+
+  // Delegate: View rationale (initial card + all dynamically added cards)
+  document.getElementById('respMessages').addEventListener('click', e => {
+    const btn = e.target.closest('.btn-rationale');
+    if (!btn) return;
+    const vId = btn.dataset.version;
+    if (respDetail.classList.contains('open') && activeRationaleBtn === btn) {
+      closeDetail();
+    } else {
+      openDetail(vId, btn);
+    }
+  });
+
+  /* ── Follow-up send ────────────────────────────────────────────── */
+  document.getElementById('sendBtn').addEventListener('click', () => {
+    const followupTa = document.getElementById('followupTa');
+    const text = followupTa.value.trim();
+    if (!text) return;
+    const messages = document.getElementById('respMessages');
+    const bubble = document.createElement('div');
+    bubble.className = 'msg-user animate-in';
+    bubble.innerHTML = `<div class="msg-user__bubble">${text.replace(/</g,'&lt;')}</div>`;
+    messages.appendChild(bubble);
+    messages.scrollTop = messages.scrollHeight;
+    followupTa.value = '';
+  });
+  document.getElementById('followupTa').addEventListener('keydown', e => {
+    if (e.key === 'Enter' && (e.metaKey || e.ctrlKey)) { e.preventDefault(); document.getElementById('sendBtn').click(); }
+  });
+
+  /* ── Ask chips ──────────────────────────────────────────────────── */
+  document.querySelector('.ask-chips').addEventListener('click', e => {
+    const btn = e.target.closest('[data-prompt]');
+    if (!btn) return;
+    const ta = document.getElementById('ask-input');
+    ta.value = btn.dataset.prompt;
+    ta.focus();
+    ta.setSelectionRange(ta.value.length, ta.value.length);
+  });
+
+  /* ── Copy to clipboard ─────────────────────────────────────────── */
+  document.getElementById('respMessages').addEventListener('click', async e => {
+    const btn = e.target.closest('.btn-copy');
+    if (!btn) return;
+    const copyText = btn.closest('.bot-card')?.querySelector('.suggested-copy-box')?.textContent?.trim() ?? '';
+    try { await navigator.clipboard.writeText(copyText); } catch {}
+    const def  = btn.querySelector('.copy-default');
+    const done = btn.querySelector('.copy-done');
+    if (def && done) {
+      def.style.display = 'none'; done.style.display = 'flex';
+      btn.classList.add('is-copied');
+      setTimeout(() => { def.style.display = 'flex'; done.style.display = 'none'; btn.classList.remove('is-copied'); }, 2000);
+    }
+  });
+
+  /* ── Session list clicks ───────────────────────────────────────── */
+  document.querySelectorAll('.session-item').forEach(item => {
+    item.addEventListener('click', () => {
+      document.querySelectorAll('.session-item').forEach(s => s.classList.remove('is-active'));
+      item.classList.add('is-active');
+      const text = item.querySelector('span').textContent.trim();
+      document.getElementById('userBubble').textContent = text;
+      const titleEl = document.getElementById('chatTitle');
+      if (titleEl) titleEl.textContent = text;
+      show('response');
+    });
+  });
+
+  document.getElementById('nav-item-assistant').addEventListener('click', e => {
+    e.preventDefault();
+    document.querySelectorAll('.session-item').forEach(s => s.classList.remove('is-active'));
+    show('empty');
+  });
+
+  /* ── Session search ─────────────────────────────────────────────── */
+  (function () {
+    const btn   = document.getElementById('historySearchBtn');
+    const input = document.getElementById('sessionSearch');
+    if (!btn || !input) return;
+
+    btn.addEventListener('click', () => {
+      const expanded = btn.getAttribute('aria-expanded') === 'true';
+      btn.setAttribute('aria-expanded', !expanded);
+      btn.classList.toggle('is-active', !expanded);
+      input.hidden = expanded;
+      if (!expanded) {
+        input.value = '';
+        input.focus();
+        // Show all items while search is open
+        document.querySelectorAll('#sidebar-main .session-wrap').forEach(w => w.style.display = '');
+        document.getElementById('sessionViewAll').hidden = true;
+      } else {
+        input.value = '';
+        updateSessionTruncation();
+      }
+    });
+
+    input.addEventListener('input', () => {
+      const q = input.value.trim().toLowerCase();
+      document.querySelectorAll('#sidebar-main .session-wrap').forEach(w => {
+        const text = w.querySelector('span')?.textContent.toLowerCase() || '';
+        w.style.display = (q === '' || text.includes(q)) ? '' : 'none';
+      });
+    });
+
+    input.addEventListener('keydown', e => {
+      if (e.key === 'Escape') btn.click();
+    });
+  })();
+
+  /* ── Session overflow truncation ────────────────────────────────── */
+  function updateSessionTruncation() {
+    const sidebar  = document.getElementById('sidebar-main');
+    const sessions = sidebar?.querySelector('.sessions');
+    const viewAll  = document.getElementById('sessionViewAll');
+    const search   = document.getElementById('sessionSearch');
+    if (!sessions || !viewAll) return;
+
+    // Don't truncate while search is open
+    if (search && !search.hidden) return;
+
+    const items = Array.from(sessions.querySelectorAll('.session-wrap'));
+    items.forEach(w => { w.style.display = ''; });
+    sessions.style.overflowY = 'hidden';
+    viewAll.hidden = true;
+
+    requestAnimationFrame(() => {
+      if (sessions.scrollHeight <= sessions.clientHeight) return;
+
+      // Find last item whose bottom edge fits within the container
+      const containerBottom = sessions.getBoundingClientRect().bottom;
+      let lastFit = -1;
+      for (let i = 0; i < items.length; i++) {
+        if (items[i].getBoundingClientRect().bottom <= containerBottom) {
+          lastFit = i;
+        } else {
+          break;
+        }
+      }
+
+      if (lastFit < 0 || lastFit >= items.length - 1) return;
+      items.slice(lastFit + 1).forEach(w => { w.style.display = 'none'; });
+      viewAll.hidden = false;
+    });
+  }
+
+  document.getElementById('sessionViewAll')?.addEventListener('click', () => {
+    showProtoScreen('history');
+  });
+
+  /* ── History screen ─────────────────────────────────────────────── */
+  const HISTORY_SESSIONS = [
+    { title: 'CPF contribution label',             date: 'Today' },
+    { title: 'Error message — OTP timeout',        date: 'Yesterday' },
+    { title: 'Confirmation — file upload',         date: '2 days ago' },
+    { title: 'Button copy — SingPass login',       date: '3 days ago' },
+    { title: 'Helper text — NRIC field',           date: '5 days ago' },
+    { title: 'Push notification — claim expiry',   date: '1 week ago' },
+    { title: 'Page title — CPF withdrawal',        date: '1 week ago' },
+    { title: 'Error message — file size exceeded', date: '2 weeks ago' },
+    { title: 'Tooltip — document upload',          date: '2 weeks ago' },
+    { title: 'Navigation label — My applications', date: '2 weeks ago' },
+    { title: 'Form label — postal code',           date: '3 weeks ago' },
+    { title: 'Button copy — Submit claim',         date: '3 weeks ago' },
+    { title: 'Alert text — session timeout',       date: '3 weeks ago' },
+    { title: 'Error message — NRIC mismatch',      date: '4 weeks ago' },
+    { title: 'Page title — MyInfo data',           date: '4 weeks ago' },
+    { title: 'Form label — date of birth',         date: '5 weeks ago' },
+    { title: 'Label — income declaration',         date: '5 weeks ago' },
+    { title: 'Error message — OTP expired',        date: '6 weeks ago' },
+    { title: 'Button copy — Download PDF',         date: '6 weeks ago' },
+  ];
+
+  const HIST_PAGE_SIZE = 10;
+  let histPage = 1;
+  let histFiltered = [...HISTORY_SESSIONS];
+
+  function renderHistory() {
+    histPage = 1;
+    histFiltered = [...HISTORY_SESSIONS];
+    const input = document.getElementById('histSearch');
+    if (input) input.value = '';
+    document.getElementById('histCount').textContent = `${HISTORY_SESSIONS.length} sessions`;
+    renderHistPage();
+  }
+
+  function renderHistPage() {
+    const list = document.getElementById('histList');
+    const start = (histPage - 1) * HIST_PAGE_SIZE;
+    const slice = histFiltered.slice(start, start + HIST_PAGE_SIZE);
+    const total = histFiltered.length;
+    const totalPages = Math.max(1, Math.ceil(total / HIST_PAGE_SIZE));
+
+    if (slice.length === 0) {
+      list.innerHTML = '<p class="hist-empty">No sessions match your search.</p>';
+    } else {
+      list.innerHTML = slice.map(s => `
+        <button class="hist-item" type="button" role="listitem" data-title="${s.title.replace(/"/g, '&quot;')}">
+          <span class="hist-item__title">${s.title}</span>
+          <span class="hist-item__date">${s.date}</span>
+          <svg class="hist-item__arrow" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>
+        </button>`).join('');
+    }
+
+    // Range label
+    const rangeEnd = Math.min(start + HIST_PAGE_SIZE, total);
+    document.getElementById('histRange').textContent =
+      total === 0 ? '' : `${start + 1}–${rangeEnd} of ${total}`;
+    document.getElementById('histPageLabel').textContent =
+      `Page ${histPage} of ${totalPages}`;
+    document.getElementById('histPrev').disabled = histPage <= 1;
+    document.getElementById('histNext').disabled = histPage >= totalPages;
+
+    // Update count label
+    document.getElementById('histCount').textContent = `${total} session${total !== 1 ? 's' : ''}`;
+  }
+
+  // Pagination clicks
+  document.getElementById('histPrev')?.addEventListener('click', () => {
+    if (histPage > 1) { histPage--; renderHistPage(); }
+  });
+  document.getElementById('histNext')?.addEventListener('click', () => {
+    const totalPages = Math.ceil(histFiltered.length / HIST_PAGE_SIZE);
+    if (histPage < totalPages) { histPage++; renderHistPage(); }
+  });
+
+  // Search
+  document.getElementById('histSearch')?.addEventListener('input', e => {
+    const q = e.target.value.trim().toLowerCase();
+    histFiltered = q === ''
+      ? [...HISTORY_SESSIONS]
+      : HISTORY_SESSIONS.filter(s => s.title.toLowerCase().includes(q));
+    histPage = 1;
+    renderHistPage();
+  });
+
+  // Session click: open in assistant
+  document.getElementById('histList')?.addEventListener('click', e => {
+    const item = e.target.closest('.hist-item');
+    if (!item) return;
+    const title = item.dataset.title;
+    document.querySelectorAll('.session-item').forEach(s => {
+      const match = s.querySelector('span')?.textContent.trim() === title;
+      s.classList.toggle('is-active', match);
+    });
+    const titleEl = document.getElementById('chatTitle');
+    if (titleEl) titleEl.textContent = title;
+    document.getElementById('userBubble').textContent = title;
+    showProtoScreen('assistant');
+    show('response');
+  });
+
+  // Sidebar nav wiring for history screen
+  document.getElementById('hist-nav-assistant')?.addEventListener('click', e => {
+    e.preventDefault(); showProtoScreen('ask');
+  });
+  document.getElementById('hist-nav-library')?.addEventListener('click', e => {
+    e.preventDefault(); showProtoScreen('library');
+  });
+
+  requestAnimationFrame(updateSessionTruncation);
+  window.addEventListener('resize', updateSessionTruncation, { passive: true });
+
+  /* ── Session context menus ─────────────────────────────────────── */
+  let openMenu = null;
+  function closeAllMenus() {
+    document.querySelectorAll('.session-ctx-menu').forEach(m => m.classList.add('hidden'));
+    openMenu = null;
+  }
+  document.querySelectorAll('.session-ctx-btn').forEach(btn => {
+    btn.addEventListener('click', e => {
+      e.stopPropagation();
+      const menu = btn.closest('.session-wrap').querySelector('.session-ctx-menu');
+      if (!menu.classList.contains('hidden')) { closeAllMenus(); return; }
+      closeAllMenus();
+      const rect = btn.getBoundingClientRect();
+      menu.style.top  = (rect.bottom + 4) + 'px';
+      menu.style.left = Math.max(4, rect.right - 128) + 'px';
+      menu.classList.remove('hidden');
+      openMenu = menu;
+    });
+  });
+  document.querySelectorAll('.ctx-item').forEach(item => {
+    item.addEventListener('click', e => { e.stopPropagation(); closeAllMenus(); });
+  });
+  document.addEventListener('click', closeAllMenus);
+  document.addEventListener('keydown', e => { if (e.key === 'Escape') closeAllMenus(); });
+
+  /* ── Detail panel: tab scroll arrows ───────────────────────────── */
+  (function () {
+    const tabs       = document.getElementById('detailTabs');
+    const arrowLeft  = document.getElementById('tabArrowLeft');
+    const arrowRight = document.getElementById('tabArrowRight');
+    const STEP = 120;
+
+    function updateArrows() {
+      const atStart = tabs.scrollLeft <= 0;
+      const atEnd   = tabs.scrollLeft >= tabs.scrollWidth - tabs.clientWidth - 1;
+      arrowLeft.classList.toggle('is-hidden', atStart);
+      arrowLeft.classList.toggle('is-dim', false);
+      arrowRight.classList.toggle('is-hidden', false);
+      arrowRight.classList.toggle('is-dim', atEnd);
+      if (atEnd) arrowRight.classList.remove('is-hidden');
+    }
+
+    arrowLeft.addEventListener('click', () => {
+      tabs.scrollBy({ left: -STEP, behavior: 'smooth' });
+    });
+    arrowRight.addEventListener('click', () => {
+      tabs.scrollBy({ left: STEP, behavior: 'smooth' });
+    });
+    tabs.addEventListener('scroll', updateArrows, { passive: true });
+    tabs.addEventListener('wheel', e => {
+      if (e.deltaY === 0) return;
+      e.preventDefault();
+      tabs.scrollBy({ left: e.deltaY, behavior: 'auto' });
+    }, { passive: false });
+
+    // initialise once detail panel is open (may not be visible yet)
+    updateArrows();
+  })();
+
+  /* ── Detail panel: version tabs ────────────────────────────────── */
+  document.querySelector('.detail-tabs').addEventListener('click', e => {
+    const tab = e.target.closest('.detail-tab');
+    if (!tab) return;
+    switchDetailTab(tab.dataset.tab);
+  });
+
+  /* ── Detail panel: collapsible sections ─────────────────────────── */
+  document.getElementById('respDetail').addEventListener('click', e => {
+    const btn = e.target.closest('.detail-collapsible-btn');
+    if (!btn) return;
+    const section = btn.closest('.detail-collapsible');
+    const isOpen = section.classList.toggle('is-open');
+    btn.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+  });
+
+  /* ── Quick actions ───────────────────────────────────────────── */
+
+  // SVGs used in version panel source labels (stroke-width 2)
+  const SOURCE_SVGS = {
+    'sl--adapted': '<line x1="7" y1="17" x2="17" y2="7"/><polyline points="7 7 17 7 17 17"/>',
+    'sl--ai':      '<polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>',
+  };
+
+  // Bot card source tags (stroke-width 1.2)
+  const SOURCE_TAG_SVGS = {
+    'source-tag--ai':      '<polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>',
+    'source-tag--adapted': '<line x1="7" y1="17" x2="17" y2="7"/><polyline points="7 7 17 7 17 17"/>',
+    'source-tag--library': '<path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/>',
+    'source-tag--ai-low':  '<path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/>',
+  };
+  const SOURCE_TAG_LABELS = {
+    'source-tag--ai':      'AI-generated',
+    'source-tag--adapted': 'Adapted from library',
+    'source-tag--library': 'Library match',
+    'source-tag--ai-low':  'AI-generated',
+  };
+  // Maps legacy sl--* classes (used in QUICK_REPLIES data) to new source-tag--* classes
+  const SL_TO_SOURCE_TAG = {
+    'sl--ai':      'source-tag--ai',
+    'sl--adapted': 'source-tag--adapted',
+    'sl--library': 'source-tag--library',
+    'sl--ai-low':  'source-tag--ai-low',
+  };
+
+  function renderSourceTag(tagClass) {
+    const svg   = SOURCE_TAG_SVGS[tagClass] || SOURCE_TAG_SVGS['source-tag--ai'];
+    const label = SOURCE_TAG_LABELS[tagClass] || 'AI-generated';
+    return `<span class="source-tag ${tagClass}" role="status" aria-label="Source: ${label}">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${svg}</svg>
+      ${label}
+    </span>`;
+  }
+
+  const COPY_BTN_HTML = `<button class="icon-btn icon-btn-primary btn-copy" type="button" aria-label="Copy to clipboard">
+    <span class="copy-default" style="display:flex;align-items:center;gap:5px;"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>Copy</span>
+    <span class="copy-done" style="display:none;align-items:center;gap:5px;"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>Copied</span>
+  </button>`;
+
+  const QUICK_ACTIONS_HTML = `<div class="quick-actions">
+    <span class="quick-label">Quick replies</span>
+    <button class="chip" type="button" data-action="clearer" title="Rewrite the copy to be easier to understand">Clearer</button>
+    <button class="chip" type="button" data-action="shorter" title="Make the copy shorter and more concise without removing any information">Shorten</button>
+    <button class="chip" type="button" data-action="alternatives" title="Get 2 more alternatives based on the information provided so far">Alternatives</button>
+  </div>`;
+
+  function renderBotCard(vId, copy, chars, tagClass) {
+    return `<div class="bot-card">
+      ${renderSourceTag(tagClass)}
+      <div class="suggested-copy-box">${copy}</div>
+      <div class="card-meta-row">
+        <span class="char-count">${chars}</span>
+        <div class="card-inline-actions">
+          <button class="icon-btn icon-btn-secondary btn-rationale" type="button" data-version="${vId}" aria-expanded="false" aria-controls="respDetail">Rationale ›</button>
+          ${COPY_BTN_HTML}
+        </div>
+      </div>
+      <div class="card-divider"></div>
+      ${QUICK_ACTIONS_HTML}
+    </div>`;
+  }
+
+  function renderAltBotCard(vId, copy, chars, tagClass, altLabel) {
+    return `<div class="bot-card">
+      <div class="card-top-row">
+        <span class="alt-label">${altLabel}</span>
+        ${renderSourceTag(tagClass)}
+      </div>
+      <div class="suggested-copy-box">${copy}</div>
+      <div class="card-meta-row">
+        <span class="char-count">${chars}</span>
+        <div class="card-inline-actions">
+          <button class="icon-btn icon-btn-secondary btn-rationale" type="button" data-version="${vId}" aria-expanded="false" aria-controls="respDetail">Rationale ›</button>
+          ${COPY_BTN_HTML}
+        </div>
+      </div>
+      <div class="card-divider"></div>
+      ${QUICK_ACTIONS_HTML}
+    </div>`;
+  }
+
+  // Maps version ID → .msg-assistant element for "Show in chat"
+  const versionChatMap = new Map();
+  (function seedStaticVersions() {
+    const staticCard = document.querySelector('#respMessages .msg-assistant');
+    if (!staticCard) return;
+    for (let i = 1; i <= 12; i++) versionChatMap.set('v' + i, staticCard);
+  })();
+
+  const QUICK_REPLIES = {
+    clearer: [{
+      copy:          'Annual CPF contribution amount',
+      chars:         '30 characters',
+      note:          'Clearer',
+      sourceClass:   'sl--ai',
+      sourceLabel:   'AI-generated',
+      rationaleText: '"Amount" added to explicitly identify this as a numeric input field. Reduces ambiguity for users less familiar with CPF terminology by naming the field type directly.',
+      guidelines: [
+        { text: 'Sentence case' },
+        { text: 'No abbreviations' },
+        { text: 'Plain language (Flesch-Kincaid ≤8)' },
+        { text: '"Amount" redundant for numeric-only field', type: 'warn' },
+        { text: 'No colon or full stop' },
+      ],
+    }],
+    shorter: [{
+      copy:          'CPF contribution',
+      chars:         '16 characters',
+      note:          'Shorter',
+      sourceClass:   'sl--adapted',
+      sourceLabel:   'Adapted from library',
+      rationaleText: 'Shortened by removing "Annual". Appropriate where the temporal scope is established by surrounding copy or a section heading, making the modifier redundant. Aligns with the base library entry.',
+      guidelines: [
+        { text: 'Sentence case' },
+        { text: 'No abbreviations' },
+        { text: 'Plain language (Flesch-Kincaid ≤8)' },
+        { text: 'Consistent with CPF terminology' },
+        { text: 'No colon or full stop' },
+      ],
+    }],
+    alternatives: [
+      {
+        copy:          'Yearly CPF contribution amount',
+        chars:         '30 characters',
+        note:          'Alternative 1 of 2',
+        sourceClass:   'sl--ai',
+        sourceLabel:   'AI-generated',
+        rationaleText: '"Yearly" as a natural-language synonym for "annual". Includes "amount" for maximum explicitness. Longer than the preferred form; most useful where the audience is unfamiliar with CPF context.',
+        guidelines: [
+          { text: 'Sentence case' },
+          { text: 'No abbreviations' },
+          { text: '"Yearly" deviates from approved CPF terminology', type: 'warn' },
+          { text: 'No colon or full stop' },
+        ],
+      },
+      {
+        copy:          'CPF annual contribution',
+        chars:         '23 characters',
+        note:          'Alternative 2 of 2',
+        sourceClass:   'sl--ai',
+        sourceLabel:   'AI-generated',
+        rationaleText: '"CPF" leads rather than modifying "contribution". Mirrors usage in CPF member communications but inverts the approved library noun-phrase order (modifier-then-noun).',
+        guidelines: [
+          { text: 'Sentence case' },
+          { text: 'No abbreviations' },
+          { text: 'Plain language (Flesch-Kincaid ≤8)' },
+          { text: 'Noun order inverted from library convention', type: 'warn' },
+          { text: 'No colon or full stop' },
+        ],
+      },
+    ],
+  };
+
+  function addVersionEntry(vId, copy, chars, sourceClass, sourceLabel, rationaleText, guidelines, chatCard, altLabel) {
+    if (chatCard) versionChatMap.set(vId, chatCard);
+    const tabsEl    = document.querySelector('.detail-tabs');
+    const container = document.querySelector('.resp-detail-inner');
+
+    // Strip Latest badge + deactivate all existing tabs
+    tabsEl.querySelectorAll('.detail-tab__badge').forEach(b => b.remove());
+    tabsEl.querySelectorAll('.detail-tab').forEach(t => {
+      t.classList.remove('is-active');
+      t.setAttribute('aria-selected', 'false');
+    });
+
+    // New tab
+    const tab = document.createElement('button');
+    tab.className = 'detail-tab is-active';
+    tab.id = 'tab-' + vId;
+    tab.setAttribute('role', 'tab');
+    tab.setAttribute('type', 'button');
+    tab.setAttribute('aria-selected', 'true');
+    tab.setAttribute('aria-controls', 'panel-' + vId);
+    tab.dataset.tab = vId;
+    tab.innerHTML = `V${versionCounter} <span class="detail-tab__badge">Latest</span>`;
+    tabsEl.insertBefore(tab, tabsEl.firstChild);
+    tabsEl.scrollLeft = 0;
+    document.getElementById('tabArrowLeft')?.classList.add('is-hidden');
+    document.getElementById('tabArrowRight')?.classList.toggle('is-dim', tabsEl.scrollWidth <= tabsEl.clientWidth);
+
+    const guidelinesHTML = guidelines ? `
+      <div class="detail-divider"></div>
+      <div class="detail-collapsible is-open">
+        <button class="detail-collapsible-btn" type="button" aria-expanded="true">
+          <span class="detail-collapsible__label">Guidelines met</span>
+          <svg class="detail-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg>
+        </button>
+        <div class="detail-collapsible__body">
+          <ul class="guidelines" role="list">
+            ${guidelines.map(g => `<li class="guideline${g.type ? ' guideline--' + g.type : ''}">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${
+                g.type === 'fail' ? '<line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>' :
+                g.type === 'warn' ? '<line x1="12" y1="5" x2="12" y2="12"/><circle cx="12" cy="16" r="1"/>' :
+                '<polyline points="20 6 9 17 4 12"/>'
+              }</svg>
+              ${g.text}
+            </li>`).join('')}
+          </ul>
+        </div>
+      </div>` : '';
+
+    // New panel
+    const panel = document.createElement('div');
+    panel.className = 'detail-body';
+    panel.id = 'panel-' + vId;
+    panel.setAttribute('role', 'tabpanel');
+    panel.setAttribute('aria-labelledby', 'tab-' + vId);
+    panel.innerHTML = `
+      <div class="detail-section">
+        ${altLabel ? `<span class="detail-alt-badge">${altLabel}</span>` : ''}
+        <div class="detail-version-meta">
+          <span class="source-label ${sourceClass}" aria-label="Source: ${sourceLabel}">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${SOURCE_SVGS[sourceClass] || SOURCE_SVGS['sl--adapted']}</svg>
+            ${sourceLabel}
+          </span>
+        </div>
+      </div>
+      <div class="detail-section">
+        <p class="detail-section__label">Suggested copy</p>
+        <div class="detail-copy-preview">${copy}</div>
+        <div class="detail-copy-actions">
+          <p class="copy-count">${chars}</p>
+          <button class="lib-copy-btn" type="button" aria-label="Copy to clipboard"><span class="copy-default" style="display:flex;align-items:center;gap:5px;"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>Copy text</span><span class="copy-done" style="display:none;align-items:center;gap:5px;"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>Copied</span></button>
+        </div>
+        <button class="btn-show-in-chat" type="button">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+          Show in chat
+        </button>
+      </div>
+      <div class="detail-divider"></div>
+      <div class="detail-collapsible is-open">
+        <button class="detail-collapsible-btn" type="button" aria-expanded="true">
+          <span class="detail-collapsible__label">Rationale</span>
+          <svg class="detail-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg>
+        </button>
+        <div class="detail-collapsible__body">
+          <p class="detail-text">${rationaleText}</p>
+        </div>
+      </div>
+      ${guidelinesHTML}`;
+
+    // Hide all existing panels, append and show new one
+    container.querySelectorAll('.detail-body').forEach(p => { p.hidden = true; });
+    container.appendChild(panel);
+  }
+
+  function appendMultiCard(replies) {
+    const messages = document.getElementById('respMessages');
+    const wrapper  = document.createElement('div');
+    wrapper.className = 'msg-assistant animate-in';
+
+    // Pre-compute version IDs so HTML and version entries match
+    const vIds = replies.map(() => { versionCounter++; return 'v' + versionCounter; });
+
+    const groupHTML = replies.map((r, i) => {
+      const tagClass = SL_TO_SOURCE_TAG[r.sourceClass] || 'source-tag--ai';
+      return renderAltBotCard(vIds[i], r.copy, r.chars, tagClass, `Alternative ${i + 1}`);
+    }).join('');
+
+    wrapper.innerHTML = `<div class="alt-group">${groupHTML}</div>`;
+    messages.appendChild(wrapper);
+    messages.scrollTop = messages.scrollHeight;
+    if (window._updateScrollBtn) window._updateScrollBtn();
+
+    replies.forEach((r, i) => {
+      addVersionEntry(vIds[i], r.copy, r.chars, r.sourceClass, r.sourceLabel, r.rationaleText, r.guidelines, wrapper, `Alternative ${i + 1} of ${replies.length}`);
+    });
+
+    // Wrap the newly created tabs in a group indicator
+    const tabsEl = document.querySelector('.detail-tabs');
+    const newTabs = vIds.map(vId => document.getElementById('tab-' + vId)).filter(Boolean);
+    if (newTabs.length > 1) {
+      const group = document.createElement('div');
+      group.className = 'detail-tab-group';
+      group.setAttribute('role', 'presentation');
+      tabsEl.insertBefore(group, newTabs[0]);
+      newTabs.forEach(t => group.appendChild(t));
+    }
+  }
+
+  function appendFullCard(config) {
+    const messages = document.getElementById('respMessages');
+    if (!messages) return;
+    const wrapper = document.createElement('div');
+    wrapper.className = 'msg-assistant animate-in';
+    const tagClass = SL_TO_SOURCE_TAG[config.sourceClass] || 'source-tag--ai';
+    wrapper.innerHTML = renderBotCard(config.vId, config.copy, config.chars, tagClass);
+    messages.appendChild(wrapper);
+    messages.scrollTop = messages.scrollHeight;
+    if (window._updateScrollBtn) window._updateScrollBtn();
+    addVersionEntry(config.vId, config.copy, config.chars, config.sourceClass, config.sourceLabel, config.rationaleText, config.guidelines, wrapper);
+  }
+
+  // Delegate: Quick action buttons (initial card + all dynamically added cards)
+  const QUICK_ACTION_LABELS = {
+    clearer:      'Make it clearer',
+    shorter:      'Shorten it',
+    alternatives: 'Give me more alternatives',
+  };
+
+  document.getElementById('respMessages').addEventListener('click', e => {
+    const btn = e.target.closest('.chip');
+    if (!btn) return;
+    const replies = QUICK_REPLIES[btn.dataset.action];
+    if (!replies) return;
+    const messages = document.getElementById('respMessages');
+    const label = QUICK_ACTION_LABELS[btn.dataset.action];
+    if (label) {
+      const bubble = document.createElement('div');
+      bubble.className = 'msg-user animate-in';
+      bubble.innerHTML = `<div class="msg-user__bubble">${label}</div>`;
+      messages.appendChild(bubble);
+      messages.scrollTop = messages.scrollHeight;
+    }
+    if (replies.length > 1) {
+      appendMultiCard(replies);
+    } else {
+      versionCounter++;
+      appendFullCard({ vId: 'v' + versionCounter, ...replies[0] });
+    }
+  });
+
+  /* ── Chat search ─────────────────────────────────────────────── */
+  const chatSearch = document.getElementById('chatSearch');
+  const chatSearchCount = document.getElementById('chatSearchCount');
+  if (chatSearch) {
+    chatSearch.addEventListener('input', () => {
+      const q = chatSearch.value.trim().toLowerCase();
+      const messages = document.getElementById('respMessages');
+      if (!messages) return;
+
+      // Remove previous highlights
+      messages.querySelectorAll('.msg-highlight').forEach(el => {
+        el.outerHTML = el.textContent;
+      });
+
+      if (!q) { chatSearchCount.textContent = ''; return; }
+
+      // Walk text nodes and wrap matches
+      let count = 0;
+      function highlightNode(node) {
+        if (node.nodeType === Node.TEXT_NODE) {
+          const idx = node.textContent.toLowerCase().indexOf(q);
+          if (idx === -1) return;
+          const mark = document.createElement('mark');
+          mark.className = 'msg-highlight';
+          mark.textContent = node.textContent.slice(idx, idx + q.length);
+          const after = node.splitText(idx);
+          after.textContent = after.textContent.slice(q.length);
+          node.parentNode.insertBefore(mark, after);
+          count++;
+        } else if (node.nodeType === Node.ELEMENT_NODE && !['SCRIPT','STYLE','INPUT','TEXTAREA'].includes(node.tagName)) {
+          Array.from(node.childNodes).forEach(highlightNode);
+        }
+      }
+      highlightNode(messages);
+      chatSearchCount.textContent = count > 0 ? `${count} result${count === 1 ? '' : 's'}` : 'No results';
+    });
+  }
+
+  /* ── Changelog tab switching ────────────────────────────────────── */
+  document.querySelectorAll('.cl-tab').forEach(tab => {
+    tab.addEventListener('click', () => {
+      const target = tab.dataset.clTab;
+      document.querySelectorAll('.cl-tab').forEach(t => {
+        t.classList.toggle('is-active', t.dataset.clTab === target);
+        t.setAttribute('aria-selected', t.dataset.clTab === target ? 'true' : 'false');
+      });
+      document.querySelectorAll('.cl-panel').forEach(p => p.classList.remove('is-active'));
+      document.getElementById('cl-panel-' + target).classList.add('is-active');
+    });
+  });
+
+  /* ── Changelog rendering ────────────────────────────────────────── */
+  function clEsc(s) {
+    return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  }
+
+  function renderClReleases() {
+    const container = document.getElementById('cl-panel-releases');
+    if (!container) return;
+    container.innerHTML = CHANGELOG_RELEASES.map(r => {
+      const changes = r.changes.map(c =>
+        `<li class="cl-change"><span class="cl-tag cl-tag--${c.tag}">${clEsc(c.tag)}</span>${clEsc(c.text)}</li>`
+      ).join('');
+      return `<div class="cl-release">
+        <div class="cl-release-meta">
+          <span class="cl-version">${clEsc(r.version)}</span>
+          <span class="cl-badge cl-badge--${r.badge}">${clEsc(r.badge)}</span>
+          <span class="cl-date">${clEsc(r.date)}</span>
+        </div>
+        <div class="cl-release-title">${clEsc(r.title)}</div>
+        <ul class="cl-changes">${changes}</ul>
+      </div>`;
+    }).join('');
+  }
+
+  function renderClRequests() {
+    const container = document.getElementById('cl-panel-requests');
+    if (!container) return;
+    const items = CHANGELOG_REQUESTS.map(req => {
+      const voted = localStorage.getItem('lorem_vote_' + req.id) === '1';
+      const count = (req.votes || 0) + (voted ? 1 : 0);
+      return `<div class="cl-request" data-req-id="${clEsc(req.id)}">
+        <button class="cl-vote-btn${voted ? ' is-voted' : ''}" type="button" aria-label="Vote for ${clEsc(req.title)}" aria-pressed="${voted}">
+          <span class="cl-vote-arrow">&#9650;</span>
+          <span class="cl-vote-count">${count}</span>
+        </button>
+        <div class="cl-req-body">
+          <div class="cl-req-title">${clEsc(req.title)}</div>
+          <div class="cl-req-desc">${clEsc(req.description)}</div>
+          <span class="cl-req-status cl-req-status--${req.status}">${clEsc(req.statusLabel)}</span>
+        </div>
+      </div>`;
+    }).join('');
+    container.innerHTML = `<div class="cl-requests">${items}</div>
+      <div class="cl-new-req">
+        <p>Don&#8217;t see your request?</p>
+        <a class="cl-link-btn" href="https://form.gov.sg/6a1537f8b7792d70c10a0d30" target="_blank" rel="noopener noreferrer">Submit a request &#8594;</a>
+      </div>`;
+    container.querySelectorAll('.cl-vote-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const reqEl = btn.closest('.cl-request');
+        const id = reqEl.dataset.reqId;
+        const countEl = btn.querySelector('.cl-vote-count');
+        const req = CHANGELOG_REQUESTS.find(r => r.id === id);
+        if (!req) return;
+        const voted = btn.classList.contains('is-voted');
+        if (voted) {
+          localStorage.removeItem('lorem_vote_' + id);
+          btn.classList.remove('is-voted');
+          btn.setAttribute('aria-pressed', 'false');
+          countEl.textContent = req.votes;
+        } else {
+          localStorage.setItem('lorem_vote_' + id, '1');
+          btn.classList.add('is-voted');
+          btn.setAttribute('aria-pressed', 'true');
+          countEl.textContent = req.votes + 1;
+        }
+      });
+    });
+  }
+
+  function renderClRoadmap() {
+    const container = document.getElementById('cl-panel-roadmap');
+    if (!container) return;
+    container.innerHTML = CHANGELOG_ROADMAP.map(quarter => {
+      const items = quarter.items.map(item =>
+        `<div class="cl-road-item">
+          <div class="cl-road-dot cl-road-dot--${item.status}"></div>
+          <span class="cl-road-name">${clEsc(item.name)}</span>
+          <span class="cl-road-tag cl-road-tag--${item.status}">${clEsc(item.label)}</span>
+        </div>`
+      ).join('');
+      return `<div class="cl-quarter">
+        <div class="cl-quarter-label">${clEsc(quarter.quarter)}</div>
+        <div class="cl-road-items">${items}</div>
+      </div>`;
+    }).join('');
+  }
+
+  function renderChangelog() {
+    renderClReleases();
+    renderClRequests();
+    renderClRoadmap();
+  }
+
+  /* ── Mobile sidebar ─────────────────────────────────────────────── */
+  [
+    ['hamburger-main', 'sidebar-main',    'sidebar-overlay-main'],
+    ['hamburger-lib',  'sidebar-lib',     'sidebar-overlay-lib'],
+    ['hamburger-cl',   'sidebar-cl',      'sidebar-overlay-cl'],
+  ].forEach(([hId, sId, oId]) => {
+    const hamburger = document.getElementById(hId);
+    const sidebar   = document.getElementById(sId);
+    const overlay   = document.getElementById(oId);
+    if (!hamburger || !sidebar || !overlay) return;
+
+    function openSidebar() {
+      sidebar.classList.add('is-open');
+      overlay.classList.add('open');
+      hamburger.setAttribute('aria-expanded', 'true');
+    }
+    function closeSidebar() {
+      sidebar.classList.remove('is-open');
+      overlay.classList.remove('open');
+      hamburger.setAttribute('aria-expanded', 'false');
+    }
+
+    hamburger.addEventListener('click', () => {
+      sidebar.classList.contains('is-open') ? closeSidebar() : openSidebar();
+    });
+    overlay.addEventListener('click', closeSidebar);
+    document.addEventListener('keydown', e => {
+      if (e.key === 'Escape' && sidebar.classList.contains('is-open')) closeSidebar();
+    });
+  });
+
+  /* ── Scroll-to-bottom button ────────────────────────────────────── */
+  (function () {
+    const btn  = document.getElementById('scrollToBottom');
+    const msgs = document.getElementById('respMessages');
+    if (!btn || !msgs) return;
+    const THRESHOLD = 120;
+
+    function update() {
+      const atBottom = msgs.scrollTop >= msgs.scrollHeight - msgs.clientHeight - THRESHOLD;
+      btn.classList.toggle('is-visible', !atBottom);
+    }
+
+    msgs.addEventListener('scroll', update, { passive: true });
+    btn.addEventListener('click', () => msgs.scrollTo({ top: msgs.scrollHeight, behavior: 'smooth' }));
+
+    // Expose so appendFullCard / appendMultiCard can call after adding content
+    window._updateScrollBtn = update;
+  })();
+</script>
+</body>
+</html>

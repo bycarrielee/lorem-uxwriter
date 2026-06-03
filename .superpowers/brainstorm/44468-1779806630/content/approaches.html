@@ -1,0 +1,139 @@
+<style>
+  .approach-cards {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    max-width: 720px;
+  }
+  .approach-card {
+    border: 1.5px solid #E0E5EA;
+    border-radius: 8px;
+    padding: 20px 22px;
+    cursor: pointer;
+    background: #fff;
+    transition: border-color 150ms, background 150ms;
+    display: flex;
+    gap: 18px;
+    align-items: flex-start;
+    font-family: 'DM Sans', sans-serif;
+  }
+  .approach-card.selected {
+    border-color: #3B5BA5;
+    background: #f5f7fc;
+  }
+  .approach-card:hover:not(.selected) {
+    border-color: #94A3B8;
+    background: #F7F8FA;
+  }
+  .badge {
+    display: inline-block;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    padding: 2px 8px;
+    border-radius: 4px;
+    flex-shrink: 0;
+    margin-top: 2px;
+  }
+  .badge-a { background: #EEF2FF; color: #3B5BA5; }
+  .badge-b { background: #F0EDE8; color: #4A5D6B; }
+  .badge-c { background: oklch(99% 0.05 80); color: oklch(55% 0.16 72); }
+  .approach-name {
+    font-size: 15px;
+    font-weight: 600;
+    color: #1E2D3A;
+    margin-bottom: 4px;
+  }
+  .approach-desc {
+    font-size: 13px;
+    color: #6B8499;
+    line-height: 1.5;
+    margin-bottom: 10px;
+  }
+  .change-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+  .chip {
+    font-size: 11.5px;
+    padding: 2px 8px;
+    border-radius: 99px;
+    border: 1px solid #E0E5EA;
+    color: #4A5D6B;
+    background: #F7F8FA;
+  }
+  .chip.new { border-color: #3B5BA5; color: #3B5BA5; background: #f5f7fc; }
+  .rec-tag {
+    font-size: 10.5px;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: #3B5BA5;
+    background: #EEF2FF;
+    border-radius: 4px;
+    padding: 1px 6px;
+    margin-left: 8px;
+    vertical-align: middle;
+  }
+</style>
+
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+
+<h2 style="font-family:'DM Sans',sans-serif">Three ways to redo the prototype</h2>
+<p class="subtitle" style="font-family:'DM Sans',sans-serif">All three stay as a standalone HTML file. Click to select your preferred scope.</p>
+
+<div class="approach-cards">
+
+  <div class="option approach-card" data-choice="a" onclick="toggleSelect(this)">
+    <div>
+      <span class="badge badge-a">A</span>
+    </div>
+    <div>
+      <div class="approach-name">Token swap <span class="rec-tag">Recommended</span></div>
+      <div class="approach-desc">Apply DESIGN.md tokens exactly as-is. Swap fonts, colors, and spacing. Same layout, same sections, same charts — just using the correct system values.</div>
+      <div class="change-list">
+        <span class="chip">DM Sans / DM Mono fonts</span>
+        <span class="chip">Warm neutrals (#F0EDE8 cards)</span>
+        <span class="chip">Fix source tier colors</span>
+        <span class="chip">Border / shadow tokens</span>
+        <span class="chip">Same layout</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="option approach-card" data-choice="b" onclick="toggleSelect(this)">
+    <div>
+      <span class="badge badge-b">B</span>
+    </div>
+    <div>
+      <div class="approach-name">Token swap + component elevation</div>
+      <div class="approach-desc">Tokens plus refinements to the component-level details: proper tab rail, nav item styles, card micro-typography, sidebar group labels — bringing it in line with the full design spec, not just the color tokens.</div>
+      <div class="change-list">
+        <span class="chip">All of A</span>
+        <span class="chip new">Proper sidebar nav styles</span>
+        <span class="chip new">Tab rail pattern</span>
+        <span class="chip new">Button variants</span>
+        <span class="chip new">Modal / badge specs</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="option approach-card" data-choice="c" onclick="toggleSelect(this)">
+    <div>
+      <span class="badge badge-c">C</span>
+    </div>
+    <div>
+      <div class="approach-name">Full rebuild</div>
+      <div class="approach-desc">Start from scratch using the design system. Opportunity to reconsider structure — is a login screen right for a prototype? Should sections be different? Highest quality, most token spend.</div>
+      <div class="change-list">
+        <span class="chip">All of B</span>
+        <span class="chip new">Reconsider login screen</span>
+        <span class="chip new">Reconsider section structure</span>
+        <span class="chip new">Clean file architecture</span>
+      </div>
+    </div>
+  </div>
+
+</div>

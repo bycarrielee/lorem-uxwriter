@@ -1,0 +1,126 @@
+<h2>Main editor layout</h2>
+<p class="subtitle">How should the copy input and agent response relate spatially? Click to select.</p>
+
+<div class="options">
+
+  <div class="option" data-choice="a" onclick="toggleSelect(this)">
+    <div class="letter">A</div>
+    <div class="content">
+      <h3>Two-panel side by side (Recommended)</h3>
+      <p>Input on the left, results on the right. Both visible at all times — practitioner can compare original and suggestion without scrolling.</p>
+      <div class="mockup" style="margin-top:12px">
+        <div class="mockup-header">Copy editor</div>
+        <div class="mockup-body" style="padding:0">
+          <div style="display:flex;gap:0;min-height:260px">
+            <!-- Left panel -->
+            <div style="flex:1;padding:12px;border-right:1px solid #e5e7eb">
+              <div style="display:flex;gap:6px;margin-bottom:10px">
+                <div style="background:#e0f2fe;border-radius:4px;padding:3px 8px;font-size:11px;color:#0369a1">MyLegacy ▾</div>
+                <div style="background:#f3f4f6;border-radius:4px;padding:3px 8px;font-size:11px;color:#374151">Modal ▾</div>
+                <div style="background:#f3f4f6;border-radius:4px;padding:3px 8px;font-size:11px;color:#374151">Error recovery ▾</div>
+              </div>
+              <div style="background:#f9fafb;border:1px solid #e5e7eb;border-radius:6px;padding:10px;font-size:12px;color:#374151;min-height:140px;line-height:1.6">
+                Your session has timed out due to inactivity. Please log in again to continue your work.
+              </div>
+              <button class="mock-button" style="margin-top:10px;width:100%;font-size:12px">Review copy →</button>
+            </div>
+            <!-- Right panel -->
+            <div style="flex:1;padding:12px;background:#fafafa">
+              <div style="font-size:11px;font-weight:600;color:#6b7280;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:8px">Suggestion · Library match</div>
+              <div style="background:white;border:1px solid #d1fae5;border-radius:6px;padding:10px;font-size:12px;color:#374151;line-height:1.6;min-height:80px">
+                Your form has been closed.<br>
+                <span style="color:#6b7280">It looks like you've left, so we closed the form to protect your privacy.</span>
+              </div>
+              <div style="display:flex;gap:6px;margin-top:8px">
+                <button style="font-size:11px;background:#f0fdf4;border:1px solid #86efac;border-radius:4px;padding:3px 8px;color:#15803d">⭐ Shortlist</button>
+                <button style="font-size:11px;background:#f5f3ff;border:1px solid #c4b5fd;border-radius:4px;padding:3px 8px;color:#6d28d9">✏️ Edit</button>
+                <button style="font-size:11px;background:#f9fafb;border:1px solid #d1d5db;border-radius:4px;padding:3px 8px;color:#374151">More options</button>
+              </div>
+              <div style="margin-top:10px;border-top:1px solid #e5e7eb;padding-top:8px">
+                <div style="font-size:11px;font-weight:600;color:#6b7280;margin-bottom:4px">▾ Rationale</div>
+                <div style="font-size:11px;color:#6b7280;line-height:1.6">• Frames timeout as privacy protection, not system failure<br>• "It looks like you've left" is gentler than "You were inactive"</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="option" data-choice="b" onclick="toggleSelect(this)">
+    <div class="letter">B</div>
+    <div class="content">
+      <h3>Single column, stacked</h3>
+      <p>Context bar at top, editor in middle, results expand below. Simpler to build, works well on smaller screens, but requires scrolling to compare original and suggestion.</p>
+      <div class="mockup" style="margin-top:12px">
+        <div class="mockup-header">Copy editor</div>
+        <div class="mockup-body" style="padding:0">
+          <div style="padding:10px;min-height:260px">
+            <div style="display:flex;gap:6px;margin-bottom:10px">
+              <div style="background:#e0f2fe;border-radius:4px;padding:3px 8px;font-size:11px;color:#0369a1">MyLegacy ▾</div>
+              <div style="background:#f3f4f6;border-radius:4px;padding:3px 8px;font-size:11px;color:#374151">Modal ▾</div>
+              <div style="background:#f3f4f6;border-radius:4px;padding:3px 8px;font-size:11px;color:#374151">Error recovery ▾</div>
+            </div>
+            <div style="background:#f9fafb;border:1px solid #e5e7eb;border-radius:6px;padding:10px;font-size:12px;color:#374151;line-height:1.6">
+              Your session has timed out due to inactivity. Please log in again to continue your work.
+            </div>
+            <button class="mock-button" style="margin-top:8px;font-size:12px">Review copy →</button>
+            <div style="margin-top:12px;border-top:1px solid #e5e7eb;padding-top:10px">
+              <div style="font-size:11px;font-weight:600;color:#6b7280;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:6px">Suggestion · Library match</div>
+              <div style="background:white;border:1px solid #d1fae5;border-radius:6px;padding:10px;font-size:12px;color:#374151;line-height:1.6">
+                Your form has been closed.<br>
+                <span style="color:#6b7280">It looks like you've left...</span>
+              </div>
+              <div style="display:flex;gap:6px;margin-top:6px">
+                <button style="font-size:11px;background:#f0fdf4;border:1px solid #86efac;border-radius:4px;padding:3px 8px;color:#15803d">⭐ Shortlist</button>
+                <button style="font-size:11px;background:#f5f3ff;border:1px solid #c4b5fd;border-radius:4px;padding:3px 8px;color:#6d28d9">✏️ Edit</button>
+                <button style="font-size:11px;background:#f9fafb;border:1px solid #d1d5db;border-radius:4px;padding:3px 8px;color:#374151">More options</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="option" data-choice="c" onclick="toggleSelect(this)">
+    <div class="letter">C</div>
+    <div class="content">
+      <h3>Sidebar + editor + slide-out results</h3>
+      <p>Persistent left sidebar for context/history, large central editor, results slide in from the right as a drawer. Most screen real estate for the editor itself.</p>
+      <div class="mockup" style="margin-top:12px">
+        <div class="mockup-header">Copy editor</div>
+        <div class="mockup-body" style="padding:0">
+          <div style="display:flex;min-height:260px">
+            <!-- Sidebar -->
+            <div style="width:120px;background:#f8fafc;border-right:1px solid #e5e7eb;padding:10px;font-size:11px;color:#6b7280">
+              <div style="font-weight:600;margin-bottom:8px;color:#374151">Context</div>
+              <div style="margin-bottom:4px">MyLegacy ▾</div>
+              <div style="margin-bottom:4px">Modal ▾</div>
+              <div style="margin-bottom:12px">Error recovery ▾</div>
+              <div style="font-weight:600;margin-bottom:8px;color:#374151">History</div>
+              <div style="margin-bottom:4px;color:#94a3b8">Session 1</div>
+              <div style="margin-bottom:4px;color:#94a3b8">Session 2</div>
+            </div>
+            <!-- Editor -->
+            <div style="flex:1;padding:12px">
+              <div style="background:#f9fafb;border:1px solid #e5e7eb;border-radius:6px;padding:10px;font-size:12px;color:#374151;min-height:160px;line-height:1.6">
+                Your session has timed out due to inactivity. Please log in again to continue your work.
+              </div>
+              <button class="mock-button" style="margin-top:10px;font-size:12px">Review copy →</button>
+            </div>
+            <!-- Slide-out -->
+            <div style="width:160px;background:#fafafa;border-left:1px solid #e5e7eb;padding:10px;font-size:11px">
+              <div style="font-weight:600;color:#374151;margin-bottom:6px">Suggestion</div>
+              <div style="background:white;border:1px solid #d1fae5;border-radius:4px;padding:6px;color:#374151;line-height:1.5;margin-bottom:6px">Your form has been closed...</div>
+              <button style="font-size:10px;background:#f0fdf4;border:1px solid #86efac;border-radius:4px;padding:2px 6px;color:#15803d;display:block;margin-bottom:4px">⭐ Shortlist</button>
+              <button style="font-size:10px;background:#f5f3ff;border:1px solid #c4b5fd;border-radius:4px;padding:2px 6px;color:#6d28d9;display:block;margin-bottom:4px">✏️ Edit</button>
+              <button style="font-size:10px;background:#f9fafb;border:1px solid #d1d5db;border-radius:4px;padding:2px 6px;color:#374151;display:block">More</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>

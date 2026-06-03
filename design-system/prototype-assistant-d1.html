@@ -1,0 +1,789 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Lorem — Assistant · Direction 1</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'system-ui', 'sans-serif'],
+            mono: ['JetBrains Mono', 'ui-monospace', 'monospace'],
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    * { box-sizing: border-box; }
+    body { font-family: 'Inter', system-ui, sans-serif; -webkit-font-smoothing: antialiased; }
+
+    @keyframes shimmer {
+      0%   { background-position: -200% 0; }
+      100% { background-position:  200% 0; }
+    }
+    .shimmer {
+      background: linear-gradient(90deg, #f1f5f9 25%, #e2e8f0 50%, #f1f5f9 75%);
+      background-size: 200% 100%;
+      animation: shimmer 1.5s infinite;
+    }
+
+    @keyframes fadeSlideIn {
+      from { opacity: 0; transform: translateY(6px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    .fade-in { animation: fadeSlideIn 220ms ease-out forwards; }
+
+    @keyframes slideInRight {
+      from { opacity: 0; transform: translateX(40px); }
+      to   { opacity: 1; transform: translateX(0); }
+    }
+    .slide-in-right { animation: slideInRight 340ms cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+
+    input:focus, textarea:focus, button:focus-visible {
+      outline: 2px solid #6366f1;
+      outline-offset: 2px;
+    }
+    button:focus:not(:focus-visible) { outline: none; }
+
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 3px; }
+    .sidebar-scroll::-webkit-scrollbar-thumb { background: #94a3b8; }
+
+    textarea { resize: none; }
+
+    .tab-btn {
+      display: inline-flex;
+      align-items: center;
+      height: 100%;
+      padding: 0 1rem;
+      font-size: 0.7rem;
+      font-weight: 600;
+      letter-spacing: 0.05em;
+      border-bottom: 2px solid transparent;
+      color: #94a3b8;
+      margin-bottom: -1px;
+      transition: color 150ms ease, border-color 150ms ease;
+      cursor: pointer;
+      background: none;
+      border-top: none;
+      border-left: none;
+      border-right: none;
+    }
+    .tab-btn:hover { color: #64748b; }
+    .tab-btn.active {
+      border-bottom-color: #4f46e5;
+      color: #4f46e5;
+    }
+
+    /* Detail panel — slides in from right via width transition */
+    #detail-panel {
+      width: 0;
+      flex-shrink: 0;
+      overflow: hidden;
+      transition: width 340ms cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    #detail-panel.open {
+      width: 300px;
+    }
+    #detail-panel-inner {
+      width: 300px;
+      height: 100%;
+      border-left: 1px solid #e2e8f0;
+      display: flex;
+      flex-direction: column;
+      background: white;
+    }
+  </style>
+</head>
+<body class="bg-white overflow-hidden">
+
+<div class="flex flex-col h-screen">
+
+  <!-- ─── Header ───────────────────────────────────────────── -->
+  <header class="h-14 bg-slate-100 border-b border-slate-200 flex items-center px-5 flex-shrink-0">
+    <div class="flex items-center gap-2.5">
+      <img src="../loremlogo.png" alt="Lorem" class="h-6 w-auto" onerror="this.style.display='none'" />
+      <div class="flex items-baseline gap-2">
+        <span class="text-slate-900 font-medium text-sm font-mono tracking-tight">Lorem</span>
+        <span class="text-slate-400 text-xs">UX Writing Assistant</span>
+      </div>
+    </div>
+    <div class="ml-auto">
+      <div class="w-7 h-7 rounded-full bg-indigo-500 flex items-center justify-center">
+        <span class="text-white text-xs font-semibold">CW</span>
+      </div>
+    </div>
+  </header>
+
+  <!-- ─── Body ─────────────────────────────────────────────── -->
+  <div class="flex flex-1 min-h-0">
+
+    <!-- Sidebar -->
+    <aside class="w-60 flex-shrink-0 bg-slate-100 border-r border-slate-200 flex flex-col overflow-hidden">
+      <nav class="px-3 py-3 space-y-0.5 flex-1 overflow-y-auto sidebar-scroll">
+        <p class="text-xs font-medium text-slate-400 uppercase tracking-wider px-2 pb-1 pt-1">Workspace</p>
+        <button class="w-full flex items-center gap-2.5 px-2.5 py-2 bg-white rounded-md text-slate-900 text-sm font-medium text-left shadow-sm">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+          Assistant
+        </button>
+        <button class="w-full flex items-center gap-2.5 px-2.5 py-2 hover:bg-slate-200 rounded-md text-slate-600 hover:text-slate-900 text-sm transition-colors text-left">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+          Library
+        </button>
+        <button class="w-full flex items-center gap-2.5 px-2.5 py-2 hover:bg-slate-200 rounded-md text-slate-600 hover:text-slate-900 text-sm transition-colors text-left">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></svg>
+          Admin
+        </button>
+
+        <div class="pt-3">
+          <p class="text-xs font-medium text-slate-400 uppercase tracking-wider px-2 pb-1 pt-1">Assistant history</p>
+          <div class="space-y-0.5">
+            <button class="w-full flex items-center px-2.5 py-1.5 hover:bg-slate-200 rounded-md text-slate-500 hover:text-slate-900 text-sm transition-colors text-left overflow-hidden">
+              <span class="truncate">Button copy for checkout flow</span>
+            </button>
+            <button class="w-full flex items-center px-2.5 py-1.5 hover:bg-slate-200 rounded-md text-slate-500 hover:text-slate-900 text-sm transition-colors text-left overflow-hidden">
+              <span class="truncate">Error message for file upload</span>
+            </button>
+            <button class="w-full flex items-center px-2.5 py-1.5 hover:bg-slate-200 rounded-md text-slate-500 hover:text-slate-900 text-sm transition-colors text-left overflow-hidden">
+              <span class="truncate">Modal copy - delete confirmation</span>
+            </button>
+          </div>
+        </div>
+      </nav>
+    </aside>
+
+    <!-- ── Main content ────────────────────────────────────── -->
+    <main class="flex-1 flex min-w-0 overflow-hidden relative">
+
+      <!-- STATE: Empty ─────────────────────────────────────── -->
+      <div id="state-empty" class="flex-1 flex flex-col items-center justify-center p-8 bg-white">
+        <div id="empty-content" class="w-full max-w-[520px]">
+
+          <div id="empty-heading" class="mb-5 text-center" style="transition: opacity 180ms ease;">
+            <h1 class="text-slate-900 font-semibold text-base">Ask Lorem</h1>
+            <p class="text-slate-400 text-sm mt-1 leading-relaxed">Paste copy to review, or describe what you need.</p>
+          </div>
+
+          <textarea
+            id="main-textarea"
+            oninput="autoResize(this)"
+            placeholder="E.g. &quot;Your session has expired. Please log in to continue.&quot;
+
+Or describe what you need — mention the product or element type in plain English if helpful."
+            class="w-full px-3 py-2.5 text-sm border border-slate-300 rounded-md bg-white text-slate-900 placeholder-slate-400 leading-relaxed transition-colors hover:border-slate-400 focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 focus:outline-none"
+            style="min-height: 132px; max-height: 320px; overflow-y: auto;"
+          ></textarea>
+
+          <button
+            onclick="submitRequest()"
+            class="mt-2.5 w-full h-9 bg-indigo-600 hover:bg-indigo-700 active:bg-indigo-800 text-white text-sm font-medium rounded-md transition-colors flex items-center justify-center gap-2"
+          >
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+            Get suggestions
+          </button>
+
+          <p id="empty-footer" class="text-center text-xs text-slate-400 mt-3 leading-relaxed" style="transition: opacity 180ms ease;">
+            Mention a product or element type if relevant — Lorem will infer from context if not.
+          </p>
+
+        </div>
+      </div>
+
+      <!-- STATE: Results ───────────────────────────────────── -->
+      <div id="state-results" class="flex-1 flex overflow-hidden" style="display:none;">
+
+        <!-- ── Panel 1: Conversation ──────────────────────── -->
+        <div class="w-96 flex-shrink-0 bg-white border-r border-slate-200 flex flex-col">
+
+          <div class="px-4 py-3 border-b border-slate-200 flex items-center justify-between flex-shrink-0">
+            <span class="text-xs font-medium text-slate-500">Conversation</span>
+            <button onclick="resetState()" class="inline-flex items-center gap-1 text-xs text-slate-400 hover:text-indigo-600 transition-colors font-medium">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+              New
+            </button>
+          </div>
+
+          <div id="chat-history" class="flex-1 overflow-y-auto px-4 py-4 min-h-0 space-y-4">
+            <!-- populated by renderChatHistory() -->
+          </div>
+
+          <div class="border-t border-slate-200 px-4 pt-3 pb-4 flex-shrink-0">
+            <textarea
+              id="left-textarea"
+              oninput="autoResize(this)"
+              placeholder="Add context or give feedback on the suggestion…"
+              class="w-full px-3 py-2.5 text-sm border border-slate-300 rounded-md bg-white text-slate-900 placeholder-slate-400 leading-relaxed transition-colors hover:border-slate-400 focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 focus:outline-none"
+              style="min-height: 80px; max-height: 200px; overflow-y: auto;"
+            ></textarea>
+            <button
+              onclick="submitFollowUp()"
+              class="mt-2 w-full h-9 bg-indigo-600 hover:bg-indigo-700 active:bg-indigo-800 text-white text-sm font-medium rounded-md transition-colors flex items-center justify-center gap-2"
+            >
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+              Send
+            </button>
+          </div>
+
+        </div>
+
+        <!-- ── Panel 2: Version view ───────────────────────── -->
+        <div id="middle-panel" class="flex-1 flex flex-col overflow-hidden" style="display:none;">
+
+          <div id="version-tabs" class="border-b border-slate-200 flex items-end px-5 flex-shrink-0" style="height: 41px;">
+            <!-- tabs added dynamically -->
+          </div>
+
+          <div class="flex-1 overflow-y-auto">
+
+            <!-- Loading skeleton -->
+            <div id="loading-state" class="p-8 max-w-2xl" style="display:none;">
+              <div class="flex items-center gap-2 mb-5">
+                <div class="shimmer h-6 w-32 rounded"></div>
+                <div class="shimmer h-4 w-48 rounded"></div>
+              </div>
+              <div class="flex items-center gap-1.5 mb-5">
+                <div class="shimmer h-5 w-28 rounded-full"></div>
+                <div class="shimmer h-5 w-24 rounded-full"></div>
+              </div>
+              <div class="flex mb-3">
+                <div class="shimmer w-0.5 rounded-full flex-shrink-0" style="min-height:64px;"></div>
+                <div class="flex-1 border border-l-0 border-slate-200 rounded-r-lg p-5 bg-slate-50">
+                  <div class="shimmer h-4 w-full rounded mb-2"></div>
+                  <div class="shimmer h-4 w-5/6 rounded"></div>
+                </div>
+              </div>
+              <div class="flex items-center justify-between mb-6 mt-3">
+                <div class="shimmer h-3.5 w-20 rounded"></div>
+                <div class="flex gap-1">
+                  <div class="shimmer h-7 w-16 rounded-md"></div>
+                  <div class="shimmer h-7 w-14 rounded-md"></div>
+                  <div class="shimmer h-7 w-14 rounded-md"></div>
+                </div>
+              </div>
+            </div>
+
+            <!-- ── Version 1 ── -->
+            <div id="version-1" class="version-panel p-8 max-w-2xl" style="display:none;">
+
+              <div class="flex items-center gap-2 mb-5">
+                <span class="inline-flex items-center gap-1.5 px-2.5 py-1 bg-blue-50 text-blue-700 border border-blue-200 text-xs font-medium rounded">
+                  <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17l9.2-9.2M17 17V7H7"/></svg>
+                  Adapted from library
+                </span>
+                <span class="text-xs text-slate-400">Library entry found · Adjusted for context</span>
+              </div>
+
+              <div class="flex flex-wrap gap-1.5 mb-5">
+                <span class="inline-flex items-center gap-1 px-2 py-0.5 bg-slate-100 text-slate-600 text-xs rounded-full">
+                  <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                  Inferred: Error messages
+                </span>
+                <span class="inline-flex items-center gap-1 px-2 py-0.5 bg-slate-100 text-slate-600 text-xs rounded-full">
+                  <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                  Context: Session timeout
+                </span>
+              </div>
+
+              <div class="flex mb-3">
+                <div class="w-0.5 bg-blue-400 rounded-l-lg flex-shrink-0"></div>
+                <div class="flex-1 border border-l-0 border-slate-200 rounded-r-lg overflow-hidden">
+                  <div class="px-5 py-4 bg-slate-50">
+                    <p class="font-mono text-sm text-slate-900 leading-relaxed">Your session has expired. Sign in again to continue.</p>
+                  </div>
+                </div>
+              </div>
+
+              <div class="flex items-center justify-between mb-6">
+                <span class="text-xs text-slate-400">52 characters</span>
+                <div class="flex items-center gap-1">
+                  <button id="copy-btn-1" onclick="handleCopy(1)" class="h-7 px-3 flex items-center gap-1.5 text-xs font-medium text-slate-600 hover:bg-slate-100 rounded-md transition-colors border border-slate-200">
+                    <svg id="copy-icon-1" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+                    <span id="copy-label-1">Copy</span>
+                  </button>
+                  <button class="h-7 px-3 flex items-center gap-1.5 text-xs font-medium text-slate-600 hover:bg-slate-100 rounded-md transition-colors border border-slate-200">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+                    Edit
+                  </button>
+                  <button class="h-7 px-3 flex items-center gap-1.5 text-xs font-medium text-slate-600 hover:bg-slate-100 rounded-md transition-colors border border-slate-200">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m19 21-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16z"/></svg>
+                    Save
+                  </button>
+                </div>
+              </div>
+
+              <div class="border-t border-slate-100 pt-5 flex items-center justify-between">
+                <button onclick="openDetails(1)" class="inline-flex items-center gap-1.5 text-sm text-indigo-600 hover:text-indigo-700 font-medium transition-colors">
+                  Rationale &amp; guidelines
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+                </button>
+                <button class="text-sm text-slate-400 hover:text-indigo-600 font-medium flex items-center gap-1.5 transition-colors">
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
+                  Generate 2 alternatives
+                </button>
+              </div>
+
+            </div>
+
+            <!-- ── Version 2 ── -->
+            <div id="version-2" class="version-panel p-8 max-w-2xl" style="display:none;">
+
+              <div class="flex items-center gap-2 mb-5">
+                <span class="inline-flex items-center gap-1.5 px-2.5 py-1 bg-amber-50 text-amber-700 border border-amber-200 text-xs font-medium rounded">
+                  <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                  AI-generated
+                </span>
+                <span class="text-xs text-slate-400">Refined based on your feedback</span>
+              </div>
+
+              <div class="flex flex-wrap gap-1.5 mb-5">
+                <span class="inline-flex items-center gap-1 px-2 py-0.5 bg-slate-100 text-slate-600 text-xs rounded-full">
+                  <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                  Inferred: Error messages
+                </span>
+                <span class="inline-flex items-center gap-1 px-2 py-0.5 bg-slate-100 text-slate-600 text-xs rounded-full">
+                  <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                  Context: Session timeout
+                </span>
+                <span class="inline-flex items-center gap-1 px-2 py-0.5 bg-violet-50 text-violet-700 border border-violet-100 text-xs rounded-full">
+                  <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+                  Feedback: warmer tone
+                </span>
+              </div>
+
+              <div class="flex mb-3">
+                <div class="w-0.5 bg-amber-400 rounded-l-lg flex-shrink-0"></div>
+                <div class="flex-1 border border-l-0 border-slate-200 rounded-r-lg overflow-hidden">
+                  <div class="px-5 py-4 bg-slate-50">
+                    <p class="font-mono text-sm text-slate-900 leading-relaxed">You've been signed out. Sign in to pick up where you left off.</p>
+                  </div>
+                </div>
+              </div>
+
+              <div class="flex items-center justify-between mb-6">
+                <span class="text-xs text-slate-400">62 characters</span>
+                <div class="flex items-center gap-1">
+                  <button id="copy-btn-2" onclick="handleCopy(2)" class="h-7 px-3 flex items-center gap-1.5 text-xs font-medium text-slate-600 hover:bg-slate-100 rounded-md transition-colors border border-slate-200">
+                    <svg id="copy-icon-2" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+                    <span id="copy-label-2">Copy</span>
+                  </button>
+                  <button class="h-7 px-3 flex items-center gap-1.5 text-xs font-medium text-slate-600 hover:bg-slate-100 rounded-md transition-colors border border-slate-200">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+                    Edit
+                  </button>
+                  <button class="h-7 px-3 flex items-center gap-1.5 text-xs font-medium text-slate-600 hover:bg-slate-100 rounded-md transition-colors border border-slate-200">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m19 21-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16z"/></svg>
+                    Save
+                  </button>
+                </div>
+              </div>
+
+              <div class="border-t border-slate-100 pt-5 flex items-center justify-between">
+                <button onclick="openDetails(2)" class="inline-flex items-center gap-1.5 text-sm text-indigo-600 hover:text-indigo-700 font-medium transition-colors">
+                  Rationale &amp; guidelines
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+                </button>
+                <button class="text-sm text-slate-400 hover:text-indigo-600 font-medium flex items-center gap-1.5 transition-colors">
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
+                  Generate 2 alternatives
+                </button>
+              </div>
+
+            </div>
+
+          </div><!-- /scrollable content -->
+        </div><!-- /middle-panel -->
+
+        <!-- ── Panel 3: Details (slides in) ────────────────── -->
+        <div id="detail-panel">
+          <div id="detail-panel-inner">
+
+            <div class="px-4 py-3 border-b border-slate-200 flex items-center justify-between flex-shrink-0">
+              <span id="detail-label" class="text-xs font-medium text-slate-500">Details · v1</span>
+              <button onclick="closeDetails()" class="w-6 h-6 flex items-center justify-center rounded text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition-colors">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+              </button>
+            </div>
+
+            <div id="detail-content" class="flex-1 overflow-y-auto px-5 py-5 space-y-5">
+              <!-- populated by openDetails(n) -->
+            </div>
+
+          </div>
+        </div>
+
+      </div><!-- /state-results -->
+    </main>
+  </div>
+</div>
+
+<!-- Prototype label -->
+<div class="fixed bottom-4 right-4 bg-slate-800 text-slate-300 text-xs px-3 py-1.5 rounded-full font-medium pointer-events-none select-none opacity-60">
+  Direction 1 · Conversation + versions
+</div>
+
+<script>
+  // ── Version data ─────────────────────────────────────────
+  const VERSION_DATA = {
+    1: {
+      copy:       'Your session has expired. Sign in again to continue.',
+      source:     'Adapted from library',
+      sourceType: 'library',
+      chars:      52,
+      confidence: 'High',
+      rationale:  '"Sign in" replaces "log in" — the GOV.SG standard term. Removed "Please" as it adds length without meaning. "again" frames the expiry as a temporary interruption, not a failure, which softens the message without obscuring the problem.',
+      guidelines: [
+        'Error pattern: state what failed, then what to do next',
+        'Gov.sg terminology: "Sign in" not "Log in"',
+        'Voice: plain language, active voice, empathetic framing',
+        'Under 15 words — accessibility reading level guideline',
+      ],
+    },
+    2: {
+      copy:       "You've been signed out. Sign in to pick up where you left off.",
+      source:     'AI-generated',
+      sourceType: 'ai',
+      chars:      62,
+      confidence: 'High',
+      rationale:  '"Signed out" replaces "session expired" — user-centred and avoids the clinical word "expired". "Pick up where you left off" reframes sign-in as continuation rather than recovery from failure, directly responding to your feedback about warmth.',
+      guidelines: [
+        'Error pattern: state what failed, then what to do next',
+        'Gov.sg terminology: "Sign in" not "Log in"',
+        'Voice: plain language, active voice, empathetic framing',
+        'Under 15 words — accessibility reading level guideline',
+        'Tone: warm and user-centred, not clinical',
+      ],
+    },
+  };
+
+  // ── State ────────────────────────────────────────────────
+  let conversationMessages = [];
+  let versionsGenerated = 0;
+
+  // ── Auto-resize textarea ─────────────────────────────────
+  function autoResize(el) {
+    el.style.height = 'auto';
+    const maxH = parseInt(el.style.maxHeight || '320');
+    const newH = Math.min(el.scrollHeight, maxH);
+    el.style.height = newH + 'px';
+    el.style.overflowY = el.scrollHeight > newH ? 'auto' : 'hidden';
+  }
+
+  // ── Escape HTML ──────────────────────────────────────────
+  function escHtml(text) {
+    return text
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/\n/g, '<br>');
+  }
+
+  // ── Render conversation history ──────────────────────────
+  function renderChatHistory() {
+    const container = document.getElementById('chat-history');
+    container.innerHTML = '';
+
+    conversationMessages.forEach((msg) => {
+      const wrap = document.createElement('div');
+      wrap.className = 'fade-in';
+
+      if (msg.type === 'user') {
+        wrap.innerHTML = `
+          <div class="bg-slate-50 border border-slate-200 rounded-md px-3 py-2.5">
+            <p class="text-sm text-slate-800 leading-relaxed">${escHtml(msg.text)}</p>
+          </div>`;
+      } else {
+        // Assistant message
+        const vd = VERSION_DATA[msg.version];
+        const copyId  = `chat-copy-icon-${msg.version}`;
+        const labelId = `chat-copy-label-${msg.version}`;
+
+        const sourceBadge = vd.sourceType === 'library'
+          ? `<span class="inline-flex items-center gap-1 px-1.5 py-0.5 bg-blue-50 text-blue-700 border border-blue-200 text-xs font-medium rounded">
+               <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17l9.2-9.2M17 17V7H7"/></svg>
+               ${vd.source}
+             </span>`
+          : `<span class="inline-flex items-center gap-1 px-1.5 py-0.5 bg-amber-50 text-amber-700 border border-amber-200 text-xs font-medium rounded">
+               <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+               ${vd.source}
+             </span>`;
+
+        wrap.innerHTML = `
+          <div class="space-y-2">
+            <div class="flex items-center gap-2">
+              ${sourceBadge}
+              <button onclick="switchVersion(${msg.version})" class="ml-auto text-xs text-slate-400 hover:text-indigo-600 font-mono font-medium transition-colors">v${msg.version}</button>
+            </div>
+            <div class="flex rounded-md overflow-hidden">
+              <div class="w-[3px] flex-shrink-0 ${vd.sourceType === 'library' ? 'bg-blue-400' : 'bg-amber-400'}"></div>
+              <div class="flex-1 ${vd.sourceType === 'library' ? 'bg-indigo-50 border border-l-0 border-indigo-200' : 'bg-amber-50 border border-l-0 border-amber-200'} px-3 py-2.5">
+                <p class="font-mono text-sm text-slate-900 leading-relaxed">${escHtml(vd.copy)}</p>
+              </div>
+            </div>
+            <div class="flex items-center gap-1.5">
+              <button
+                onclick="handleCopyChat(${msg.version})"
+                class="h-6 px-2 flex items-center gap-1 text-xs text-slate-500 hover:bg-slate-100 rounded border border-slate-200 transition-colors"
+              >
+                <svg id="${copyId}" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+                <span id="${labelId}">Copy</span>
+              </button>
+              <button
+                onclick="openDetails(${msg.version})"
+                class="h-6 px-2 flex items-center gap-1 text-xs text-indigo-600 hover:bg-indigo-50 rounded border border-indigo-200 transition-colors font-medium"
+              >
+                Details
+                <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+              </button>
+            </div>
+          </div>`;
+      }
+
+      container.appendChild(wrap);
+    });
+
+    container.scrollTop = container.scrollHeight;
+  }
+
+  // ── Add a message ────────────────────────────────────────
+  function addUserMessage(text) {
+    conversationMessages.push({ type: 'user', text });
+    renderChatHistory();
+  }
+
+  function addAssistantMessage(version) {
+    conversationMessages.push({ type: 'assistant', version });
+    renderChatHistory();
+  }
+
+  // ── Version tabs ─────────────────────────────────────────
+  function addVersionTab(n) {
+    const tabBar = document.getElementById('version-tabs');
+    const btn = document.createElement('button');
+    btn.id = `tab-${n}`;
+    btn.textContent = `v${n}`;
+    btn.onclick = () => switchVersion(n);
+    btn.className = 'tab-btn';
+    tabBar.appendChild(btn);
+    return btn;
+  }
+
+  function switchVersion(n) {
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    const tab = document.getElementById(`tab-${n}`);
+    if (tab) tab.classList.add('active');
+
+    document.querySelectorAll('.version-panel').forEach(el => el.style.display = 'none');
+    const panel = document.getElementById(`version-${n}`);
+    if (panel) {
+      panel.style.display = 'block';
+      panel.classList.remove('fade-in');
+      void panel.offsetWidth;
+      panel.classList.add('fade-in');
+    }
+
+    // If detail panel is open, update its content to match
+    if (document.getElementById('detail-panel').classList.contains('open')) {
+      openDetails(n);
+    }
+  }
+
+  // ── Open / close detail panel ────────────────────────────
+  function openDetails(n) {
+    const vd = VERSION_DATA[n];
+    if (!vd) return;
+
+    document.getElementById('detail-label').textContent = `Details · v${n}`;
+
+    const checkIcon = `<svg class="mt-0.5 flex-shrink-0" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#059669" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>`;
+
+    const guidelinesHtml = vd.guidelines.map(g =>
+      `<li class="flex items-start gap-2">${checkIcon}<span class="text-sm text-slate-600">${escHtml(g)}</span></li>`
+    ).join('');
+
+    document.getElementById('detail-content').innerHTML = `
+      <div>
+        <p class="text-[10px] font-semibold text-slate-400 uppercase tracking-wider mb-2">Rationale</p>
+        <p class="text-sm text-slate-600 leading-relaxed">${escHtml(vd.rationale)}</p>
+      </div>
+      <div class="border-t border-slate-100 pt-5">
+        <p class="text-[10px] font-semibold text-slate-400 uppercase tracking-wider mb-3">Guidelines met</p>
+        <ul class="space-y-2">${guidelinesHtml}</ul>
+      </div>
+      <div class="border-t border-slate-100 pt-5">
+        <p class="text-[10px] font-semibold text-slate-400 uppercase tracking-wider mb-1.5">Confidence</p>
+        <span class="text-sm text-emerald-600 font-medium">${escHtml(vd.confidence)}</span>
+      </div>`;
+
+    document.getElementById('detail-panel').classList.add('open');
+
+    // Make sure the matching version is active in the middle panel
+    switchVersion(n);
+  }
+
+  function closeDetails() {
+    document.getElementById('detail-panel').classList.remove('open');
+  }
+
+  // ── Loading → reveal version + add assistant message ─────
+  function startLoading(version) {
+    document.querySelectorAll('.version-panel').forEach(el => el.style.display = 'none');
+    document.getElementById('loading-state').style.display = 'block';
+    setTimeout(() => {
+      document.getElementById('loading-state').style.display = 'none';
+      switchVersion(version);
+      addAssistantMessage(version);
+    }, 1600);
+  }
+
+  // ── Initial submit with FLIP animation ──────────────────
+  function submitRequest() {
+    const textarea = document.getElementById('main-textarea');
+    const text = textarea.value.trim();
+    if (!text) { textarea.focus(); return; }
+
+    versionsGenerated = 1;
+
+    const first = textarea.getBoundingClientRect();
+
+    const clone = document.createElement('textarea');
+    clone.value = text;
+    clone.style.cssText = `
+      position: fixed;
+      top: ${first.top}px; left: ${first.left}px;
+      width: ${first.width}px; height: ${first.height}px;
+      margin: 0; resize: none; pointer-events: none; z-index: 600;
+      transition:
+        top    380ms cubic-bezier(0.16, 1, 0.3, 1),
+        left   380ms cubic-bezier(0.16, 1, 0.3, 1),
+        width  380ms cubic-bezier(0.16, 1, 0.3, 1),
+        height 380ms cubic-bezier(0.16, 1, 0.3, 1);
+      font-family: inherit; font-size: 0.875rem; line-height: 1.625;
+      padding: 0.625rem 0.75rem; border: 1px solid #cbd5e1;
+      border-radius: 0.375rem; background: white; color: #0f172a;
+      overflow: hidden; box-sizing: border-box;
+    `;
+    document.body.appendChild(clone);
+
+    document.getElementById('empty-heading').style.opacity = '0';
+    document.getElementById('empty-footer').style.opacity  = '0';
+
+    document.getElementById('state-empty').style.display = 'none';
+    document.getElementById('state-results').style.display = 'flex';
+
+    const leftTA = document.getElementById('left-textarea');
+    leftTA.value = '';
+    leftTA.style.opacity = '0';
+    leftTA.style.height = '80px';
+    leftTA.style.transition = 'opacity 100ms ease';
+
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        const last = leftTA.getBoundingClientRect();
+        clone.style.top    = last.top    + 'px';
+        clone.style.left   = last.left   + 'px';
+        clone.style.width  = last.width  + 'px';
+        clone.style.height = last.height + 'px';
+
+        const mp = document.getElementById('middle-panel');
+        mp.style.display = 'flex';
+        mp.classList.add('slide-in-right');
+
+        const tab = addVersionTab(1);
+        tab.classList.add('active');
+
+        setTimeout(() => {
+          clone.remove();
+          leftTA.style.opacity = '1';
+          leftTA.style.height = '';
+          addUserMessage(text);
+          startLoading(1);
+        }, 400);
+      });
+    });
+  }
+
+  // ── Follow-up submit ─────────────────────────────────────
+  function submitFollowUp() {
+    const leftTA = document.getElementById('left-textarea');
+    const text = leftTA.value.trim();
+    if (!text) { leftTA.focus(); return; }
+
+    if (versionsGenerated < 2) {
+      versionsGenerated = 2;
+      addVersionTab(2);
+    }
+
+    leftTA.value = '';
+    leftTA.style.height = '';
+
+    addUserMessage(text);
+    startLoading(2);
+  }
+
+  // ── Reset ────────────────────────────────────────────────
+  function resetState() {
+    conversationMessages = [];
+    versionsGenerated = 0;
+
+    closeDetails();
+    document.getElementById('state-results').style.display = 'none';
+    document.getElementById('middle-panel').style.display  = 'none';
+    document.getElementById('middle-panel').classList.remove('slide-in-right');
+    document.getElementById('loading-state').style.display = 'none';
+    document.getElementById('version-tabs').innerHTML = '';
+    document.querySelectorAll('.version-panel').forEach(el => el.style.display = 'none');
+    document.getElementById('chat-history').innerHTML = '';
+
+    document.getElementById('state-empty').style.display = 'flex';
+    document.getElementById('main-textarea').value = '';
+    document.getElementById('main-textarea').style.height = '';
+    document.getElementById('left-textarea').value = '';
+    document.getElementById('left-textarea').style.height = '';
+    document.getElementById('empty-heading').style.opacity = '1';
+    document.getElementById('empty-footer').style.opacity  = '1';
+  }
+
+  // ── Copy (version panel) ─────────────────────────────────
+  function handleCopy(n) {
+    const btn   = document.getElementById(`copy-btn-${n}`);
+    const icon  = document.getElementById(`copy-icon-${n}`);
+    const label = document.getElementById(`copy-label-${n}`);
+    const copy  = VERSION_DATA[n] ? VERSION_DATA[n].copy : '';
+    if (navigator.clipboard && copy) navigator.clipboard.writeText(copy);
+    label.textContent = 'Copied';
+    icon.innerHTML = '<polyline points="20 6 9 17 4 12"/>';
+    btn.classList.add('text-emerald-700', 'bg-emerald-50', 'border-emerald-200');
+    btn.classList.remove('text-slate-600');
+    setTimeout(() => {
+      label.textContent = 'Copy';
+      icon.innerHTML = '<rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>';
+      btn.classList.remove('text-emerald-700', 'bg-emerald-50', 'border-emerald-200');
+      btn.classList.add('text-slate-600');
+    }, 2000);
+  }
+
+  // ── Copy (conversation bubble) ───────────────────────────
+  function handleCopyChat(n) {
+    const iconEl  = document.getElementById(`chat-copy-icon-${n}`);
+    const labelEl = document.getElementById(`chat-copy-label-${n}`);
+    const copy    = VERSION_DATA[n] ? VERSION_DATA[n].copy : '';
+    if (navigator.clipboard && copy) navigator.clipboard.writeText(copy);
+    if (labelEl) labelEl.textContent = 'Copied';
+    if (iconEl)  iconEl.innerHTML = '<polyline points="20 6 9 17 4 12"/>';
+    setTimeout(() => {
+      if (labelEl) labelEl.textContent = 'Copy';
+      if (iconEl)  iconEl.innerHTML = '<rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>';
+    }, 2000);
+  }
+</script>
+</body>
+</html>

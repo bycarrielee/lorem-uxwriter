@@ -1,0 +1,86 @@
+<h2>System architecture</h2>
+<p class="subtitle">How the four layers connect. Does this look right?</p>
+
+<div style="display:flex;flex-direction:column;gap:16px;max-width:860px;margin:0 auto">
+
+  <!-- Row 1: User -->
+  <div style="display:flex;justify-content:center">
+    <div style="background:#f0f9ff;border:2px solid #0284c7;border-radius:12px;padding:14px 32px;text-align:center;min-width:200px">
+      <div style="font-size:11px;text-transform:uppercase;letter-spacing:1px;color:#0284c7;font-weight:600">Users</div>
+      <div style="font-size:14px;margin-top:4px">UX practitioners · POs · Devs</div>
+      <div style="font-size:12px;color:#6b7280;margin-top:2px">.gov.sg email · self-serve signup</div>
+    </div>
+  </div>
+
+  <div style="display:flex;justify-content:center;color:#94a3b8;font-size:20px">↕</div>
+
+  <!-- Row 2: Next.js Frontend -->
+  <div style="background:#f0fdf4;border:2px solid #16a34a;border-radius:12px;padding:16px 24px">
+    <div style="font-size:11px;text-transform:uppercase;letter-spacing:1px;color:#16a34a;font-weight:600;margin-bottom:10px">Frontend · Next.js</div>
+    <div style="display:flex;gap:12px;flex-wrap:wrap">
+      <div style="background:white;border:1px solid #d1fae5;border-radius:8px;padding:8px 14px;font-size:13px">✏️ Copy editor</div>
+      <div style="background:white;border:1px solid #d1fae5;border-radius:8px;padding:8px 14px;font-size:13px">📚 Library browser</div>
+      <div style="background:white;border:1px solid #d1fae5;border-radius:8px;padding:8px 14px;font-size:13px">🕘 Session history</div>
+      <div style="background:white;border:1px solid #d1fae5;border-radius:8px;padding:8px 14px;font-size:13px">🔐 Auth pages</div>
+      <div style="background:white;border:1px solid #bbf7d0;border-radius:8px;padding:8px 14px;font-size:13px;color:#15803d">🛠 Admin panel</div>
+    </div>
+  </div>
+
+  <div style="display:flex;justify-content:center;color:#94a3b8;font-size:20px">↕</div>
+
+  <!-- Row 3: API layer - two columns -->
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
+
+    <div style="background:#fdf4ff;border:2px solid #9333ea;border-radius:12px;padding:16px 20px">
+      <div style="font-size:11px;text-transform:uppercase;letter-spacing:1px;color:#9333ea;font-weight:600;margin-bottom:10px">Agent service · Next.js API</div>
+      <div style="font-size:13px;color:#374151;line-height:1.7">
+        1. Receive copy + context<br>
+        2. <strong>Query Supabase</strong> for matching library entries<br>
+        3. Load relevant foundations + patterns<br>
+        4. Call <strong>Claude API</strong> with structured prompt<br>
+        5. Return structured response
+      </div>
+    </div>
+
+    <div style="background:#fff7ed;border:2px solid #ea580c;border-radius:12px;padding:16px 20px">
+      <div style="font-size:11px;text-transform:uppercase;letter-spacing:1px;color:#ea580c;font-weight:600;margin-bottom:10px">Content API · Supabase REST</div>
+      <div style="font-size:13px;color:#374151;line-height:1.7">
+        Auto-generated from DB schema<br>
+        Admin CRUD for library entries<br>
+        Future: external content updates<br>
+        Row-level security (admin only writes)<br>
+        <span style="color:#ea580c;font-weight:500">→ The future content API is ready on day one</span>
+      </div>
+    </div>
+
+  </div>
+
+  <div style="display:flex;justify-content:center;color:#94a3b8;font-size:20px">↕</div>
+
+  <!-- Row 4: Supabase + Claude -->
+  <div style="display:grid;grid-template-columns:2fr 1fr;gap:16px">
+
+    <div style="background:#fefce8;border:2px solid #ca8a04;border-radius:12px;padding:16px 20px">
+      <div style="font-size:11px;text-transform:uppercase;letter-spacing:1px;color:#ca8a04;font-weight:600;margin-bottom:10px">Supabase (PostgreSQL)</div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;font-size:12px">
+        <span style="background:#fef9c3;padding:4px 10px;border-radius:6px">copy_entries</span>
+        <span style="background:#fef9c3;padding:4px 10px;border-radius:6px">patterns</span>
+        <span style="background:#fef9c3;padding:4px 10px;border-radius:6px">foundations</span>
+        <span style="background:#fef9c3;padding:4px 10px;border-radius:6px">products</span>
+        <span style="background:#fef9c3;padding:4px 10px;border-radius:6px">users (Auth)</span>
+        <span style="background:#fef9c3;padding:4px 10px;border-radius:6px">sessions</span>
+      </div>
+      <div style="margin-top:10px;font-size:12px;color:#92400e">Supabase Auth handles .gov.sg email restriction · Row-level security throughout</div>
+    </div>
+
+    <div style="background:#f5f3ff;border:2px solid #7c3aed;border-radius:12px;padding:16px 20px">
+      <div style="font-size:11px;text-transform:uppercase;letter-spacing:1px;color:#7c3aed;font-weight:600;margin-bottom:10px">Claude API</div>
+      <div style="font-size:12px;color:#374151;line-height:1.7">
+        Receives: copy + context + library matches + loaded foundations<br><br>
+        Returns: suggested copy · rationale · confidence · source
+      </div>
+    </div>
+
+  </div>
+
+</div>

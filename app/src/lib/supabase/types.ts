@@ -25,6 +25,7 @@ export type Database = {
           id?: number
           updated_at?: string
         }
+        Relationships: []
       }
       copy_entries: {
         Row: {
@@ -87,6 +88,7 @@ export type Database = {
           usage_examples?: string[]
           validated_by_research?: boolean
         }
+        Relationships: []
       }
       foundations: {
         Row: {
@@ -113,6 +115,7 @@ export type Database = {
           type?: Database['public']['Enums']['foundation_type']
           updated_at?: string
         }
+        Relationships: []
       }
       patterns: {
         Row: {
@@ -139,6 +142,7 @@ export type Database = {
           scope?: Database['public']['Enums']['content_scope']
           updated_at?: string
         }
+        Relationships: []
       }
       products: {
         Row: {
@@ -165,6 +169,7 @@ export type Database = {
           name?: string
           slug?: string
         }
+        Relationships: []
       }
       session_messages: {
         Row: {
@@ -194,6 +199,7 @@ export type Database = {
           session_id?: string
           source_type?: Database['public']['Enums']['source_type'] | null
         }
+        Relationships: []
       }
       sessions: {
         Row: {
@@ -214,6 +220,142 @@ export type Database = {
           name?: string | null
           product_id?: string | null
         }
+        Relationships: []
+      }
+      app_sessions: {
+        Row: {
+          id: string
+          client_id: string
+          user_id: string | null
+          started_at: string
+          ended_at: string | null
+          duration_seconds: number | null
+        }
+        Insert: {
+          id?: string
+          client_id: string
+          user_id?: string | null
+          started_at?: string
+          ended_at?: string | null
+          duration_seconds?: number | null
+        }
+        Update: {
+          id?: string
+          client_id?: string
+          user_id?: string | null
+          started_at?: string
+          ended_at?: string | null
+          duration_seconds?: number | null
+        }
+        Relationships: []
+      }
+      suggestion_interactions: {
+        Row: {
+          id: string
+          client_id: string
+          user_id: string | null
+          session_id: string | null
+          interaction: 'copied' | 'rationale_opened' | 'follow_up_sent' | 'quick_action_shorter' | 'quick_action_alternatives'
+          source_tier: 'library' | 'adapted' | 'ai' | 'ai_low' | null
+          char_count: number | null
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          client_id: string
+          user_id?: string | null
+          session_id?: string | null
+          interaction: 'copied' | 'rationale_opened' | 'follow_up_sent' | 'quick_action_shorter' | 'quick_action_alternatives'
+          source_tier?: 'library' | 'adapted' | 'ai' | 'ai_low' | null
+          char_count?: number | null
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          client_id?: string
+          user_id?: string | null
+          session_id?: string | null
+          interaction?: 'copied' | 'rationale_opened' | 'follow_up_sent' | 'quick_action_shorter' | 'quick_action_alternatives'
+          source_tier?: 'library' | 'adapted' | 'ai' | 'ai_low' | null
+          char_count?: number | null
+          created_at?: string
+        }
+        Relationships: []
+      }
+      api_calls: {
+        Row: {
+          id: string
+          client_id: string
+          user_id: string | null
+          session_id: string | null
+          model: string | null
+          status: 'success' | 'error' | 'timeout'
+          error_code: string | null
+          duration_ms: number | null
+          input_tokens: number | null
+          output_tokens: number | null
+          cost_usd: number | null
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          client_id: string
+          user_id?: string | null
+          session_id?: string | null
+          model?: string | null
+          status: 'success' | 'error' | 'timeout'
+          error_code?: string | null
+          duration_ms?: number | null
+          input_tokens?: number | null
+          output_tokens?: number | null
+          cost_usd?: number | null
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          client_id?: string
+          user_id?: string | null
+          session_id?: string | null
+          model?: string | null
+          status?: 'success' | 'error' | 'timeout'
+          error_code?: string | null
+          duration_ms?: number | null
+          input_tokens?: number | null
+          output_tokens?: number | null
+          cost_usd?: number | null
+          created_at?: string
+        }
+        Relationships: []
+      }
+      events: {
+        Row: {
+          id: string
+          client_id: string
+          user_id: string | null
+          session_id: string | null
+          event: string
+          properties: Json | null
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          client_id: string
+          user_id?: string | null
+          session_id?: string | null
+          event: string
+          properties?: Json | null
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          client_id?: string
+          user_id?: string | null
+          session_id?: string | null
+          event?: string
+          properties?: Json | null
+          created_at?: string
+        }
+        Relationships: []
       }
     }
     Views: Record<string, never>

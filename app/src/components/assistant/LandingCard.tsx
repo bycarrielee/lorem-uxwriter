@@ -16,15 +16,18 @@ interface Props {
   loading: boolean
   scopeError?: string | null
   onClearScopeError?: () => void
+  budgetExceeded?: boolean
 }
 
-export function LandingCard({ onSubmit, loading, scopeError, onClearScopeError }: Props) {
+export function LandingCard({ onSubmit, loading, scopeError, onClearScopeError, budgetExceeded }: Props) {
   const [input, setInput] = useState('')
   const isFigma = isFigmaUrl(input)
 
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
-    if (!input.trim() || loading) return
+    if (loading) return
+    // When budget exceeded: always pass through to submit() so it can open the API key modal
+    if (!input.trim() && !budgetExceeded) return
     onSubmit({ input: input.trim() })
   }
 
@@ -97,8 +100,8 @@ export function LandingCard({ onSubmit, loading, scopeError, onClearScopeError }
         {/* Submit */}
         <button
           type="submit"
-          disabled={!input.trim() || loading}
-          className="submit-btn"
+          disabled={budgetExceeded ? false : (!input.trim() || loading)}
+          className={`submit-btn${budgetExceeded ? ' is-budget-exceeded' : ''}`}
         >
           {loading ? (
             <>

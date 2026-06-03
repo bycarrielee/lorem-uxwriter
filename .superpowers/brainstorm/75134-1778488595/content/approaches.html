@@ -1,0 +1,71 @@
+<h2>Three architectural approaches</h2>
+<p class="subtitle">How should the system handle the relationship between the copy library and the AI?</p>
+
+<div class="options">
+  <div class="option" data-choice="a" onclick="toggleSelect(this)">
+    <div class="letter">A</div>
+    <div class="content">
+      <h3>Structured lookup → AI (Recommended)</h3>
+      <p>Library search is a deterministic database query <em>before</em> the AI is invoked. The AI only fills gaps the library doesn't cover. Source is always explicit: library hit, adapted, or AI-generated.</p>
+      <div style="background:#f0f4ff;border-radius:8px;padding:12px;margin-top:10px;font-size:13px;line-height:1.6">
+        <strong>Flow:</strong> User submits copy →
+        <span style="color:#2563eb">DB query for matching patterns</span> →
+        match found? surface it →
+        no match? <span style="color:#7c3aed">Claude API</span> reviews against foundations + patterns →
+        structured output
+      </div>
+      <div style="display:flex;gap:16px;margin-top:10px;font-size:12px">
+        <div style="color:#16a34a">✓ Deterministic library matching</div>
+        <div style="color:#16a34a">✓ Clear source transparency</div>
+        <div style="color:#16a34a">✓ API-ready from day one</div>
+        <div style="color:#dc2626">✗ More upfront DB work</div>
+      </div>
+      <div style="margin-top:8px;font-size:12px;color:#6b7280"><strong>Stack:</strong> Next.js · PostgreSQL · Claude API</div>
+    </div>
+  </div>
+
+  <div class="option" data-choice="b" onclick="toggleSelect(this)">
+    <div class="letter">B</div>
+    <div class="content">
+      <h3>RAG (AI-first with semantic search)</h3>
+      <p>Copy library is embedded as vectors. Everything goes through the AI — it semantically retrieves relevant library entries as context before responding. More flexible matching.</p>
+      <div style="background:#f0f4ff;border-radius:8px;padding:12px;margin-top:10px;font-size:13px;line-height:1.6">
+        <strong>Flow:</strong> User submits copy →
+        <span style="color:#7c3aed">vector similarity search</span> retrieves relevant library entries →
+        <span style="color:#7c3aed">Claude API</span> receives copy + retrieved context →
+        structured output
+      </div>
+      <div style="display:flex;gap:16px;margin-top:10px;font-size:12px">
+        <div style="color:#16a34a">✓ Fuzzy/semantic matching</div>
+        <div style="color:#16a34a">✓ Scales well with large libraries</div>
+        <div style="color:#dc2626">✗ Less deterministic</div>
+        <div style="color:#dc2626">✗ Harder to explain source clearly</div>
+        <div style="color:#dc2626">✗ Extra infra (vector DB)</div>
+      </div>
+      <div style="margin-top:8px;font-size:12px;color:#6b7280"><strong>Stack:</strong> Next.js · PostgreSQL + pgvector · Claude API</div>
+    </div>
+  </div>
+
+  <div class="option" data-choice="c" onclick="toggleSelect(this)">
+    <div class="letter">C</div>
+    <div class="content">
+      <h3>File-based (lightweight, no DB)</h3>
+      <p>Content system lives in structured JSON/Markdown files. The AI loads relevant files on demand. No database needed initially — faster to build, easier to edit directly.</p>
+      <div style="background:#f0f4ff;border-radius:8px;padding:12px;margin-top:10px;font-size:13px;line-height:1.6">
+        <strong>Flow:</strong> User submits copy →
+        <span style="color:#2563eb">file system lookup</span> (JSON pattern files) →
+        relevant files loaded into context →
+        <span style="color:#7c3aed">Claude API</span> reviews →
+        structured output
+      </div>
+      <div style="display:flex;gap:16px;margin-top:10px;font-size:12px">
+        <div style="color:#16a34a">✓ Fastest to build</div>
+        <div style="color:#16a34a">✓ Human-editable content</div>
+        <div style="color:#dc2626">✗ Not API-ready</div>
+        <div style="color:#dc2626">✗ Doesn't scale beyond ~500 entries</div>
+        <div style="color:#dc2626">✗ Needs migration later anyway</div>
+      </div>
+      <div style="margin-top:8px;font-size:12px;color:#6b7280"><strong>Stack:</strong> Next.js · File system · Claude API</div>
+    </div>
+  </div>
+</div>

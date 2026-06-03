@@ -1,0 +1,1286 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>lorem-uxwriter — Design Prototype</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'system-ui', 'sans-serif'],
+            mono: ['JetBrains Mono', 'ui-monospace', 'monospace'],
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    * { box-sizing: border-box; }
+    body { font-family: 'Inter', system-ui, sans-serif; -webkit-font-smoothing: antialiased; overflow: hidden; width: 100vw; }
+
+    /* Screen switcher — managed via inline style in JS */
+
+    /* Shimmer animation */
+    @keyframes shimmer {
+      0% { background-position: -200% 0; }
+      100% { background-position: 200% 0; }
+    }
+    .shimmer {
+      background: linear-gradient(90deg, #f1f5f9 25%, #e2e8f0 50%, #f1f5f9 75%);
+      background-size: 200% 100%;
+      animation: shimmer 1.5s infinite;
+    }
+
+    /* Fade-in for response */
+    @keyframes fadeSlideIn {
+      from { opacity: 0; transform: translateY(6px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .fade-in { animation: fadeSlideIn 200ms ease-out forwards; }
+
+    /* Collapsible — managed via inline style in JS */
+
+    /* Focus styles */
+    input:focus, textarea:focus, select:focus, button:focus-visible {
+      outline: 2px solid #6366f1;
+      outline-offset: 2px;
+    }
+    button:focus:not(:focus-visible) { outline: none; }
+
+    /* Custom scrollbar */
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 3px; }
+
+    /* Auth background */
+    .auth-bg {
+      background-color: #f8fafc;
+      background-image: radial-gradient(circle at 1px 1px, #e2e8f0 1px, transparent 0);
+      background-size: 20px 20px;
+    }
+
+    /* Dark sidebar scrollbar */
+    .sidebar-scroll::-webkit-scrollbar-thumb { background: #94a3b8; }
+    .sidebar-scroll::-webkit-scrollbar-track { background: transparent; }
+
+    /* History item context menu — fixed so it escapes overflow:hidden sidebar */
+    .hist-menu { position: fixed; z-index: 1000; }
+
+    /* Detail panel — slides in from right */
+    .er-detail-panel {
+      width: 0;
+      flex-shrink: 0;
+      overflow: hidden;
+      transition: width 340ms cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .er-detail-panel.open { width: 420px; }
+    .er-detail-panel-inner {
+      width: 420px;
+      height: 100%;
+      border-left: 1px solid #e2e8f0;
+      display: flex;
+      flex-direction: column;
+      background: white;
+    }
+
+    /* Reduced motion */
+    @media (prefers-reduced-motion: reduce) {
+      .fade-in { animation: none; opacity: 1; }
+      .shimmer { animation: none; background: #f1f5f9; }
+      .er-detail-panel { transition: none; }
+      * { transition-duration: 0ms !important; }
+    }
+  </style>
+</head>
+<body class="bg-white">
+
+<!-- ─── Navigation Bar ─────────────────────────────────── -->
+<div class="fixed top-0 left-0 right-0 z-50 bg-slate-900 border-b border-slate-800 flex items-center gap-3 px-4 py-2">
+  <span class="text-slate-400 text-xs font-medium uppercase tracking-wider">Prototype screens</span>
+  <div class="flex gap-1 ml-2">
+    <button onclick="showScreen('editor')" id="btn-editor" class="px-3 py-1.5 text-xs font-medium rounded-md transition-colors bg-slate-700 text-white">Editor</button>
+    <button onclick="showScreen('editor-response')" id="btn-editor-response" class="px-3 py-1.5 text-xs font-medium rounded-md transition-colors text-slate-400 hover:text-white hover:bg-slate-800">Editor (response)</button>
+    <button onclick="showScreen('library')" id="btn-library" class="px-3 py-1.5 text-xs font-medium rounded-md transition-colors text-slate-400 hover:text-white hover:bg-slate-800">Library</button>
+  </div>
+  <div class="ml-auto">
+    <button onclick="showScreen('feedback')" id="btn-feedback" class="px-3 py-1.5 text-xs font-medium rounded-md transition-colors text-slate-400 hover:text-white hover:bg-slate-800">Feedback</button>
+  </div>
+</div>
+
+<!-- Offset for nav bar -->
+<div class="h-10"></div>
+
+<!-- ─────────────────────────────────────────────────────── -->
+<!-- SCREEN: Editor (empty state)                          -->
+<!-- ─────────────────────────────────────────────────────── -->
+<div id="screen-editor" class="bg-white" style="display:none;">
+  <div class="flex flex-col h-[calc(100vh-2.5rem)] w-full">
+
+    <!-- Full-width header -->
+    <header class="h-14 bg-slate-100 border-b border-slate-200 flex items-center px-5 flex-shrink-0">
+      <div class="flex items-center gap-2.5 flex-shrink-0">
+        <img src="../loremlogo.png" alt="Lorem" class="h-6 w-auto flex-shrink-0" />
+        <div class="flex items-baseline gap-2">
+          <span class="text-slate-900 font-medium text-sm font-mono tracking-tight">Lorem</span>
+          <span class="text-slate-400 text-xs">UX Writing Assistant</span>
+        </div>
+      </div>
+    </header>
+
+    <div class="flex flex-1 min-h-0">
+
+    <!-- Sidebar -->
+    <aside class="w-60 flex-shrink-0 bg-slate-100 border-r border-slate-200 flex flex-col h-full overflow-hidden">
+      <nav class="px-3 py-3 space-y-0.5 flex-1 overflow-y-auto sidebar-scroll">
+        <p class="text-xs font-medium text-slate-400 uppercase tracking-wider px-2 pb-1 pt-1">Workspace</p>
+        <button onclick="showScreen('editor')" class="w-full flex items-center gap-2.5 px-2.5 py-2 bg-white rounded-md text-slate-900 text-sm font-medium text-left shadow-sm">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+          Assistant
+        </button>
+        <button onclick="showScreen('library')" class="w-full flex items-center gap-2.5 px-2.5 py-2 hover:bg-slate-200 rounded-md text-slate-600 hover:text-slate-900 text-sm transition-colors text-left">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+          Library
+        </button>
+        <div class="pt-3">
+          <p class="text-xs font-medium text-slate-400 uppercase tracking-wider px-2 pb-1 pt-1">Assistant history</p>
+          <div class="space-y-0.5">
+            <div class="relative group">
+              <button onclick="showScreen('editor')" class="w-full flex items-center px-2.5 py-1.5 pr-7 hover:bg-slate-200 rounded-md text-slate-500 hover:text-slate-900 text-sm transition-colors text-left overflow-hidden"><span class="truncate">Button copy for checkout flow</span></button>
+              <button onclick="toggleHistMenu(this,event)" class="absolute right-1 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 w-5 h-5 flex items-center justify-center rounded text-slate-400 hover:text-slate-700 hover:bg-slate-300 transition-opacity" tabindex="-1"><svg width="12" height="12" viewBox="0 0 20 20" fill="currentColor"><circle cx="4" cy="10" r="1.75"/><circle cx="10" cy="10" r="1.75"/><circle cx="16" cy="10" r="1.75"/></svg></button>
+              <div class="hist-menu hidden w-32 bg-white border border-slate-200 rounded-md shadow-lg py-1">
+                <button onclick="event.stopPropagation();document.querySelectorAll('.hist-menu').forEach(function(m){m.classList.add('hidden')})" class="w-full px-3 py-1.5 text-sm text-slate-700 hover:bg-slate-50 text-left">Rename</button>
+                <button onclick="event.stopPropagation();document.querySelectorAll('.hist-menu').forEach(function(m){m.classList.add('hidden')})" class="w-full px-3 py-1.5 text-sm text-red-500 hover:bg-red-50 text-left">Delete</button>
+              </div>
+            </div>
+            <div class="relative group">
+              <button onclick="showScreen('editor-response')" class="w-full flex items-center px-2.5 py-1.5 pr-7 hover:bg-slate-200 rounded-md text-slate-500 hover:text-slate-900 text-sm transition-colors text-left overflow-hidden"><span class="truncate">Error message for file upload</span></button>
+              <button onclick="toggleHistMenu(this,event)" class="absolute right-1 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 w-5 h-5 flex items-center justify-center rounded text-slate-400 hover:text-slate-700 hover:bg-slate-300 transition-opacity" tabindex="-1"><svg width="12" height="12" viewBox="0 0 20 20" fill="currentColor"><circle cx="4" cy="10" r="1.75"/><circle cx="10" cy="10" r="1.75"/><circle cx="16" cy="10" r="1.75"/></svg></button>
+              <div class="hist-menu hidden w-32 bg-white border border-slate-200 rounded-md shadow-lg py-1">
+                <button onclick="event.stopPropagation();document.querySelectorAll('.hist-menu').forEach(function(m){m.classList.add('hidden')})" class="w-full px-3 py-1.5 text-sm text-slate-700 hover:bg-slate-50 text-left">Rename</button>
+                <button onclick="event.stopPropagation();document.querySelectorAll('.hist-menu').forEach(function(m){m.classList.add('hidden')})" class="w-full px-3 py-1.5 text-sm text-red-500 hover:bg-red-50 text-left">Delete</button>
+              </div>
+            </div>
+            <div class="relative group">
+              <button onclick="showScreen('editor')" class="w-full flex items-center px-2.5 py-1.5 pr-7 hover:bg-slate-200 rounded-md text-slate-500 hover:text-slate-900 text-sm transition-colors text-left overflow-hidden"><span class="truncate">Modal copy - delete confirmation</span></button>
+              <button onclick="toggleHistMenu(this,event)" class="absolute right-1 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 w-5 h-5 flex items-center justify-center rounded text-slate-400 hover:text-slate-700 hover:bg-slate-300 transition-opacity" tabindex="-1"><svg width="12" height="12" viewBox="0 0 20 20" fill="currentColor"><circle cx="4" cy="10" r="1.75"/><circle cx="10" cy="10" r="1.75"/><circle cx="16" cy="10" r="1.75"/></svg></button>
+              <div class="hist-menu hidden w-32 bg-white border border-slate-200 rounded-md shadow-lg py-1">
+                <button onclick="event.stopPropagation();document.querySelectorAll('.hist-menu').forEach(function(m){m.classList.add('hidden')})" class="w-full px-3 py-1.5 text-sm text-slate-700 hover:bg-slate-50 text-left">Rename</button>
+                <button onclick="event.stopPropagation();document.querySelectorAll('.hist-menu').forEach(function(m){m.classList.add('hidden')})" class="w-full px-3 py-1.5 text-sm text-red-500 hover:bg-red-50 text-left">Delete</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </nav>
+    </aside>
+
+      <!-- Pane 2: main content -->
+      <div class="flex-1 auth-bg flex items-center justify-center px-8">
+        <div class="w-full max-w-md bg-white rounded-2xl border border-slate-200/80 shadow-sm px-8 py-10">
+          <div class="text-center mb-7">
+            <img src="../loremlogo.png" alt="Lorem" class="h-10 w-auto mx-auto mb-5" />
+            <h2 class="text-slate-900 font-semibold text-2xl tracking-tight mb-2">Ask <span class="font-mono">Lorem</span></h2>
+            <p class="text-slate-500 text-sm leading-relaxed max-w-xs mx-auto">Paste a draft of your copy, or describe what you need.</p>
+          </div>
+          <textarea
+            class="w-full h-36 px-4 py-3 text-sm border border-slate-200 rounded-xl bg-white text-slate-900 placeholder-slate-400 resize-none leading-relaxed shadow-sm focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 focus:outline-none transition-colors duration-150"
+            placeholder="Review error message: File upload failed. Please try again."
+          ></textarea>
+          <button onclick="showScreen('editor-response')" class="mt-3 w-full h-11 bg-indigo-600 hover:bg-indigo-700 active:bg-indigo-800 text-white text-sm font-medium rounded-xl transition-colors duration-150 flex items-center justify-center gap-2">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+            Get suggestions
+          </button>
+        </div>
+      </div>
+
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ─────────────────────────────────────────────────────── -->
+<!-- SCREEN: Editor (with response)                        -->
+<!-- ─────────────────────────────────────────────────────── -->
+<div id="screen-editor-response" class="bg-white" style="display:none;">
+  <div class="flex flex-col h-[calc(100vh-2.5rem)] w-full">
+
+    <!-- Full-width header -->
+    <header class="h-14 bg-slate-100 border-b border-slate-200 flex items-center px-5 flex-shrink-0">
+      <div class="flex items-center gap-2.5 flex-shrink-0">
+        <img src="../loremlogo.png" alt="Lorem" class="h-6 w-auto flex-shrink-0" />
+        <div class="flex items-baseline gap-2">
+          <span class="text-slate-900 font-medium text-sm font-mono tracking-tight">Lorem</span>
+          <span class="text-slate-400 text-xs">UX Writing Assistant</span>
+        </div>
+      </div>
+    </header>
+
+    <div class="flex flex-1 min-h-0">
+
+    <!-- Sidebar -->
+    <aside class="w-60 flex-shrink-0 bg-slate-100 border-r border-slate-200 flex flex-col h-full overflow-hidden">
+      <nav class="px-3 py-3 space-y-0.5 flex-1 overflow-y-auto sidebar-scroll">
+        <p class="text-xs font-medium text-slate-400 uppercase tracking-wider px-2 pb-1 pt-1">Workspace</p>
+        <button onclick="showScreen('editor')" class="w-full flex items-center gap-2.5 px-2.5 py-2 bg-white rounded-md text-slate-900 text-sm font-medium text-left shadow-sm">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+          Assistant
+        </button>
+        <button onclick="showScreen('library')" class="w-full flex items-center gap-2.5 px-2.5 py-2 hover:bg-slate-200 rounded-md text-slate-600 hover:text-slate-900 text-sm transition-colors text-left">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+          Library
+        </button>
+        <div class="pt-3">
+          <p class="text-xs font-medium text-slate-400 uppercase tracking-wider px-2 pb-1 pt-1">Assistant history</p>
+          <div class="space-y-0.5">
+            <div class="relative group">
+              <button onclick="showScreen('editor')" class="w-full flex items-center px-2.5 py-1.5 pr-7 hover:bg-slate-200 rounded-md text-slate-500 hover:text-slate-900 text-sm transition-colors text-left overflow-hidden"><span class="truncate">Button copy for checkout flow</span></button>
+              <button onclick="toggleHistMenu(this,event)" class="absolute right-1 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 w-5 h-5 flex items-center justify-center rounded text-slate-400 hover:text-slate-700 hover:bg-slate-300 transition-opacity" tabindex="-1"><svg width="12" height="12" viewBox="0 0 20 20" fill="currentColor"><circle cx="4" cy="10" r="1.75"/><circle cx="10" cy="10" r="1.75"/><circle cx="16" cy="10" r="1.75"/></svg></button>
+              <div class="hist-menu hidden w-32 bg-white border border-slate-200 rounded-md shadow-lg py-1">
+                <button onclick="event.stopPropagation();document.querySelectorAll('.hist-menu').forEach(function(m){m.classList.add('hidden')})" class="w-full px-3 py-1.5 text-sm text-slate-700 hover:bg-slate-50 text-left">Rename</button>
+                <button onclick="event.stopPropagation();document.querySelectorAll('.hist-menu').forEach(function(m){m.classList.add('hidden')})" class="w-full px-3 py-1.5 text-sm text-red-500 hover:bg-red-50 text-left">Delete</button>
+              </div>
+            </div>
+            <div class="relative group">
+              <button onclick="showScreen('editor-response')" class="w-full flex items-center px-2.5 py-1.5 pr-7 bg-slate-200 rounded-md text-slate-900 text-sm text-left overflow-hidden"><span class="truncate">Error message for file upload</span></button>
+              <button onclick="toggleHistMenu(this,event)" class="absolute right-1 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 w-5 h-5 flex items-center justify-center rounded text-slate-500 hover:text-slate-700 hover:bg-slate-400 transition-opacity" tabindex="-1"><svg width="12" height="12" viewBox="0 0 20 20" fill="currentColor"><circle cx="4" cy="10" r="1.75"/><circle cx="10" cy="10" r="1.75"/><circle cx="16" cy="10" r="1.75"/></svg></button>
+              <div class="hist-menu hidden w-32 bg-white border border-slate-200 rounded-md shadow-lg py-1">
+                <button onclick="event.stopPropagation();document.querySelectorAll('.hist-menu').forEach(function(m){m.classList.add('hidden')})" class="w-full px-3 py-1.5 text-sm text-slate-700 hover:bg-slate-50 text-left">Rename</button>
+                <button onclick="event.stopPropagation();document.querySelectorAll('.hist-menu').forEach(function(m){m.classList.add('hidden')})" class="w-full px-3 py-1.5 text-sm text-red-500 hover:bg-red-50 text-left">Delete</button>
+              </div>
+            </div>
+            <div class="relative group">
+              <button onclick="showScreen('editor')" class="w-full flex items-center px-2.5 py-1.5 pr-7 hover:bg-slate-200 rounded-md text-slate-500 hover:text-slate-900 text-sm transition-colors text-left overflow-hidden"><span class="truncate">Modal copy - delete confirmation</span></button>
+              <button onclick="toggleHistMenu(this,event)" class="absolute right-1 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 w-5 h-5 flex items-center justify-center rounded text-slate-400 hover:text-slate-700 hover:bg-slate-300 transition-opacity" tabindex="-1"><svg width="12" height="12" viewBox="0 0 20 20" fill="currentColor"><circle cx="4" cy="10" r="1.75"/><circle cx="10" cy="10" r="1.75"/><circle cx="16" cy="10" r="1.75"/></svg></button>
+              <div class="hist-menu hidden w-32 bg-white border border-slate-200 rounded-md shadow-lg py-1">
+                <button onclick="event.stopPropagation();document.querySelectorAll('.hist-menu').forEach(function(m){m.classList.add('hidden')})" class="w-full px-3 py-1.5 text-sm text-slate-700 hover:bg-slate-50 text-left">Rename</button>
+                <button onclick="event.stopPropagation();document.querySelectorAll('.hist-menu').forEach(function(m){m.classList.add('hidden')})" class="w-full px-3 py-1.5 text-sm text-red-500 hover:bg-red-50 text-left">Delete</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </nav>
+    </aside>
+
+      <!-- Pane 2 (conversation) + Pane 3 (details) -->
+      <div class="flex flex-1 overflow-hidden">
+
+        <!-- Pane 2: Conversation thread -->
+        <div class="flex-1 min-w-0 flex flex-col bg-white overflow-hidden">
+
+          <!-- Messages -->
+          <div class="flex-1 overflow-y-auto px-6 py-6 space-y-6">
+
+            <!-- User message -->
+            <div class="flex justify-end">
+              <div class="max-w-md bg-indigo-600 rounded-2xl rounded-tr-sm px-4 py-3">
+                <p class="text-sm text-white leading-relaxed">Review this error message: "File upload failed. Please try again."</p>
+              </div>
+            </div>
+
+            <!-- Assistant recommendation card -->
+            <div class="flex justify-start fade-in">
+              <div class="max-w-xl w-full bg-white rounded-2xl rounded-tl-sm border border-slate-200 shadow-sm overflow-hidden">
+
+                <!-- Card header: source + inferred context -->
+                <div class="px-5 pt-4 pb-3 border-b border-slate-100 flex flex-wrap items-center gap-2">
+                  <span class="inline-flex items-center gap-1.5 px-2 py-0.5 bg-amber-50 text-amber-700 border border-amber-200 text-xs font-medium rounded-full">
+                    <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                    AI-generated
+                  </span>
+                  <span class="inline-flex items-center gap-1 px-2 py-0.5 bg-slate-100 text-slate-500 text-xs rounded-full">
+                    <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                    Error messages
+                  </span>
+                  <span class="inline-flex items-center gap-1 px-2 py-0.5 bg-slate-100 text-slate-500 text-xs rounded-full">
+                    <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                    File upload
+                  </span>
+                  <span class="text-xs text-slate-400 ml-auto">High confidence</span>
+                </div>
+
+                <!-- Suggested copy (prominent) -->
+                <div class="px-5 pt-4 pb-3">
+                  <p class="text-xs font-semibold text-slate-400 uppercase tracking-wide mb-2">Suggested copy</p>
+                  <div class="bg-indigo-50 border border-indigo-100 rounded-xl px-4 py-3.5">
+                    <p class="font-mono text-sm text-slate-900 leading-relaxed">Upload failed. Please try again or <span class="text-indigo-600 underline underline-offset-2">contact support</span> if the problem continues.</p>
+                  </div>
+                  <p class="text-xs text-slate-400 text-right mt-1.5">72 characters</p>
+                </div>
+
+                <!-- Primary actions -->
+                <div class="px-5 pb-3">
+                  <div class="flex gap-2">
+                    <button onclick="erHandleCopy()" id="er-copy-btn" class="flex-1 h-9 bg-indigo-600 hover:bg-indigo-700 active:bg-indigo-800 text-white text-sm font-medium rounded-lg transition-colors duration-150 flex items-center justify-center gap-2">
+                      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+                      Copy text
+                    </button>
+                    <button onclick="erOpenDetails()" class="flex-1 h-9 bg-white hover:bg-slate-50 active:bg-slate-100 border border-slate-200 text-slate-700 text-sm font-medium rounded-lg transition-colors duration-150 flex items-center justify-center gap-2">
+                      View rationale
+                      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+                    </button>
+                  </div>
+                </div>
+
+                <!-- Quick actions -->
+                <div class="px-5 pb-4 pt-3 border-t border-slate-100 flex items-center gap-2">
+                  <span class="text-xs text-slate-400 mr-1">Quick actions</span>
+                  <button class="h-7 px-3 text-xs font-medium text-slate-600 hover:text-slate-800 active:text-slate-900 bg-slate-100 hover:bg-slate-200 active:bg-slate-300 rounded-full transition-colors duration-150">
+                    More concise
+                  </button>
+                  <button class="h-7 px-3 text-xs font-medium text-slate-600 hover:text-slate-800 active:text-slate-900 bg-slate-100 hover:bg-slate-200 active:bg-slate-300 rounded-full transition-colors duration-150">
+                    Alternatives
+                  </button>
+                </div>
+
+              </div>
+            </div>
+
+          </div>
+
+          <!-- Follow-up input -->
+          <div class="border-t border-slate-200 bg-slate-50/60 px-6 py-4 flex gap-2 items-end flex-shrink-0">
+            <textarea
+              placeholder="Ask a follow-up — e.g. Make it shorter, or remove the support link."
+              rows="2"
+              class="flex-1 px-3 py-2.5 text-sm border border-slate-200 rounded-lg bg-white text-slate-900 placeholder-slate-400 leading-relaxed resize-none shadow-sm focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 focus:outline-none transition-colors duration-150"
+            ></textarea>
+            <button class="h-9 px-4 bg-indigo-600 hover:bg-indigo-700 active:bg-indigo-800 text-white text-sm font-medium rounded-lg transition-colors duration-150 flex items-center gap-2 flex-shrink-0 self-end">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+              Send
+            </button>
+          </div>
+
+        </div>
+
+        <!-- Pane 3: Detail panel (slides in from right) -->
+        <div class="er-detail-panel" id="er-detail-panel">
+          <div class="er-detail-panel-inner">
+
+            <!-- Panel header -->
+            <div class="px-5 py-3.5 border-b border-slate-200 flex items-center justify-between flex-shrink-0">
+              <span class="text-sm font-semibold text-slate-800">Version history</span>
+              <button onclick="erCloseDetails()" class="w-7 h-7 flex items-center justify-center rounded-md text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition-colors">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+              </button>
+            </div>
+
+            <!-- Version tabs -->
+            <div class="px-5 pt-3 border-b border-slate-200 flex gap-0 flex-shrink-0">
+              <button onclick="erSwitchTab('v3')" id="er-tab-v3" class="er-tab er-tab-active flex items-center gap-1.5 px-3 py-2 text-xs font-medium border-b-2 border-indigo-600 text-indigo-600 -mb-px transition-colors">
+                V3
+                <span class="px-1.5 py-0.5 bg-indigo-100 text-indigo-600 text-xs rounded-full leading-none">Latest</span>
+              </button>
+              <button onclick="erSwitchTab('v2')" id="er-tab-v2" class="er-tab flex items-center gap-1.5 px-3 py-2 text-xs font-medium border-b-2 border-transparent text-slate-500 hover:text-slate-700 -mb-px transition-colors">
+                V2
+              </button>
+              <button onclick="erSwitchTab('v1')" id="er-tab-v1" class="er-tab flex items-center gap-1.5 px-3 py-2 text-xs font-medium border-b-2 border-transparent text-slate-500 hover:text-slate-700 -mb-px transition-colors">
+                V1
+              </button>
+            </div>
+
+            <!-- V3 panel (latest) -->
+            <div id="er-panel-v3" class="flex-1 overflow-y-auto px-5 py-5 space-y-5">
+              <div>
+                <div class="flex items-center gap-2 mb-2.5">
+                  <span class="inline-flex items-center gap-1.5 px-2.5 py-1 bg-amber-50 text-amber-700 border border-amber-200 text-xs font-medium rounded-full">
+                    <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                    AI-generated
+                  </span>
+                  <span class="text-xs text-slate-400">High confidence</span>
+                </div>
+                <p class="text-xs font-semibold text-slate-400 uppercase tracking-wide mb-2">Suggested copy</p>
+                <div class="bg-indigo-50 border border-indigo-100 rounded-xl px-4 py-3">
+                  <p class="font-mono text-sm text-slate-900 leading-relaxed">Upload failed. Please try again or <span class="text-indigo-600 underline underline-offset-2">contact support</span> if the problem continues.</p>
+                </div>
+                <p class="text-xs text-slate-400 text-right mt-1">72 characters</p>
+              </div>
+              <hr class="border-slate-100" />
+              <div>
+                <button onclick="erToggleSection(this)" class="w-full flex items-center justify-between py-0.5 group">
+                  <h4 class="text-xs font-semibold text-slate-500 uppercase tracking-wider">Rationale</h4>
+                  <svg class="er-chevron flex-shrink-0 text-slate-400 transition-transform duration-200" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+                </button>
+                <div class="mt-2.5">
+                  <p class="text-sm text-slate-700 leading-relaxed">The original message "File upload failed. Please try again." is brief but lacks a recovery path for persistent failures. The revision adds an escape valve without over-explaining. The phrasing "Upload failed" is shorter — consistent with the guideline to front-load the problem type.</p>
+                </div>
+              </div>
+              <div>
+                <button onclick="erToggleSection(this)" class="w-full flex items-center justify-between py-0.5 group">
+                  <h4 class="text-xs font-semibold text-slate-500 uppercase tracking-wider">Guidelines met</h4>
+                  <svg class="er-chevron flex-shrink-0 text-slate-400 transition-transform duration-200" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+                </button>
+                <div class="mt-2.5">
+                  <ul class="space-y-2.5">
+                    <li class="flex items-start gap-2">
+                      <svg class="mt-0.5 flex-shrink-0" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#059669" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                      <span class="text-sm text-slate-600">Error pattern: state what failed, then what to do next</span>
+                    </li>
+                    <li class="flex items-start gap-2">
+                      <svg class="mt-0.5 flex-shrink-0" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#059669" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                      <span class="text-sm text-slate-600">Voice: plain language, no jargon, active voice</span>
+                    </li>
+                    <li class="flex items-start gap-2">
+                      <svg class="mt-0.5 flex-shrink-0" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#059669" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                      <span class="text-sm text-slate-600">Accessibility: recovery path included for persistent errors</span>
+                    </li>
+                    <li class="flex items-start gap-2">
+                      <svg class="mt-0.5 flex-shrink-0" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#059669" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                      <span class="text-sm text-slate-600">Style: sentence case, no full stop on short error messages</span>
+                    </li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+
+            <!-- V2 panel -->
+            <div id="er-panel-v2" class="flex-1 overflow-y-auto px-5 py-5 space-y-5" style="display:none;">
+              <div>
+                <div class="flex items-center gap-2 mb-2.5">
+                  <span class="inline-flex items-center gap-1.5 px-2.5 py-1 bg-amber-50 text-amber-700 border border-amber-200 text-xs font-medium rounded-full">
+                    <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                    AI-generated
+                  </span>
+                  <span class="text-xs text-slate-400">High confidence</span>
+                </div>
+                <p class="text-xs font-semibold text-slate-400 uppercase tracking-wide mb-2">Suggested copy</p>
+                <div class="bg-slate-50 border border-slate-200 rounded-xl px-4 py-3">
+                  <p class="font-mono text-sm text-slate-900 leading-relaxed">Upload failed. Please try again. If the problem continues, <span class="text-indigo-600 underline underline-offset-2">contact our support team</span>.</p>
+                </div>
+                <p class="text-xs text-slate-400 text-right mt-1">86 characters</p>
+              </div>
+              <hr class="border-slate-100" />
+              <div>
+                <button onclick="erToggleSection(this)" class="w-full flex items-center justify-between py-0.5 group">
+                  <h4 class="text-xs font-semibold text-slate-500 uppercase tracking-wider">Rationale</h4>
+                  <svg class="er-chevron flex-shrink-0 text-slate-400 transition-transform duration-200" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+                </button>
+                <div class="mt-2.5">
+                  <p class="text-sm text-slate-700 leading-relaxed">This version separates the immediate action from the fallback into two sentences. The structure is more scannable for users under stress, but slightly longer than the revised V3 version.</p>
+                </div>
+              </div>
+              <div>
+                <button onclick="erToggleSection(this)" class="w-full flex items-center justify-between py-0.5 group">
+                  <h4 class="text-xs font-semibold text-slate-500 uppercase tracking-wider">Guidelines met</h4>
+                  <svg class="er-chevron flex-shrink-0 text-slate-400 transition-transform duration-200" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+                </button>
+                <div class="mt-2.5">
+                  <ul class="space-y-2.5">
+                    <li class="flex items-start gap-2">
+                      <svg class="mt-0.5 flex-shrink-0" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#059669" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                      <span class="text-sm text-slate-600">Error pattern: state what failed, then what to do next</span>
+                    </li>
+                    <li class="flex items-start gap-2">
+                      <svg class="mt-0.5 flex-shrink-0" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#059669" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                      <span class="text-sm text-slate-600">Voice: plain language, no jargon, active voice</span>
+                    </li>
+                    <li class="flex items-start gap-2">
+                      <svg class="mt-0.5 flex-shrink-0" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#d97706" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="12"/><circle cx="12" cy="16" r="1"/></svg>
+                      <span class="text-sm text-slate-600">Style: slightly long — two sentences where one would do</span>
+                    </li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+
+            <!-- V1 panel -->
+            <div id="er-panel-v1" class="flex-1 overflow-y-auto px-5 py-5 space-y-5" style="display:none;">
+              <div>
+                <div class="flex items-center gap-2 mb-2.5">
+                  <span class="inline-flex items-center gap-1.5 px-2.5 py-1 bg-amber-50 text-amber-700 border border-amber-200 text-xs font-medium rounded-full">
+                    <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                    AI-generated
+                  </span>
+                  <span class="text-xs text-slate-400">Medium confidence</span>
+                </div>
+                <p class="text-xs font-semibold text-slate-400 uppercase tracking-wide mb-2">Suggested copy</p>
+                <div class="bg-slate-50 border border-slate-200 rounded-xl px-4 py-3">
+                  <p class="font-mono text-sm text-slate-900 leading-relaxed">File upload failed. Please try again.</p>
+                </div>
+                <p class="text-xs text-slate-400 text-right mt-1">37 characters</p>
+              </div>
+              <hr class="border-slate-100" />
+              <div>
+                <button onclick="erToggleSection(this)" class="w-full flex items-center justify-between py-0.5 group">
+                  <h4 class="text-xs font-semibold text-slate-500 uppercase tracking-wider">Rationale</h4>
+                  <svg class="er-chevron flex-shrink-0 text-slate-400 transition-transform duration-200" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+                </button>
+                <div class="mt-2.5">
+                  <p class="text-sm text-slate-700 leading-relaxed">Close to the original input. The first version cleaned up punctuation and casing but did not add a recovery path. Marked medium confidence as it leaves the user with no next step if the retry also fails.</p>
+                </div>
+              </div>
+              <div>
+                <button onclick="erToggleSection(this)" class="w-full flex items-center justify-between py-0.5 group">
+                  <h4 class="text-xs font-semibold text-slate-500 uppercase tracking-wider">Guidelines met</h4>
+                  <svg class="er-chevron flex-shrink-0 text-slate-400 transition-transform duration-200" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+                </button>
+                <div class="mt-2.5">
+                  <ul class="space-y-2.5">
+                    <li class="flex items-start gap-2">
+                      <svg class="mt-0.5 flex-shrink-0" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#059669" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                      <span class="text-sm text-slate-600">Voice: plain language, no jargon, active voice</span>
+                    </li>
+                    <li class="flex items-start gap-2">
+                      <svg class="mt-0.5 flex-shrink-0" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#059669" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                      <span class="text-sm text-slate-600">Style: sentence case, no trailing full stop</span>
+                    </li>
+                    <li class="flex items-start gap-2">
+                      <svg class="mt-0.5 flex-shrink-0" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#dc2626" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                      <span class="text-sm text-slate-600">Accessibility: no recovery path for persistent failures</span>
+                    </li>
+                    <li class="flex items-start gap-2">
+                      <svg class="mt-0.5 flex-shrink-0" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#dc2626" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                      <span class="text-sm text-slate-600">Error pattern: "File upload" is redundant in an upload context</span>
+                    </li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ─────────────────────────────────────────────────────── -->
+<!-- SCREEN: Library                                        -->
+<!-- ─────────────────────────────────────────────────────── -->
+<div id="screen-library" class="bg-white" style="display:none;">
+  <div class="flex flex-col h-[calc(100vh-2.5rem)] w-full">
+
+    <!-- Full-width header -->
+    <header class="h-14 bg-slate-100 border-b border-slate-200 flex items-center px-5 flex-shrink-0">
+      <div class="flex items-center gap-2.5 flex-shrink-0">
+        <img src="../loremlogo.png" alt="Lorem" class="h-6 w-auto flex-shrink-0" />
+        <div class="flex items-baseline gap-2">
+          <span class="text-slate-900 font-medium text-sm font-mono tracking-tight">Lorem</span>
+          <span class="text-slate-400 text-xs">UX Writing Assistant</span>
+        </div>
+      </div>
+    </header>
+
+    <div class="flex flex-1 min-h-0">
+
+    <!-- Sidebar -->
+    <aside class="w-60 flex-shrink-0 bg-slate-100 border-r border-slate-200 flex flex-col h-full overflow-hidden">
+      <nav class="px-3 py-3 space-y-0.5 flex-1 overflow-y-auto sidebar-scroll">
+        <p class="text-xs font-medium text-slate-400 uppercase tracking-wider px-2 pb-1 pt-1">Workspace</p>
+        <button onclick="showScreen('editor')" class="w-full flex items-center gap-2.5 px-2.5 py-2 hover:bg-slate-200 rounded-md text-slate-600 hover:text-slate-900 text-sm transition-colors text-left">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+          Assistant
+        </button>
+        <button class="w-full flex items-center gap-2.5 px-2.5 py-2 bg-white rounded-md text-slate-900 text-sm font-medium text-left shadow-sm">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+          Library
+        </button>
+        <div class="pt-3">
+          <p class="text-xs font-medium text-slate-400 uppercase tracking-wider px-2 pb-1 pt-1">Assistant history</p>
+          <div class="space-y-0.5">
+            <div class="relative group">
+              <button onclick="showScreen('editor')" class="w-full flex items-center px-2.5 py-1.5 pr-7 hover:bg-slate-200 rounded-md text-slate-500 hover:text-slate-900 text-sm transition-colors text-left overflow-hidden"><span class="truncate">Button copy for checkout flow</span></button>
+              <button onclick="toggleHistMenu(this,event)" class="absolute right-1 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 w-5 h-5 flex items-center justify-center rounded text-slate-400 hover:text-slate-700 hover:bg-slate-300 transition-opacity" tabindex="-1"><svg width="12" height="12" viewBox="0 0 20 20" fill="currentColor"><circle cx="4" cy="10" r="1.75"/><circle cx="10" cy="10" r="1.75"/><circle cx="16" cy="10" r="1.75"/></svg></button>
+              <div class="hist-menu hidden w-32 bg-white border border-slate-200 rounded-md shadow-lg py-1">
+                <button onclick="event.stopPropagation();document.querySelectorAll('.hist-menu').forEach(function(m){m.classList.add('hidden')})" class="w-full px-3 py-1.5 text-sm text-slate-700 hover:bg-slate-50 text-left">Rename</button>
+                <button onclick="event.stopPropagation();document.querySelectorAll('.hist-menu').forEach(function(m){m.classList.add('hidden')})" class="w-full px-3 py-1.5 text-sm text-red-500 hover:bg-red-50 text-left">Delete</button>
+              </div>
+            </div>
+            <div class="relative group">
+              <button onclick="showScreen('editor-response')" class="w-full flex items-center px-2.5 py-1.5 pr-7 hover:bg-slate-200 rounded-md text-slate-500 hover:text-slate-900 text-sm transition-colors text-left overflow-hidden"><span class="truncate">Error message for file upload</span></button>
+              <button onclick="toggleHistMenu(this,event)" class="absolute right-1 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 w-5 h-5 flex items-center justify-center rounded text-slate-400 hover:text-slate-700 hover:bg-slate-300 transition-opacity" tabindex="-1"><svg width="12" height="12" viewBox="0 0 20 20" fill="currentColor"><circle cx="4" cy="10" r="1.75"/><circle cx="10" cy="10" r="1.75"/><circle cx="16" cy="10" r="1.75"/></svg></button>
+              <div class="hist-menu hidden w-32 bg-white border border-slate-200 rounded-md shadow-lg py-1">
+                <button onclick="event.stopPropagation();document.querySelectorAll('.hist-menu').forEach(function(m){m.classList.add('hidden')})" class="w-full px-3 py-1.5 text-sm text-slate-700 hover:bg-slate-50 text-left">Rename</button>
+                <button onclick="event.stopPropagation();document.querySelectorAll('.hist-menu').forEach(function(m){m.classList.add('hidden')})" class="w-full px-3 py-1.5 text-sm text-red-500 hover:bg-red-50 text-left">Delete</button>
+              </div>
+            </div>
+            <div class="relative group">
+              <button onclick="showScreen('editor')" class="w-full flex items-center px-2.5 py-1.5 pr-7 hover:bg-slate-200 rounded-md text-slate-500 hover:text-slate-900 text-sm transition-colors text-left overflow-hidden"><span class="truncate">Modal copy - delete confirmation</span></button>
+              <button onclick="toggleHistMenu(this,event)" class="absolute right-1 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 w-5 h-5 flex items-center justify-center rounded text-slate-400 hover:text-slate-700 hover:bg-slate-300 transition-opacity" tabindex="-1"><svg width="12" height="12" viewBox="0 0 20 20" fill="currentColor"><circle cx="4" cy="10" r="1.75"/><circle cx="10" cy="10" r="1.75"/><circle cx="16" cy="10" r="1.75"/></svg></button>
+              <div class="hist-menu hidden w-32 bg-white border border-slate-200 rounded-md shadow-lg py-1">
+                <button onclick="event.stopPropagation();document.querySelectorAll('.hist-menu').forEach(function(m){m.classList.add('hidden')})" class="w-full px-3 py-1.5 text-sm text-slate-700 hover:bg-slate-50 text-left">Rename</button>
+                <button onclick="event.stopPropagation();document.querySelectorAll('.hist-menu').forEach(function(m){m.classList.add('hidden')})" class="w-full px-3 py-1.5 text-sm text-red-500 hover:bg-red-50 text-left">Delete</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </nav>
+    </aside>
+
+      <!-- Right section: tabs + list/detail -->
+      <div class="flex-1 flex flex-col min-h-0 min-w-0">
+
+        <!-- Tabs -->
+        <div class="flex-shrink-0 bg-white border-b border-slate-200 flex gap-0">
+          <button data-lib-tab="all" onclick="setLibTab('all')" class="px-4 py-2.5 text-sm font-medium text-indigo-600 border-b-2 border-indigo-600">All</button>
+          <button data-lib-tab="forms" onclick="setLibTab('forms')" class="px-4 py-2.5 text-sm font-medium text-slate-500 hover:text-slate-700 border-b-2 border-transparent transition-colors">Forms</button>
+          <button data-lib-tab="modals" onclick="setLibTab('modals')" class="px-4 py-2.5 text-sm font-medium text-slate-500 hover:text-slate-700 border-b-2 border-transparent transition-colors">Modals</button>
+          <button data-lib-tab="buttons" onclick="setLibTab('buttons')" class="px-4 py-2.5 text-sm font-medium text-slate-500 hover:text-slate-700 border-b-2 border-transparent transition-colors">Buttons</button>
+          <button data-lib-tab="errors" onclick="setLibTab('errors')" class="px-4 py-2.5 text-sm font-medium text-slate-500 hover:text-slate-700 border-b-2 border-transparent transition-colors">Errors</button>
+        </div>
+
+        <!-- Search bar -->
+        <div class="flex-shrink-0 bg-white border-b border-slate-200 px-4 py-2.5 flex items-center gap-2">
+          <div class="relative">
+            <svg class="absolute left-2.5 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+            <input type="text" placeholder="Filter entries…" class="h-8 pl-8 pr-3 w-52 text-sm border border-slate-300 rounded-md bg-white text-slate-900 placeholder-slate-400" oninput="libSearch=this.value;renderLibrary()" />
+          </div>
+          <select onchange="libProduct=this.value;renderLibrary()" class="h-8 px-2.5 text-sm border border-slate-300 rounded-md bg-white text-slate-600 appearance-none">
+            <option value="all">All scopes</option>
+            <option value="global">Global</option>
+          </select>
+        </div>
+
+        <!-- List + detail columns -->
+        <div class="flex flex-1 min-h-0 min-w-0">
+
+          <!-- List column -->
+          <div class="w-80 flex-shrink-0 border-r border-slate-200 flex flex-col overflow-hidden">
+            <div class="px-4 py-3 border-b border-slate-200 flex-shrink-0">
+              <p class="text-xs text-slate-500" id="library-count">35 entries · Global</p>
+            </div>
+            <div id="library-list" class="flex-1 overflow-y-auto"></div>
+          </div>
+
+          <!-- Detail column -->
+          <div id="library-detail" class="flex-1 overflow-y-auto bg-white"></div>
+
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="screen-admin" style="display:none;"></div>
+
+<!-- ─────────────────────────────────────────────────────── -->
+<!-- SCREEN: Feedback                                       -->
+<!-- ─────────────────────────────────────────────────────── -->
+<div id="screen-feedback" class="h-[calc(100vh-2.5rem)] bg-slate-50 flex flex-col" style="display:none;">
+
+  <header class="h-14 bg-white border-b border-slate-200 flex items-center px-5 flex-shrink-0">
+    <div class="flex items-center gap-2.5">
+      <img src="../loremlogo.png" alt="Lorem" class="h-6 w-auto" onerror="this.style.display='none'" />
+      <div class="flex items-baseline gap-2">
+        <span class="text-slate-900 font-semibold text-sm font-mono tracking-tight">Lorem</span>
+        <span class="text-slate-400 text-xs">·</span>
+        <span class="text-slate-500 text-xs">Feedback</span>
+      </div>
+    </div>
+  </header>
+
+  <div class="flex-1 flex items-start justify-center pt-16 px-6">
+    <div class="w-full max-w-lg">
+
+      <!-- Default: form -->
+      <div id="feedback-form-wrap">
+        <h1 class="text-slate-900 font-semibold text-base mb-1">Send feedback</h1>
+        <p class="text-slate-500 text-sm mb-6 leading-relaxed">Share a bug, suggestion, or general comment with the Lorem team.</p>
+
+        <form class="space-y-4 bg-white border border-slate-200 rounded-lg p-6 shadow-sm" onsubmit="submitFeedback(); return false;">
+
+          <div>
+            <label class="block text-xs font-medium text-slate-700 mb-1.5">Type</label>
+            <div class="relative">
+              <select class="w-full h-9 pl-3 pr-8 text-sm border border-slate-300 rounded-md bg-white text-slate-900 appearance-none focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 focus:outline-none transition-colors">
+                <option value="general">General comment</option>
+                <option value="bug">Bug report</option>
+                <option value="suggestion">Suggestion</option>
+              </select>
+              <svg class="pointer-events-none absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+            </div>
+          </div>
+
+          <div>
+            <label class="block text-xs font-medium text-slate-700 mb-1.5">Message</label>
+            <textarea
+              placeholder="Describe what you noticed or what you'd like to see…"
+              class="w-full px-3 py-2.5 text-sm border border-slate-300 rounded-md bg-white text-slate-900 placeholder-slate-400 leading-relaxed resize-none focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 focus:outline-none transition-colors"
+              rows="5"
+            ></textarea>
+          </div>
+
+          <div>
+            <label class="block text-xs font-medium text-slate-700 mb-1.5">
+              Your email
+              <span class="text-slate-400 font-normal ml-1">(optional — if you'd like a reply)</span>
+            </label>
+            <input
+              type="email"
+              placeholder="name@agency.gov.sg"
+              class="w-full h-9 px-3 text-sm border border-slate-300 rounded-md bg-white text-slate-900 placeholder-slate-400 focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 focus:outline-none transition-colors hover:border-slate-400"
+            />
+          </div>
+
+          <div class="pt-1 flex items-center justify-between">
+            <button
+              type="submit"
+              class="h-9 px-5 bg-indigo-600 hover:bg-indigo-700 active:bg-indigo-800 text-white text-sm font-medium rounded-md transition-colors"
+            >
+              Send feedback
+            </button>
+            <span class="text-xs text-slate-400">Goes directly to the Lorem team</span>
+          </div>
+
+        </form>
+      </div>
+
+      <!-- Success state -->
+      <div id="feedback-success" class="hidden text-center py-12">
+        <div class="inline-flex items-center justify-center w-12 h-12 rounded-full bg-emerald-50 border border-emerald-200 mb-4">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#059669" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+        </div>
+        <h2 class="text-slate-900 font-semibold text-base mb-1">Feedback sent</h2>
+        <p class="text-slate-500 text-sm leading-relaxed max-w-sm mx-auto">Thanks — the Lorem team will review it. If you left an email, we'll get back to you.</p>
+        <button onclick="resetFeedback()" class="mt-6 text-sm text-indigo-600 hover:text-indigo-700 font-medium transition-colors">Send more feedback</button>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- ─────────────────────────────────────────────────────── -->
+<!-- MODAL: Edit links                                      -->
+<!-- ─────────────────────────────────────────────────────── -->
+<div id="edit-modal" class="fixed inset-0 z-50 items-center justify-center p-4" style="display:none;">
+  <div class="absolute inset-0 bg-slate-900/50" onclick="closeEditModal()"></div>
+  <div class="relative bg-white rounded-lg border border-slate-200 shadow-xl w-full max-w-md">
+    <div class="flex items-center justify-between px-5 py-4 border-b border-slate-200">
+      <h2 class="text-sm font-semibold text-slate-900">Edit links</h2>
+      <button onclick="closeEditModal()" class="text-slate-400 hover:text-slate-700 transition-colors rounded p-0.5">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>
+    <div class="px-5 py-3 bg-slate-50 border-b border-slate-200">
+      <p id="modal-entry-id" class="text-xs text-slate-400 font-mono mb-1"></p>
+      <p id="modal-entry-copy" class="text-sm text-slate-800 font-mono leading-relaxed line-clamp-2"></p>
+    </div>
+    <div class="px-5 py-5 space-y-4">
+      <div>
+        <label class="block text-xs font-medium text-slate-700 mb-1.5" for="modal-screenshot-url">Screenshot URL</label>
+        <input id="modal-screenshot-url" type="url" placeholder="https://…"
+          class="w-full h-9 px-3 text-sm border border-slate-300 rounded-md bg-white text-slate-900 placeholder-slate-400 hover:border-slate-400" />
+        <p class="text-xs text-slate-400 mt-1">Direct link to a screenshot showing this copy in context.</p>
+      </div>
+    </div>
+    <div class="flex items-center justify-end gap-2 px-5 py-4 border-t border-slate-200">
+      <button onclick="closeEditModal()" class="h-8 px-4 text-sm font-medium text-slate-600 border border-slate-300 rounded-md hover:bg-slate-50 transition-colors">Cancel</button>
+      <button onclick="saveEditModal()" class="h-8 px-4 text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 rounded-md transition-colors">Save</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  // ─── Data ─────────────────────────────────────────────────
+  const ENTRIES = [
+    // email
+    {id:"global.forms.email.label",elementType:"form-field-label",status:"approved",value:"Email address",screenshot:"screenshots/forms/email.png",field:"email"},
+    {id:"global.forms.email.hint",elementType:"form-field-hint",status:"draft",value:"We'll use this to send you important updates.",screenshot:"screenshots/forms/email.png",field:"email"},
+    {id:"global.forms.email.errors.required",elementType:"form-field-error",status:"approved",value:"Enter your email address.",screenshot:"screenshots/forms/email-error-required.png",field:"email",fieldRef:{id:"global.forms.email",label:"Email address"}},
+    {id:"global.forms.email.errors.invalid",elementType:"form-field-error",status:"approved",value:"Enter a valid email address, like name@example.com.",screenshot:"screenshots/forms/email-error-invalid.png",field:"email",fieldRef:{id:"global.forms.email",label:"Email address"}},
+    {id:"global.forms.email.errors.duplicate",elementType:"form-field-error",status:"draft",value:"An account with this email already exists.",screenshot:null,field:"email",fieldRef:{id:"global.forms.email",label:"Email address"}},
+    // password
+    {id:"global.forms.password.label",elementType:"form-field-label",status:"approved",value:"Password",screenshot:"screenshots/forms/password.png",field:"password"},
+    {id:"global.forms.password.hint",elementType:"form-field-hint",status:"draft",value:"Use 8 or more characters with a mix of letters, numbers, and symbols.",screenshot:null,field:"password"},
+    {id:"global.forms.password.errors.required",elementType:"form-field-error",status:"approved",value:"Enter a password.",screenshot:"screenshots/forms/password-error-required.png",field:"password",fieldRef:{id:"global.forms.password",label:"Password"}},
+    {id:"global.forms.password.errors.tooShort",elementType:"form-field-error",status:"approved",value:"Password must be at least 8 characters.",screenshot:"screenshots/forms/password-error-tooshort.png",field:"password",fieldRef:{id:"global.forms.password",label:"Password"}},
+    {id:"global.forms.password.errors.tooWeak",elementType:"form-field-error",status:"draft",value:"Include numbers and symbols to strengthen your password.",screenshot:null,field:"password",fieldRef:{id:"global.forms.password",label:"Password"}},
+    {id:"global.forms.password.errors.compromised",elementType:"form-field-error",status:"draft",value:"This password has been compromised. Choose a different password.",screenshot:null,field:"password",fieldRef:{id:"global.forms.password",label:"Password"}},
+    // confirmPassword
+    {id:"global.forms.confirmPassword.label",elementType:"form-field-label",status:"approved",value:"Confirm password",screenshot:"screenshots/forms/confirm-password.png",field:"confirmPassword"},
+    {id:"global.forms.confirmPassword.errors.required",elementType:"form-field-error",status:"approved",value:"Confirm your password.",screenshot:null,field:"confirmPassword",fieldRef:{id:"global.forms.confirmPassword",label:"Confirm password"}},
+    {id:"global.forms.confirmPassword.errors.mismatch",elementType:"form-field-error",status:"approved",value:"Passwords do not match.",screenshot:"screenshots/forms/confirm-password-error-mismatch.png",field:"confirmPassword",fieldRef:{id:"global.forms.confirmPassword",label:"Confirm password"}},
+    // firstName
+    {id:"global.forms.firstName.label",elementType:"form-field-label",status:"approved",value:"First name",screenshot:null,field:"firstName"},
+    {id:"global.forms.firstName.errors.required",elementType:"form-field-error",status:"approved",value:"Enter your first name.",screenshot:null,field:"firstName",fieldRef:{id:"global.forms.firstName",label:"First name"}},
+    // lastName
+    {id:"global.forms.lastName.label",elementType:"form-field-label",status:"approved",value:"Last name",screenshot:null,field:"lastName"},
+    {id:"global.forms.lastName.errors.required",elementType:"form-field-error",status:"approved",value:"Enter your last name.",screenshot:null,field:"lastName",fieldRef:{id:"global.forms.lastName",label:"Last name"}},
+    // phone
+    {id:"global.forms.phone.label",elementType:"form-field-label",status:"approved",value:"Phone number",screenshot:"screenshots/forms/phone.png",field:"phone"},
+    {id:"global.forms.phone.hint",elementType:"form-field-hint",status:"draft",value:"Include your country code, e.g. +65 9123 4567.",screenshot:"screenshots/forms/phone.png",field:"phone"},
+    {id:"global.forms.phone.errors.required",elementType:"form-field-error",status:"approved",value:"Enter your phone number.",screenshot:null,field:"phone",fieldRef:{id:"global.forms.phone",label:"Phone number"}},
+    {id:"global.forms.phone.errors.invalid",elementType:"form-field-error",status:"draft",value:"Enter a valid phone number, including your country code.",screenshot:null,field:"phone",fieldRef:{id:"global.forms.phone",label:"Phone number"}},
+    // dateOfBirth
+    {id:"global.forms.dateOfBirth.label",elementType:"form-field-label",status:"approved",value:"Date of birth",screenshot:"screenshots/forms/date-of-birth.png",field:"dateOfBirth"},
+    {id:"global.forms.dateOfBirth.hint",elementType:"form-field-hint",status:"draft",value:"For example, 15 Jan 1990.",screenshot:"screenshots/forms/date-of-birth.png",field:"dateOfBirth"},
+    {id:"global.forms.dateOfBirth.errors.required",elementType:"form-field-error",status:"approved",value:"Enter your date of birth.",screenshot:null,field:"dateOfBirth",fieldRef:{id:"global.forms.dateOfBirth",label:"Date of birth"}},
+    {id:"global.forms.dateOfBirth.errors.invalid",elementType:"form-field-error",status:"approved",value:"Enter a valid date.",screenshot:null,field:"dateOfBirth",fieldRef:{id:"global.forms.dateOfBirth",label:"Date of birth"}},
+    {id:"global.forms.dateOfBirth.errors.underage",elementType:"form-field-error",status:"draft",value:"You must be 18 or older to continue.",screenshot:null,field:"dateOfBirth",fieldRef:{id:"global.forms.dateOfBirth",label:"Date of birth"}},
+    {id:"global.forms.dateOfBirth.errors.future",elementType:"form-field-error",status:"draft",value:"Date of birth cannot be in the future.",screenshot:null,field:"dateOfBirth",fieldRef:{id:"global.forms.dateOfBirth",label:"Date of birth"}},
+    // postalCode
+    {id:"global.forms.postalCode.label",elementType:"form-field-label",status:"approved",value:"Postal code",screenshot:null,field:"postalCode"},
+    {id:"global.forms.postalCode.errors.required",elementType:"form-field-error",status:"approved",value:"Enter your postal code.",screenshot:null,field:"postalCode",fieldRef:{id:"global.forms.postalCode",label:"Postal code"}},
+    {id:"global.forms.postalCode.errors.invalid",elementType:"form-field-error",status:"draft",value:"Enter a valid 6-digit postal code.",screenshot:null,field:"postalCode",fieldRef:{id:"global.forms.postalCode",label:"Postal code"}},
+    // country
+    {id:"global.forms.country.label",elementType:"form-field-label",status:"approved",value:"Country",screenshot:null,field:"country"},
+    {id:"global.forms.country.errors.required",elementType:"form-field-error",status:"approved",value:"Select a country.",screenshot:null,field:"country",fieldRef:{id:"global.forms.country",label:"Country"}},
+    // termsAccepted
+    {id:"global.forms.termsAccepted.label",elementType:"form-field-label",status:"draft",value:"I agree to the terms and conditions",screenshot:null,field:"termsAccepted"},
+    {id:"global.forms.termsAccepted.errors.required",elementType:"form-field-error",status:"draft",value:"You must agree to the terms and conditions to continue.",screenshot:null,field:"termsAccepted",fieldRef:{id:"global.forms.termsAccepted",label:"I agree to the terms and conditions"}},
+    // modals — session expired (error)
+    {id:"global.modals.sessionExpired.title",elementType:"modal",status:"approved",value:"Your session has expired",screenshot:null,isError:true},
+    {id:"global.modals.sessionExpired.body",elementType:"modal",status:"approved",value:"You've been signed out due to inactivity. Sign in again to continue.",screenshot:null,isError:true},
+    {id:"global.modals.sessionExpired.primaryCta",elementType:"modal",status:"approved",value:"Sign in again",screenshot:null,isError:true},
+    // modals — upload failed (error)
+    {id:"global.modals.uploadFailed.title",elementType:"modal",status:"approved",value:"Upload failed",screenshot:null,isError:true},
+    {id:"global.modals.uploadFailed.body",elementType:"modal",status:"draft",value:"Your file could not be uploaded. Check your connection and try again.",screenshot:null,isError:true},
+    // modals — delete confirmation (not an error)
+    {id:"global.modals.confirmDelete.title",elementType:"modal",status:"approved",value:"Delete this item?",screenshot:null},
+    {id:"global.modals.confirmDelete.body",elementType:"modal",status:"approved",value:"This action cannot be undone.",screenshot:null},
+    {id:"global.modals.confirmDelete.primaryCta",elementType:"modal",status:"approved",value:"Yes, delete",screenshot:null},
+    {id:"global.modals.confirmDelete.secondaryCta",elementType:"modal",status:"approved",value:"Cancel",screenshot:null},
+  ];
+
+  // ─── Config ───────────────────────────────────────────────
+  const TYPE_CONFIG = {
+    'form-field-label': { label: 'Label', badge: 'bg-blue-50 text-blue-700 border border-blue-200' },
+    'form-field-hint':  { label: 'Hint',  badge: 'bg-violet-50 text-violet-700 border border-violet-200' },
+    'form-field-error': { label: 'Error', badge: 'bg-amber-50 text-amber-700 border border-amber-200' },
+    'modal':            { label: 'Modal', badge: 'bg-slate-100 text-slate-700 border border-slate-200' },
+  };
+
+  // ─── State ────────────────────────────────────────────────
+  let libFilter = 'all', libSearch = '', libProduct = 'all', libExpandedRow = null, libTab = 'all';
+
+  const LIB_TAB_CATEGORIES = {
+    all:     null,
+    forms:   function(e) { return e.elementType.startsWith('form-'); },
+    modals:  function(e) { return e.elementType === 'modal'; },
+    buttons: function(e) { return e.id.includes('button') || e.id.includes('btn') || e.elementType === 'button-label'; },
+    errors:  function(e) { return e.elementType === 'form-field-error' || (e.elementType === 'modal' && e.isError === true); },
+  };
+  let adminFilter = 'all', adminProduct = 'all', adminSearch = '', adminPage = 1;
+  const PAGE_SIZE = 20;
+
+  // ─── Helpers ──────────────────────────────────────────────
+  function esc(s) {
+    return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  }
+
+  // ─── Library ──────────────────────────────────────────────
+  function getProductFromId(id) {
+    return 'global';
+  }
+
+  function getLibEntries() {
+    var tabFn = LIB_TAB_CATEGORIES[libTab];
+    return ENTRIES.filter(function(e) {
+      if (tabFn && !tabFn(e)) return false;
+      if (libFilter !== 'all' && e.elementType !== libFilter) return false;
+      if (libProduct !== 'all' && libProduct !== 'global') return false;
+      if (libSearch) {
+        var q = libSearch.toLowerCase();
+        if (!e.value.toLowerCase().includes(q) && !e.id.toLowerCase().includes(q) && !(e.field||'').toLowerCase().includes(q)) return false;
+      }
+      return true;
+    });
+  }
+
+  function setLibTab(tab) {
+    libTab = tab;
+    libExpandedRow = null;
+    document.querySelectorAll('[data-lib-tab]').forEach(function(btn) {
+      var active = btn.dataset.libTab === tab;
+      btn.className = 'px-4 py-2.5 text-sm font-medium border-b-2 transition-colors '
+        + (active ? 'text-indigo-600 border-indigo-600' : 'text-slate-500 hover:text-slate-700 border-transparent');
+    });
+    renderLibrary();
+  }
+
+  // ─── Library layouts ──────────────────────────────────────
+  const FIELD_GROUPS = [
+    { label: 'Email',            field: 'email' },
+    { label: 'Password',         field: 'password' },
+    { label: 'Confirm password', field: 'confirmPassword' },
+    { label: 'First name',       field: 'firstName' },
+    { label: 'Last name',        field: 'lastName' },
+    { label: 'Phone',            field: 'phone' },
+    { label: 'Date of birth',    field: 'dateOfBirth' },
+    { label: 'Postal code',      field: 'postalCode' },
+    { label: 'Country',          field: 'country' },
+    { label: 'Terms',            field: 'termsAccepted' },
+  ];
+
+  function makeCard(e) {
+    var tc = TYPE_CONFIG[e.elementType] || TYPE_CONFIG['form-field-label'];
+    var statusBadge = e.status === 'draft'
+      ? '<span class="px-2 py-0.5 bg-amber-50 text-amber-700 text-xs rounded border border-amber-200">Draft</span>'
+      : '<span class="px-2 py-0.5 bg-emerald-50 text-emerald-700 text-xs rounded">Approved</span>';
+    var idParts = e.id.split('.');
+    var subtype = idParts[idParts.length - 1];
+    var subtypeTag = '<span class="px-1.5 py-0.5 bg-slate-100 text-slate-500 text-xs rounded">' + esc(subtype) + '</span>';
+    var fieldTag = e.field ? '<span class="px-1.5 py-0.5 bg-slate-100 text-slate-500 text-xs rounded">' + esc(e.field) + '</span>' : '';
+    var screenshotIcon = '<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>';
+    var screenshotLink = e.screenshot
+      ? '<a href="' + esc(e.screenshot) + '" onclick="event.stopPropagation()" class="inline-flex items-center gap-1 text-xs text-slate-400 hover:text-slate-700 transition-colors">' + screenshotIcon + 'Screenshot</a>'
+      : '';
+    var linksRow = screenshotLink ? '<div class="flex items-center gap-3 mt-3 pt-2.5 border-t border-slate-100">' + screenshotLink + '</div>' : '';
+    var fieldRefRow = e.fieldRef
+      ? '<p class="text-xs text-slate-400 mt-1">Field: <span class="text-slate-500">' + esc(e.fieldRef.label) + '</span></p>'
+      : '';
+    var copyBtn = '<button data-copy="' + esc(e.value) + '" onclick="event.stopPropagation();navigator.clipboard&&navigator.clipboard.writeText(this.dataset.copy)" class="h-6 px-2 text-xs text-slate-400 border border-slate-200 rounded hover:bg-slate-50 hover:text-slate-700 transition-colors flex-shrink-0">Copy</button>';
+    return '<div class="bg-white border border-slate-200 rounded-lg p-4 hover:border-slate-300 hover:shadow-sm transition-all">'
+      + '<div class="flex items-start justify-between gap-2 mb-2.5">'
+      + '<div class="flex flex-wrap gap-1.5">'
+      + '<span class="px-2 py-0.5 ' + tc.badge + ' text-xs font-medium rounded">' + tc.label + '</span>'
+      + '<span class="px-2 py-0.5 bg-slate-100 text-slate-600 text-xs rounded">Global</span>'
+      + statusBadge
+      + '</div>'
+      + copyBtn
+      + '</div>'
+      + '<p class="font-mono text-sm text-slate-900 mb-1.5 leading-relaxed">' + esc(e.value) + '</p>'
+      + '<p class="font-mono text-xs text-slate-400 mb-2">' + esc(e.id) + '</p>'
+      + fieldRefRow
+      + '<div class="flex flex-wrap gap-1 mt-2">' + fieldTag + subtypeTag + '</div>'
+      + linksRow
+      + '</div>';
+  }
+
+  function renderList(entries, container) {
+    if (entries.length === 0) {
+      container.innerHTML = '<div class="py-12 text-center text-slate-400 text-sm px-4">No entries match your search.</div>';
+      return;
+    }
+    container.innerHTML = entries.map(function(e) {
+      var tc = TYPE_CONFIG[e.elementType] || TYPE_CONFIG['form-field-label'];
+      if (libTab === 'errors' && e.elementType === 'form-field-error') tc = { label: 'Form', badge: 'bg-sky-50 text-sky-700 border border-sky-200' };
+      var isSelected = libExpandedRow === e.id;
+      var statusDot = e.status === 'draft'
+        ? '<span class="w-1.5 h-1.5 rounded-full bg-amber-400 flex-shrink-0 mt-0.5" title="Draft"></span>'
+        : '<span class="w-1.5 h-1.5 rounded-full bg-emerald-400 flex-shrink-0 mt-0.5" title="Approved"></span>';
+      return '<div onclick="selectEntry(\'' + e.id + '\')" class="flex items-start gap-3 px-4 py-3 cursor-pointer border-b border-slate-100 last:border-0 transition-colors '
+        + (isSelected ? 'bg-indigo-50 border-l-2 border-l-indigo-500' : 'hover:bg-slate-50') + '">'
+        + '<span class="px-1.5 py-0.5 ' + tc.badge + ' text-xs font-medium rounded flex-shrink-0 mt-0.5">' + tc.label + '</span>'
+        + '<p class="font-mono text-sm text-slate-800 flex-1 min-w-0 leading-snug line-clamp-2">' + esc(e.value) + '</p>'
+        + statusDot
+        + '</div>';
+    }).join('');
+  }
+
+  function renderDetail(entry, container) {
+    if (!entry) {
+      container.innerHTML = '<div class="flex flex-col items-center justify-center h-full text-center px-8">'
+        + '<div class="w-12 h-12 rounded-xl bg-slate-100 flex items-center justify-center mb-3">'
+        + '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="text-slate-400"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>'
+        + '</div>'
+        + '<p class="text-sm font-medium text-slate-500">Select an entry</p>'
+        + '<p class="text-xs text-slate-400 mt-1">Click any item in the list to view its details</p>'
+        + '</div>';
+      return;
+    }
+    var tc = TYPE_CONFIG[entry.elementType] || TYPE_CONFIG['form-field-label'];
+    if (libTab === 'errors' && entry.elementType === 'form-field-error') tc = { label: 'Form', badge: 'bg-sky-50 text-sky-700 border border-sky-200' };
+    var statusLabel = entry.status === 'draft'
+      ? '<span class="px-2 py-0.5 bg-amber-50 text-amber-700 border border-amber-200 text-xs font-medium rounded">Draft</span>'
+      : '<span class="px-2 py-0.5 bg-emerald-50 text-emerald-700 border border-emerald-200 text-xs font-medium rounded">Approved</span>';
+    var fieldRefRow = entry.fieldRef
+      ? '<div class="flex items-start gap-2 px-3 py-3 border-b border-slate-100">'
+        + '<span class="text-xs text-slate-400 w-24 flex-shrink-0 pt-0.5">Field ref</span>'
+        + '<span class="text-xs font-mono text-slate-600">' + esc(entry.fieldRef.label) + ' <span class="text-slate-400">(' + esc(entry.fieldRef.id) + ')</span></span>'
+        + '</div>'
+      : '';
+    var screenshotRow = entry.screenshot
+      ? '<div class="mt-4"><img src="' + esc(entry.screenshot) + '" alt="Screenshot" class="w-full rounded-lg border border-slate-200 bg-slate-50" onerror="this.parentElement.innerHTML=\'<div class=&quot;w-full rounded-lg border border-dashed border-slate-200 bg-slate-50 flex items-center justify-center py-8 text-xs text-slate-400&quot;>Image not available</div>\'" /></div>'
+      : '';
+    container.innerHTML = '<div class="p-6">'
+      + '<div class="flex items-start justify-between gap-3 mb-6">'
+      + '<div class="flex flex-wrap gap-2">'
+      + '<span class="px-2 py-0.5 ' + tc.badge + ' text-xs font-medium rounded">' + tc.label + '</span>'
+      + statusLabel
+      + '</div>'
+      + '<button data-copy="' + esc(entry.value) + '" onclick="navigator.clipboard&&navigator.clipboard.writeText(this.dataset.copy)" class="h-7 px-3 text-xs text-slate-500 border border-slate-200 rounded-md hover:bg-slate-50 hover:text-slate-800 transition-colors flex-shrink-0">Copy text</button>'
+      + '</div>'
+      + '<p class="font-mono text-base text-slate-900 leading-relaxed mb-6">' + esc(entry.value) + '</p>'
+      + '<div class="border border-slate-200 rounded-lg overflow-hidden mb-4">'
+      + '<div class="flex items-start gap-2 px-3 py-3 border-b border-slate-100">'
+      + '<span class="text-xs text-slate-400 w-24 flex-shrink-0 pt-0.5">ID</span>'
+      + '<span class="text-xs font-mono text-slate-600 break-all">' + esc(entry.id) + '</span>'
+      + '</div>'
+      + '<div class="flex items-start gap-2 px-3 py-3 border-b border-slate-100">'
+      + '<span class="text-xs text-slate-400 w-24 flex-shrink-0 pt-0.5">Type</span>'
+      + '<span class="text-xs font-mono text-slate-600">' + esc(entry.elementType) + '</span>'
+      + '</div>'
+      + '<div class="flex items-start gap-2 px-3 py-3 border-b border-slate-100">'
+      + '<span class="text-xs text-slate-400 w-24 flex-shrink-0 pt-0.5">Field</span>'
+      + '<span class="text-xs font-mono text-slate-600">' + esc(entry.field || '—') + '</span>'
+      + '</div>'
+      + fieldRefRow
+      + '<div class="flex items-start gap-2 px-3 py-3">'
+      + '<span class="text-xs text-slate-400 w-24 flex-shrink-0 pt-0.5">Screenshot</span>'
+      + (entry.screenshot ? '<span class="text-xs text-slate-500">' + esc(entry.screenshot) + '</span>' : '<span class="text-xs text-slate-400">None</span>')
+      + '</div>'
+      + '</div>'
+      + screenshotRow
+      + '</div>';
+  }
+
+  function selectEntry(id) {
+    libExpandedRow = libExpandedRow === id ? null : id;
+    renderLibrary();
+  }
+
+  function renderLibrary() {
+    var entries = getLibEntries();
+    var countEl = document.getElementById('library-count');
+    if (countEl) {
+      countEl.textContent = entries.length === ENTRIES.length
+        ? entries.length + ' entries · Global'
+        : entries.length + ' of ' + ENTRIES.length + ' entries · Global';
+    }
+    var listEl = document.getElementById('library-list');
+    var detailEl = document.getElementById('library-detail');
+    if (!listEl) return;
+    renderList(entries, listEl);
+    if (detailEl) {
+      var selectedEntry = libExpandedRow ? ENTRIES.find(function(e) { return e.id === libExpandedRow; }) : null;
+      renderDetail(selectedEntry, detailEl);
+    }
+  }
+
+  function setLibFilter(type) {
+    libFilter = type;
+    document.querySelectorAll('[data-lib-filter]').forEach(function(btn) {
+      btn.className = btn.dataset.libFilter === type
+        ? 'h-7 px-3 text-xs font-medium rounded-full border border-indigo-300 bg-indigo-50 text-indigo-700'
+        : 'h-7 px-3 text-xs font-medium rounded-full border border-slate-200 text-slate-600 hover:bg-slate-50';
+    });
+    renderLibrary();
+  }
+
+  // ─── Admin ────────────────────────────────────────────────
+  function getAdminEntries() {
+    return ENTRIES.filter(function(e) {
+      if (adminFilter !== 'all' && e.elementType !== adminFilter) return false;
+      if (adminSearch) {
+        var q = adminSearch.toLowerCase();
+        if (!e.value.toLowerCase().includes(q) && !e.id.toLowerCase().includes(q)) return false;
+      }
+      return true;
+    });
+  }
+
+  function renderAdmin() {
+    var all = getAdminEntries();
+    var total = all.length;
+    var totalPages = Math.max(1, Math.ceil(total / PAGE_SIZE));
+    if (adminPage > totalPages) adminPage = 1;
+    var start = (adminPage - 1) * PAGE_SIZE;
+    var page = all.slice(start, start + PAGE_SIZE);
+
+    var countEl = document.getElementById('admin-count');
+    if (countEl) {
+      var end = Math.min(start + page.length, total);
+      countEl.textContent = total === 0 ? 'No entries' : 'Showing ' + (start + 1) + '\u2013' + end + ' of ' + total + ' entries';
+    }
+
+    var editIcon   = '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>';
+    var delIcon    = '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg>';
+    var shotIcon   = '<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>';
+
+    var tbody = document.getElementById('admin-tbody');
+    if (tbody) {
+      if (page.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="6" class="px-4 py-8 text-center text-slate-400 text-sm">No entries found.</td></tr>';
+      } else {
+        tbody.innerHTML = page.map(function(e) {
+          var tc = TYPE_CONFIG[e.elementType] || TYPE_CONFIG['form-field-label'];
+          var statusBadge = e.status === 'draft'
+            ? '<span class="px-2 py-0.5 bg-amber-50 text-amber-700 text-xs rounded border border-amber-200">Draft</span>'
+            : '<span class="px-2 py-0.5 bg-emerald-50 text-emerald-700 text-xs rounded">Approved</span>';
+          var secondaryBtn = e.status === 'approved'
+            ? '<button class="h-6 px-2 flex items-center text-xs text-slate-400 hover:text-amber-600 hover:bg-amber-50 rounded transition-colors">Deprecate</button>'
+            : '<button class="h-6 px-2 flex items-center text-xs text-indigo-600 hover:bg-indigo-50 rounded transition-colors font-medium">Publish</button>';
+          var linkCells = '';
+          if (e.screenshot) linkCells += '<a href="' + esc(e.screenshot) + '" target="_blank" title="View screenshot" class="h-6 w-6 flex items-center justify-center text-slate-400 hover:text-slate-700 hover:bg-slate-100 rounded transition-colors">' + shotIcon + '</a>';
+          var linksCell = '<td class="px-4 py-3"><div class="flex items-center gap-1">' + (linkCells || '<span class="text-slate-300 text-xs">—</span>') + '</div></td>';
+          return '<tr class="hover:bg-slate-50 transition-colors">'
+            + '<td class="px-4 py-3"><span class="px-2 py-0.5 ' + tc.badge + ' text-xs font-medium rounded">' + tc.label + '</span></td>'
+            + '<td class="px-4 py-3 font-mono text-xs text-slate-700 max-w-xs truncate" title="' + esc(e.value) + '">' + esc(e.value) + '</td>'
+            + '<td class="px-4 py-3 text-xs text-slate-500">Global</td>'
+            + '<td class="px-4 py-3">' + statusBadge + '</td>'
+            + linksCell
+            + '<td class="px-4 py-3 text-right"><div class="flex items-center justify-end gap-1">'
+            + '<button onclick="openEditModal(\'' + e.id + '\')" class="h-6 w-6 flex items-center justify-center text-slate-400 hover:text-slate-700 hover:bg-slate-100 rounded transition-colors">' + editIcon + '</button>'
+            + secondaryBtn
+            + '<button class="h-6 w-6 flex items-center justify-center text-slate-400 hover:text-red-600 hover:bg-red-50 rounded transition-colors">' + delIcon + '</button>'
+            + '</div></td></tr>';
+        }).join('');
+      }
+    }
+
+    // Pagination
+    var pg = document.getElementById('admin-pagination');
+    if (pg) {
+      if (totalPages <= 1) { pg.innerHTML = ''; return; }
+      var prevD = adminPage === 1, nextD = adminPage === totalPages;
+      var prevBtn = '<button onclick="goPage(' + (adminPage - 1) + ')" ' + (prevD ? 'disabled ' : '') + 'class="h-7 w-7 flex items-center justify-center border border-slate-200 rounded text-slate-400 hover:bg-slate-50 transition-colors' + (prevD ? ' opacity-40 cursor-not-allowed' : '') + '"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg></button>';
+      var nextBtn = '<button onclick="goPage(' + (adminPage + 1) + ')" ' + (nextD ? 'disabled ' : '') + 'class="h-7 w-7 flex items-center justify-center border border-slate-200 rounded text-slate-400 hover:bg-slate-50 transition-colors' + (nextD ? ' opacity-40 cursor-not-allowed' : '') + '"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg></button>';
+      var pages = '';
+      for (var i = 1; i <= totalPages; i++) {
+        pages += i === adminPage
+          ? '<button class="h-7 w-7 flex items-center justify-center bg-indigo-600 text-white text-xs font-medium rounded">' + i + '</button>'
+          : '<button onclick="goPage(' + i + ')" class="h-7 w-7 flex items-center justify-center border border-slate-200 rounded text-slate-600 hover:bg-slate-50 text-xs transition-colors">' + i + '</button>';
+      }
+      pg.innerHTML = prevBtn + pages + nextBtn;
+    }
+  }
+
+  function goPage(n) { adminPage = n; renderAdmin(); }
+
+  // ─── Edit modal ───────────────────────────────────────────
+  var editingId = null;
+
+  function openEditModal(id) {
+    var entry = ENTRIES.find(function(e) { return e.id === id; });
+    if (!entry) return;
+    editingId = id;
+    document.getElementById('modal-entry-id').textContent = id;
+    document.getElementById('modal-entry-copy').textContent = entry.value;
+    document.getElementById('modal-screenshot-url').value = entry.screenshot || '';
+    document.getElementById('edit-modal').style.display = 'flex';
+    document.getElementById('modal-screenshot-url').focus();
+  }
+
+  function closeEditModal() {
+    document.getElementById('edit-modal').style.display = 'none';
+    editingId = null;
+  }
+
+  function saveEditModal() {
+    if (!editingId) return;
+    var entry = ENTRIES.find(function(e) { return e.id === editingId; });
+    if (!entry) return;
+    var shotVal  = document.getElementById('modal-screenshot-url').value.trim();
+    entry.screenshot = shotVal || null;
+    closeEditModal();
+    renderAdmin();
+    renderLibrary();
+  }
+
+  document.addEventListener('keydown', function(ev) {
+    if (ev.key === 'Escape') closeEditModal();
+  });
+
+  // ─── Screen switching ──────────────────────────────────────
+  const SCREENS = ['editor','editor-response','library','feedback'];
+
+  function showScreen(name) {
+    SCREENS.forEach(function(s) {
+      var el = document.getElementById('screen-' + s);
+      if (el) el.style.display = 'none';
+    });
+    var target = document.getElementById('screen-' + name);
+    if (target) target.style.display = 'flex';
+    SCREENS.forEach(function(s) {
+      var btn = document.getElementById('btn-' + s);
+      if (!btn) return;
+      btn.className = 'px-3 py-1.5 text-xs font-medium rounded-md transition-colors text-slate-400 hover:text-white hover:bg-slate-800';
+    });
+    var activeBtn = document.getElementById('btn-' + name);
+    if (activeBtn) activeBtn.className = 'px-3 py-1.5 text-xs font-medium rounded-md transition-colors bg-slate-700 text-white';
+  }
+
+  function toggleCollapsible(id) {
+    var content = document.getElementById('collapsible-' + id);
+    var chevron = document.getElementById('chevron-' + id);
+    var isOpen = content.style.display !== 'none';
+    content.style.display = isOpen ? 'none' : 'block';
+    chevron.style.transform = isOpen ? 'rotate(-90deg)' : 'rotate(0deg)';
+  }
+
+  // ─── History item context menu ─────────────────────────────
+  function toggleHistMenu(btn, e) {
+    e.stopPropagation();
+    var menu = btn.parentElement.querySelector('.hist-menu');
+    var isHidden = menu.classList.contains('hidden');
+    document.querySelectorAll('.hist-menu, .user-menu').forEach(function(m) { m.classList.add('hidden'); });
+    if (isHidden) {
+      var rect = btn.getBoundingClientRect();
+      menu.style.top = (rect.bottom + 2) + 'px';
+      menu.style.left = (rect.right - 128) + 'px';
+      menu.classList.remove('hidden');
+    }
+  }
+
+  // ─── User menu ─────────────────────────────────────────────
+  function toggleUserMenu(btn, e) {
+    e.stopPropagation();
+    var menu = btn.parentElement.querySelector('.user-menu');
+    var isHidden = menu.classList.contains('hidden');
+    document.querySelectorAll('.hist-menu, .user-menu').forEach(function(m) { m.classList.add('hidden'); });
+    if (isHidden) menu.classList.remove('hidden');
+  }
+
+  document.addEventListener('click', function() {
+    document.querySelectorAll('.hist-menu, .user-menu').forEach(function(m) { m.classList.add('hidden'); });
+  });
+
+  // ─── Feedback ─────────────────────────────────────────────
+  function submitFeedback() {
+    document.getElementById('feedback-form-wrap').classList.add('hidden');
+    document.getElementById('feedback-success').classList.remove('hidden');
+  }
+
+  function resetFeedback() {
+    document.getElementById('feedback-success').classList.add('hidden');
+    document.getElementById('feedback-form-wrap').classList.remove('hidden');
+  }
+
+  // ─── Editor-response detail panel ─────────────────────────
+  function erOpenDetails() {
+    document.getElementById('er-detail-panel').classList.add('open');
+  }
+
+  function erCloseDetails() {
+    document.getElementById('er-detail-panel').classList.remove('open');
+  }
+
+  function erToggleSection(btn) {
+    var content = btn.nextElementSibling;
+    var chevron = btn.querySelector('.er-chevron');
+    var isOpen = content.style.display !== 'none';
+    content.style.display = isOpen ? 'none' : '';
+    chevron.style.transform = isOpen ? 'rotate(-90deg)' : '';
+  }
+
+  function erSwitchTab(v) {
+    ['v1', 'v2', 'v3'].forEach(function(t) {
+      var panel = document.getElementById('er-panel-' + t);
+      var tab = document.getElementById('er-tab-' + t);
+      if (t === v) {
+        panel.style.display = '';
+        tab.classList.add('border-indigo-600', 'text-indigo-600');
+        tab.classList.remove('border-transparent', 'text-slate-500');
+      } else {
+        panel.style.display = 'none';
+        tab.classList.remove('border-indigo-600', 'text-indigo-600');
+        tab.classList.add('border-transparent', 'text-slate-500');
+      }
+    });
+  }
+
+  function erHandleCopy() {
+    var text = 'Upload failed. Please try again or contact support if the problem continues.';
+    navigator.clipboard.writeText(text).catch(function() {});
+    var btn = document.getElementById('er-copy-btn');
+    var orig = btn.innerHTML;
+    btn.innerHTML = '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg> Copied!';
+    btn.classList.add('text-emerald-600', 'border-emerald-200', 'bg-emerald-50');
+    setTimeout(function() { btn.innerHTML = orig; btn.classList.remove('text-emerald-600', 'border-emerald-200', 'bg-emerald-50'); }, 2000);
+  }
+
+  // ─── Init ─────────────────────────────────────────────────
+  document.addEventListener('DOMContentLoaded', function() {
+    renderLibrary();
+    showScreen('editor');
+  });
+</script>
+
+</body>
+</html>

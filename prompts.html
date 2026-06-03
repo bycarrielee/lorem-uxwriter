@@ -1,0 +1,611 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Lorem · Prompt log</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,400&family=DM+Mono:wght@400;500&family=DM+Serif+Display:ital@0;1&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --surface-base:  #F7F8FA;
+      --surface-card:  #F0EDE8;
+      --surface-input: #EDE8E0;
+      --surface-white: #FFFFFF;
+      --border-default: #E0E5EA;
+      --border-input:   #D9D2C8;
+      --text-primary:   #1E2D3A;
+      --text-secondary: #6B8499;
+      --text-tertiary:  #94A3B8;
+      --color-primary:       #3B5BA5;
+      --color-primary-hover: #334F94;
+      --lib-bg:  oklch(97% 0.05 162); --lib-txt: oklch(44% 0.15 162); --lib-bd: oklch(85% 0.07 162);
+      --ada-bg:  #E8E2D9;             --ada-txt: #4A5D6B;             --ada-bd: #B8AA9E;
+      --ai-bg:   oklch(99% 0.05 80);  --ai-txt:  oklch(51% 0.16 72);  --ai-bd:  oklch(83% 0.10 72);
+      --ail-bg:  oklch(99% 0.04 55);  --ail-txt: oklch(54% 0.18 45);  --ail-bd: oklch(85% 0.09 55);
+      --confirmed: oklch(58% 0.17 162);
+      --r-sm: 4px; --r-md: 6px; --r-lg: 8px; --r-xl: 12px;
+      --font: 'DM Sans', -apple-system, sans-serif;
+      --paper:          var(--surface-base);
+      --canvas:         var(--surface-white);
+      --divider:        var(--border-default);
+      --divider-strong: var(--border-input);
+      --txt-1: var(--text-primary);
+      --txt-2: var(--text-secondary);
+      --txt-3: var(--text-tertiary);
+      --primary: var(--color-primary);
+    }
+
+    body { font-family: var(--font); background: var(--paper); color: var(--txt-1); font-size: 14px; line-height: 1.5; }
+    .hidden { display: none !important; }
+
+    /* ── PROTO NAV ──────────────────────────────────────────── */
+    .proto-nav {
+      height: 33px; background: var(--surface-card); border-bottom: 1px solid var(--divider-strong);
+      display: flex; align-items: center; padding: 0 16px;
+    }
+    .proto-badge { font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em; color: var(--txt-3); margin-right: 16px; }
+    .proto-links { display: flex; align-items: center; gap: 2px; }
+    .proto-link {
+      height: 25px; padding: 0 10px; border: none; background: none; border-radius: var(--r-md);
+      font-size: 12px; font-weight: 500; font-family: var(--font); color: var(--txt-2);
+      text-decoration: none; display: flex; align-items: center;
+      transition: background 100ms ease-out, color 100ms ease-out;
+    }
+    .proto-link:hover { background: var(--divider); color: var(--txt-1); }
+    .proto-link.active { color: var(--color-primary); background: rgba(59,91,165,0.07); }
+
+    /* ── DASHBOARD SHELL (shared chrome) ────────────────────── */
+    .dashboard { display: flex; flex-direction: column; height: calc(100vh - 33px); overflow: hidden; }
+
+    .dash-header {
+      height: 56px; flex-shrink: 0;
+      background: var(--canvas); border-bottom: 1px solid var(--divider);
+      display: flex; align-items: center; padding: 0 20px; gap: 12px;
+    }
+    .dash-brand { display: flex; align-items: center; gap: 8px; flex: 1; }
+    .dash-wordmark { font-family: 'DM Mono', ui-monospace, monospace; font-size: 13px; font-weight: 500; color: var(--txt-1); }
+    .dash-sep { width: 1px; height: 16px; background: var(--divider-strong); }
+    .dash-page-title { font-size: 13px; color: var(--txt-3); }
+
+    .dash-body { display: flex; flex: 1; overflow: hidden; }
+
+    /* ── SIDEBAR ────────────────────────────────────────────── */
+    .dash-sidebar {
+      width: 196px; flex-shrink: 0;
+      background: var(--paper); border-right: 1px solid var(--divider);
+      padding: 12px 8px; display: flex; flex-direction: column; gap: 2px;
+      overflow-y: auto;
+    }
+    .sidebar-group-label {
+      font-size: 11px; font-weight: 600; text-transform: uppercase;
+      letter-spacing: 0.07em; color: var(--txt-3);
+      padding: 0 10px; margin: 10px 0 4px;
+    }
+    .sidebar-group-label:first-child { margin-top: 2px; }
+    .dash-nav-btn {
+      height: 34px; padding: 0 10px;
+      border: none; background: none; border-radius: var(--r-md);
+      font-size: 13px; color: var(--txt-2); font-family: var(--font);
+      cursor: pointer; text-align: left; text-decoration: none;
+      display: flex; align-items: center; gap: 8px;
+      transition: background 100ms ease-out, color 100ms ease-out;
+    }
+    .dash-nav-btn:hover { background: var(--divider); color: var(--txt-1); }
+    .dash-nav-btn.active {
+      background: var(--canvas); color: var(--txt-1);
+      font-weight: 500; box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+    }
+    .nav-icon { width: 15px; height: 15px; flex-shrink: 0; opacity: 0.5; }
+    .dash-nav-btn.active .nav-icon,
+    .dash-nav-btn:hover .nav-icon { opacity: 1; }
+
+    /* ── PROMPT MAIN AREA ───────────────────────────────────── */
+    .prompt-main { flex: 1; display: flex; flex-direction: column; overflow: hidden; min-width: 0; }
+
+    /* ── TOOLBAR ────────────────────────────────────────────── */
+    .toolbar {
+      flex-shrink: 0; height: 52px;
+      background: var(--canvas); border-bottom: 1px solid var(--divider);
+      display: flex; align-items: center; padding: 0 20px; gap: 10px;
+    }
+    .search-wrap { position: relative; flex: 1; max-width: 360px; }
+    .search-icon {
+      position: absolute; left: 10px; top: 50%; transform: translateY(-50%);
+      color: var(--txt-3); pointer-events: none;
+    }
+    .search-input {
+      width: 100%; height: 32px; padding: 0 10px 0 32px;
+      background: var(--paper); border: 1px solid var(--divider-strong);
+      border-radius: var(--r-md); font-size: 13px; font-family: var(--font);
+      color: var(--txt-1); outline: none;
+      transition: border-color 100ms ease-out;
+    }
+    .search-input::placeholder { color: var(--txt-3); }
+    .search-input:focus { border-color: var(--color-primary); }
+    .filter-select {
+      height: 32px; padding: 0 28px 0 10px; flex-shrink: 0;
+      background: var(--paper) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%2394A3B8' stroke-width='1.5' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") no-repeat right 10px center;
+      border: 1px solid var(--divider-strong); border-radius: var(--r-md);
+      font-size: 13px; font-family: var(--font); color: var(--txt-2);
+      cursor: pointer; outline: none; appearance: none;
+      transition: border-color 100ms ease-out;
+    }
+    .filter-select:focus { border-color: var(--color-primary); }
+    .result-count { font-size: 12px; color: var(--txt-3); margin-left: auto; white-space: nowrap; flex-shrink: 0; }
+
+    /* ── TABLE ──────────────────────────────────────────────── */
+    .table-wrap { flex: 1; overflow-y: auto; overflow-x: hidden; background: var(--canvas); }
+    .prompt-table { width: 100%; border-collapse: collapse; table-layout: fixed; }
+    .prompt-table thead th {
+      position: sticky; top: 0; z-index: 1;
+      padding: 9px 16px; text-align: left;
+      font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; color: var(--txt-3);
+      background: var(--paper); border-bottom: 1px solid var(--divider);
+      white-space: nowrap;
+    }
+    .prompt-table tbody .pr-row {
+      cursor: pointer;
+      transition: background 80ms ease-out;
+    }
+    .prompt-table tbody .pr-row:hover td { background: oklch(97.5% 0.008 220); }
+    .prompt-table tbody .pr-row.panel-open td {
+      background: oklch(96% 0.01 240);
+    }
+    .prompt-table tbody .pr-row.panel-open td:first-child {
+      box-shadow: inset 3px 0 0 var(--color-primary);
+    }
+    .prompt-table tbody td {
+      padding: 10px 16px; border-bottom: 1px solid var(--divider);
+      font-size: 13px; color: var(--txt-1); vertical-align: middle;
+    }
+    .col-time   { width: 130px; }
+    .col-client { width: 90px; }
+    .col-tier   { width: 100px; }
+    .col-action { width: 110px; }
+    .col-open   { width: 40px; text-align: right; }
+    td.col-time { color: var(--txt-2); font-size: 12px; white-space: nowrap; }
+
+    .prompt-text { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+    .client-id {
+      font-family: 'DM Mono', monospace; font-size: 11px; color: var(--txt-2);
+      background: var(--surface-card); border: 1px solid var(--divider-strong);
+      padding: 2px 6px; border-radius: var(--r-sm); white-space: nowrap;
+    }
+
+    /* Tier badges */
+    .badge {
+      display: inline-flex; align-items: center;
+      font-size: 11px; font-weight: 500; padding: 2px 8px;
+      border-radius: var(--r-sm); border: 1px solid transparent; white-space: nowrap;
+    }
+    .badge-lib  { background: var(--lib-bg); color: var(--lib-txt); border-color: var(--lib-bd); }
+    .badge-ada  { background: var(--ada-bg); color: var(--ada-txt); border-color: var(--ada-bd); }
+    .badge-ai   { background: var(--ai-bg);  color: var(--ai-txt);  border-color: var(--ai-bd);  }
+    .badge-ail  { background: var(--ail-bg); color: var(--ail-txt); border-color: var(--ail-bd); }
+
+    /* Action labels */
+    .action-copied    { color: var(--confirmed); font-weight: 500; }
+    .action-followup  { color: var(--color-primary); font-weight: 500; }
+    .action-shorter   { color: var(--txt-2); }
+    .action-alts      { color: var(--txt-2); }
+    .action-dismissed { color: var(--txt-3); }
+
+    /* Open icon */
+    .open-icon { color: var(--txt-3); display: block; }
+    .pr-row:hover .open-icon,
+    .pr-row.panel-open .open-icon { color: var(--color-primary); }
+
+    /* Empty state */
+    .empty-state {
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      padding: 80px 32px; text-align: center; gap: 6px;
+    }
+    .empty-heading { font-size: 15px; font-weight: 500; color: var(--txt-2); }
+    .empty-state p { font-size: 13px; color: var(--txt-3); }
+
+    /* ── SIDE PANEL ─────────────────────────────────────────── */
+    .side-panel {
+      width: 0; flex-shrink: 0;
+      display: flex; flex-direction: column;
+      overflow: hidden;
+      transition: width 250ms cubic-bezier(0.25, 1, 0.5, 1);
+    }
+    .side-panel.open { width: 421px; }
+
+    .side-panel-inner {
+      width: 420px; flex-shrink: 0;
+      border-left: 1px solid var(--divider);
+      background: var(--canvas);
+      display: flex; flex-direction: column;
+      flex: 1; overflow: hidden;
+    }
+
+    .panel-hd {
+      flex-shrink: 0; height: 52px;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0 16px 0 20px;
+      background: var(--paper); border-bottom: 1px solid var(--divider);
+    }
+    .panel-hd-meta { display: flex; align-items: center; gap: 10px; }
+    .panel-ts { font-size: 12px; color: var(--txt-3); }
+    .panel-close {
+      width: 28px; height: 28px; border: none; background: none;
+      border-radius: var(--r-md); color: var(--txt-3);
+      font-size: 18px; line-height: 1; cursor: pointer; display: flex; align-items: center; justify-content: center;
+      transition: background 100ms ease-out, color 100ms ease-out;
+    }
+    .panel-close:hover { background: var(--divider); color: var(--txt-1); }
+
+    .panel-body {
+      flex: 1; overflow-y: auto;
+      padding: 20px;
+      display: flex; flex-direction: column; gap: 16px;
+    }
+
+    .conv-msg { display: flex; flex-direction: column; gap: 5px; }
+    .conv-label {
+      font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.07em;
+      color: var(--txt-3); display: flex; align-items: center; gap: 7px;
+    }
+    .conv-bubble {
+      font-size: 13px; line-height: 1.7; color: var(--txt-1);
+      padding: 12px 14px; border-radius: var(--r-lg);
+      white-space: pre-wrap; word-break: break-word;
+    }
+    .conv-bubble.user      { background: var(--surface-card); border: 1px solid var(--divider-strong); }
+    .conv-bubble.assistant { background: var(--paper); border: 1px solid var(--divider); }
+
+    .conv-divider {
+      display: flex; align-items: center; gap: 10px;
+      font-size: 11px; color: var(--txt-3);
+    }
+    .conv-divider::before,
+    .conv-divider::after { content: ''; flex: 1; height: 1px; background: var(--divider); }
+
+    .panel-footer {
+      flex-shrink: 0; padding: 12px 20px;
+      border-top: 1px solid var(--divider); background: var(--paper);
+      display: flex; align-items: center; gap: 8px;
+    }
+    .panel-footer-action { font-size: 12px; color: var(--txt-3); }
+  </style>
+</head>
+<body>
+
+<!-- PROTOTYPE NAV -->
+<nav class="proto-nav">
+  <span class="proto-badge">Prototype</span>
+  <div class="proto-links">
+    <a class="proto-link" href="editor.html">Assistant</a>
+    <a class="proto-link" href="dashboard-prototype-v2.html">Dashboard</a>
+    <a class="proto-link active" href="prompts.html">Prompts</a>
+    <a class="proto-link" href="changelog.html">Changelog</a>
+  </div>
+</nav>
+
+<!-- PAGE -->
+<div class="dashboard">
+
+  <header class="dash-header">
+    <div class="dash-brand">
+      <svg width="22" height="22" viewBox="0 0 24 24" aria-hidden="true" style="flex-shrink:0">
+        <rect x="2" y="2" width="17" height="13" rx="3" fill="oklch(56% 0.17 185)"/>
+        <path d="M5 15 L3 20 L8 18.5Z" fill="oklch(56% 0.17 185)"/>
+        <circle cx="6.5"  cy="8.5" r="1.25" fill="white"/>
+        <circle cx="10.5" cy="8.5" r="1.25" fill="white"/>
+        <circle cx="14.5" cy="8.5" r="1.25" fill="white"/>
+      </svg>
+      <span class="dash-wordmark">Lorem</span>
+      <div class="dash-sep"></div>
+      <span class="dash-page-title">Prompt log</span>
+    </div>
+  </header>
+
+  <div class="dash-body">
+
+    <nav class="dash-sidebar">
+      <div class="sidebar-group-label">Analytics</div>
+      <a class="dash-nav-btn" href="dashboard-prototype-v2.html#overview">
+        <svg class="nav-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><rect x="2" y="2" width="5" height="5" rx="1"/><rect x="9" y="2" width="5" height="5" rx="1"/><rect x="2" y="9" width="5" height="5" rx="1"/><rect x="9" y="9" width="5" height="5" rx="1"/></svg>
+        Overview
+      </a>
+      <a class="dash-nav-btn" href="dashboard-prototype-v2.html#usage">
+        <svg class="nav-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><polyline points="2,12 5,7 8,9 11,5 14,3"/><line x1="2" y1="14" x2="14" y2="14"/></svg>
+        Usage
+      </a>
+      <a class="dash-nav-btn" href="dashboard-prototype-v2.html#suggestions">
+        <svg class="nav-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M2 5h12v6a2 2 0 01-2 2H6l-3 2v-2H4a2 2 0 01-2-2V5z"/></svg>
+        Suggestions
+      </a>
+      <a class="dash-nav-btn" href="dashboard-prototype-v2.html#api-health">
+        <svg class="nav-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><polyline points="1,8 4,8 5.5,3 7,12 8.5,6 10,9 11.5,8 15,8"/></svg>
+        API health
+      </a>
+      <div class="sidebar-group-label">Tools</div>
+      <a class="dash-nav-btn" href="dashboard-prototype-v2.html#queries">
+        <svg class="nav-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><rect x="2" y="2" width="12" height="12" rx="2"/><line x1="5" y1="6" x2="11" y2="6"/><line x1="5" y1="9" x2="9" y2="9"/></svg>
+        Queries
+      </a>
+      <span class="dash-nav-btn active">
+        <svg class="nav-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><line x1="3" y1="4" x2="13" y2="4"/><line x1="3" y1="8" x2="13" y2="8"/><line x1="3" y1="12" x2="9" y2="12"/></svg>
+        Prompt log
+      </span>
+    </nav>
+
+    <div class="prompt-main">
+
+      <div class="toolbar">
+        <div class="search-wrap">
+          <svg class="search-icon" width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="7" cy="7" r="5"/><line x1="11" y1="11" x2="14.5" y2="14.5"/>
+          </svg>
+          <input class="search-input" id="search" type="search" placeholder="Search prompts…" autocomplete="off">
+        </div>
+        <select class="filter-select" id="filter-tier">
+          <option value="">All tiers</option>
+          <option value="Library">Library</option>
+          <option value="Adapted">Adapted</option>
+          <option value="AI">AI</option>
+          <option value="AI low">AI low</option>
+        </select>
+        <select class="filter-select" id="filter-action">
+          <option value="">All actions</option>
+          <option value="Copied">Copied</option>
+          <option value="Follow-up">Follow-up</option>
+          <option value="Shorter">Shorter</option>
+          <option value="Alternatives">Alternatives</option>
+          <option value="Dismissed">Dismissed</option>
+        </select>
+        <span class="result-count" id="result-count"></span>
+      </div>
+
+      <div class="table-wrap">
+        <table class="prompt-table">
+          <thead>
+            <tr>
+              <th class="col-time">Time</th>
+              <th class="col-client">Client</th>
+              <th>Prompt</th>
+              <th class="col-tier">Tier</th>
+              <th class="col-action">Action</th>
+              <th class="col-open"></th>
+            </tr>
+          </thead>
+          <tbody id="tbody"></tbody>
+        </table>
+        <div id="empty-state" class="empty-state" style="display:none">
+          <span class="empty-heading">No prompts match</span>
+          <p>Try a different search term or clear the filters.</p>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- SIDE PANEL -->
+    <div class="side-panel" id="side-panel">
+      <div class="side-panel-inner">
+        <div class="panel-hd">
+          <div class="panel-hd-meta">
+            <span class="client-id" id="panel-client"></span>
+            <span class="panel-ts" id="panel-ts"></span>
+          </div>
+          <button class="panel-close" onclick="closePanel()" title="Close">
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round">
+              <line x1="2" y1="2" x2="12" y2="12"/><line x1="12" y1="2" x2="2" y2="12"/>
+            </svg>
+          </button>
+        </div>
+        <div class="panel-body" id="panel-body"></div>
+        <div class="panel-footer" id="panel-footer"></div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+// ── DATA ──────────────────────────────────────────────────────────
+const PROMPTS = [
+  { id:'p030', ts:'26 May, 14:32', client:'cli_4f8a', text:'Write a professional email declining a meeting request while keeping the door open for future collaboration', tier:'Library', action:'Copied' },
+  { id:'p029', ts:'26 May, 14:18', client:'cli_2b3d', text:'Help me write a subject line for a product update newsletter', tier:'AI', action:'Alternatives' },
+  { id:'p028', ts:'26 May, 13:51', client:'cli_7e1f', text:'Draft an out-of-office auto-reply for a two-week holiday', tier:'Library', action:'Copied' },
+  { id:'p027', ts:'26 May, 13:22', client:'cli_4f8a', text:'Make this punchier: "Our new feature is now available for all users"', tier:'Adapted', action:'Copied' },
+  { id:'p026', ts:'26 May, 12:47', client:'cli_9c2a', text:'Write a polite but firm reminder about an overdue invoice', tier:'Library', action:'Follow-up' },
+  { id:'p025', ts:'26 May, 12:14', client:'cli_2b3d', text:'Create a friendly error message for a failed file upload', tier:'AI', action:'Copied' },
+  { id:'p024', ts:'26 May, 11:38', client:'cli_6d5b', text:'Draft a response to a 3-star customer review on the App Store', tier:'Adapted', action:'Shorter' },
+  { id:'p023', ts:'26 May, 11:05', client:'cli_4f8a', text:'Announce a new Slack integration in three sentences', tier:'AI low', action:'Alternatives' },
+  { id:'p022', ts:'26 May, 10:29', client:'cli_7e1f', text:'Write a welcome email for users who just completed onboarding', tier:'Library', action:'Copied' },
+  { id:'p021', ts:'26 May, 09:52', client:'cli_9c2a', text:'Summarise this feedback in one sentence: "The upload was slow, the interface was confusing and I couldn\'t find the export button"', tier:'Adapted', action:'Copied' },
+  { id:'p020', ts:'25 May, 16:44', client:'cli_6d5b', text:'Write a short bio for our About page', tier:'AI', action:'Follow-up' },
+  { id:'p019', ts:'25 May, 15:31', client:'cli_2b3d', text:'Draft a cold outreach email for a potential partnership', tier:'AI low', action:'Dismissed' },
+  { id:'p018', ts:'25 May, 14:57', client:'cli_4f8a', text:'Create a push notification for a flash sale ending tonight', tier:'Library', action:'Copied' },
+  { id:'p017', ts:'25 May, 14:22', client:'cli_7e1f', text:'Help me write copy for an empty state when there are no search results', tier:'Library', action:'Copied' },
+  { id:'p016', ts:'25 May, 13:41', client:'cli_9c2a', text:'Rewrite this in plain English: "Leverage synergies to optimise cross-functional outcomes"', tier:'Adapted', action:'Copied' },
+  { id:'p015', ts:'25 May, 12:16', client:'cli_6d5b', text:'Write a congratulations message for a user hitting a milestone', tier:'Library', action:'Alternatives' },
+  { id:'p014', ts:'25 May, 11:50', client:'cli_2b3d', text:'Draft a tooltip for the Export button explaining which file formats are supported', tier:'AI', action:'Copied' },
+  { id:'p013', ts:'25 May, 10:38', client:'cli_4f8a', text:'Write a data deletion confirmation email', tier:'Library', action:'Copied' },
+  { id:'p012', ts:'25 May, 09:14', client:'cli_7e1f', text:'Create a brief product description for the App Store listing', tier:'AI', action:'Shorter' },
+  { id:'p011', ts:'24 May, 17:28', client:'cli_9c2a', text:'Write subject lines for A/B testing a re-engagement campaign', tier:'AI', action:'Alternatives' },
+  { id:'p010', ts:'24 May, 16:03', client:'cli_6d5b', text:'Help me write changelog notes for a minor bug fix release', tier:'Adapted', action:'Copied' },
+  { id:'p009', ts:'24 May, 15:47', client:'cli_2b3d', text:'Draft a Slack message announcing planned maintenance downtime', tier:'Library', action:'Copied' },
+  { id:'p008', ts:'24 May, 14:21', client:'cli_4f8a', text:'Write a cancellation confirmation email that reduces churn', tier:'Adapted', action:'Follow-up' },
+  { id:'p007', ts:'24 May, 12:55', client:'cli_7e1f', text:'Create a friendly 404 page message', tier:'Library', action:'Copied' },
+  { id:'p006', ts:'24 May, 11:34', client:'cli_9c2a', text:'Help me phrase a privacy policy update notice clearly and without legal jargon', tier:'AI low', action:'Dismissed' },
+  { id:'p005', ts:'24 May, 10:18', client:'cli_6d5b', text:'Write a referral programme invitation email', tier:'Adapted', action:'Copied' },
+  { id:'p004', ts:'23 May, 16:42', client:'cli_2b3d', text:'Draft copy for a loading screen while data is being fetched', tier:'AI', action:'Copied' },
+  { id:'p003', ts:'23 May, 15:24', client:'cli_4f8a', text:'Rewrite this headline to be more action-oriented: "Dashboard improvements"', tier:'Adapted', action:'Copied' },
+  { id:'p002', ts:'23 May, 14:07', client:'cli_7e1f', text:'Write a password reset email for users who have not logged in for 90 days', tier:'Library', action:'Copied' },
+  { id:'p001', ts:'23 May, 12:31', client:'cli_9c2a', text:'Help me write a cookie consent banner message that is clear and not annoying', tier:'AI low', action:'Follow-up' },
+];
+
+// ── CONVERSATION DATA ─────────────────────────────────────────────
+const RESPONSES = {
+  p030: 'Subject: Re: Meeting Request\n\nHi [Name],\n\nThanks for reaching out. I\'m not able to make that date, but I\'d genuinely like to connect — would [alternative date] work, or feel free to suggest a time?\n\nLooking forward to it.\n\nBest,\n[Your name]',
+  p029: 'Option A: What\'s new in [Product] — May update\nOption B: [Product] just got better: here\'s what changed\nOption C: Your May update is here\nOption D: New in [Product]: [feature name] and more',
+  p028: 'Thanks for your message. I\'m out of the office from [start date] to [end date] with limited access.\n\nFor urgent matters, contact [colleague] at [email]. I\'ll reply to everything else when I\'m back on [return date].',
+  p027: '[Feature] is live — try it today.',
+  p026: 'Hi [Name],\n\nInvoice #[INV-042] for [amount] was due on [date]. Could you let us know when we can expect payment, or if there\'s anything we can help with?\n\nThanks,\n[Your name]',
+  p025: 'Oops — that file didn\'t upload. Check it\'s under [size limit] and saved as [format], then try again.',
+  p024: 'Thank you for taking the time to leave a review. We\'re sorry the experience didn\'t meet your expectations. We\'ve shared your feedback with the team and would love to make things right — reach out at [support email] if you\'d like to discuss further.',
+  p023: 'Option A: [Product] now connects directly to Slack — get suggestions right in your workspace\nOption B: Slack just got smarter with [Product]: copy suggestions without leaving your channel\nOption C: New: use [Product] inside Slack',
+  p022: 'Subject: You\'re all set — welcome to [Product]\n\nHi [Name],\n\nYou\'ve completed setup. Here\'s what to do next:\n\n· [Action 1]\n· [Action 2]\n· [Action 3]\n\nIf you have questions, our help centre has everything you need.\n\nThe [Product] team',
+  p021: 'Users found the upload slow, the interface hard to follow, and the export button difficult to locate.',
+  p020: '[Company] is a [description], helping [audience] to [outcome]. Founded in [year], we believe [core value].',
+  p019: 'Hi [Name],\n\nI came across [their company] and saw a natural opportunity for us to work together. We help [audience] with [solution] — I think there\'s a great fit here.\n\nWould you be open to a quick call this week?\n\n[Your name]',
+  p018: 'Flash sale — ends tonight at midnight. Get [X]% off with code [CODE].',
+  p017: 'No results for "[search term]"\n\nTry a different keyword, or check for typos.',
+  p016: 'Work together across teams to get the best results.',
+  p015: 'Option A: You\'ve reached [milestone] — that\'s a big deal. Well done!\nOption B: [Milestone] unlocked. Keep it up!\nOption C: You hit [milestone]! Here\'s something to celebrate: [reward]',
+  p014: 'Export your data as CSV or JSON. Large exports may take a moment to prepare.',
+  p013: 'Subject: Your data has been deleted\n\nHi [Name],\n\nAs requested, your account data has been permanently deleted. This can\'t be undone.\n\nIf this was a mistake, contact us at [support email] within [timeframe].\n\nThe [Product] team',
+  p012: '[Product] is the smart writing assistant that helps you draft better copy in seconds. Whether you\'re writing emails, notifications or interface text, [Product] surfaces the right words from your library and adapts them to fit your context.',
+  p011: 'Option A: We miss you — come back and see what\'s new\nOption B: [Product] has changed a lot since your last visit\nOption C: Still interested in [product]? Here\'s what you\'ve missed\nOption D: A quick note from the [Product] team',
+  p010: 'Fixed an issue where [description of bug]. No action needed on your end.',
+  p009: '⚠️ Planned maintenance: [date], [time range]\n\n[Product] will be unavailable during this window. We\'ll post updates as we go. Thanks for your patience.',
+  p008: 'Subject: Your cancellation is confirmed\n\nHi [Name],\n\nYour subscription has been cancelled. You\'ll keep access until [end date].\n\nWe\'d love to know what we could have done better — [share your feedback].\n\nThanks for being with us.\nThe [Product] team',
+  p007: 'This page doesn\'t exist.\n\n[Go back] or [return to home]',
+  p006: 'We\'ve updated our privacy policy. The changes take effect on [date] and cover how we collect and use your data.\n\n[Read the full policy →]',
+  p005: 'Subject: Give [Product] to a friend — you\'ll both get [reward]\n\nHi [Name],\n\nYou\'ve been with us for [time]. Share your referral link and you\'ll both get [reward] when your friend signs up.\n\n[Share your link →]',
+  p004: 'Fetching your data…',
+  p003: 'What\'s new in your dashboard',
+  p002: 'Subject: Reset your [Product] password\n\nHi [Name],\n\nWe noticed you haven\'t logged in for a while. To get back in, reset your password below — the link expires in 24 hours.\n\n[Reset password →]\n\nIf this wasn\'t you, ignore this email.\n\nThe [Product] team',
+  p001: 'This site uses cookies to improve your experience. [Accept] [Manage preferences]',
+};
+
+const FOLLOW_UPS = {
+  p026: [
+    { role:'user',      text:'Add a specific payment deadline of 5 business days' },
+    { role:'assistant', text:'Hi [Name],\n\nInvoice #[INV-042] for [amount] was due on [date]. Please arrange payment within 5 business days — reply here if you have any questions.\n\nThanks,\n[Your name]' },
+  ],
+  p024: [
+    { role:'user',      text:'Make it shorter' },
+    { role:'assistant', text:'Sorry we missed the mark — thanks for the feedback. Reach out at [support email] if we can help.' },
+  ],
+  p020: [
+    { role:'user',      text:'We\'re a small team, make it warmer' },
+    { role:'assistant', text:'We\'re a small team building [product] for [audience]. We care about [value] and are proud of the community we\'re growing.' },
+  ],
+  p012: [
+    { role:'user',      text:'Shorter' },
+    { role:'assistant', text:'[Product] helps you write better copy faster — for emails, notifications and UI text.' },
+  ],
+  p008: [
+    { role:'user',      text:'Add a way for them to reactivate' },
+    { role:'assistant', text:'Subject: Your cancellation is confirmed\n\nHi [Name],\n\nYour subscription has been cancelled. You\'ll keep access until [end date].\n\nChanged your mind? You can reactivate anytime — all your data will still be there.\n\nThanks for being with us.\nThe [Product] team' },
+  ],
+  p001: [
+    { role:'user',      text:'Tell them what the cookies actually do' },
+    { role:'assistant', text:'We use cookies to remember your preferences and understand how you use [Product]. [Accept all] [Choose what to allow]' },
+  ],
+};
+
+// ── HELPERS ───────────────────────────────────────────────────────
+const TIER_CLASS   = { 'Library':'badge-lib', 'Adapted':'badge-ada', 'AI':'badge-ai', 'AI low':'badge-ail' };
+const ACTION_CLASS = { 'Copied':'action-copied', 'Follow-up':'action-followup', 'Shorter':'action-shorter', 'Alternatives':'action-alts', 'Dismissed':'action-dismissed' };
+
+function esc(s) { return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+function tierBadge(t)  { return `<span class="badge ${TIER_CLASS[t]||''}">${esc(t)}</span>`; }
+function actionLabel(a){ return `<span class="${ACTION_CLASS[a]||''}">${esc(a)}</span>`; }
+
+// ── TABLE RENDER ──────────────────────────────────────────────────
+let panelId = null;
+
+function render(data) {
+  const tbody = document.getElementById('tbody');
+  const empty = document.getElementById('empty-state');
+  document.getElementById('result-count').textContent =
+    data.length === 1 ? '1 prompt' : `${data.length} prompts`;
+
+  if (data.length === 0) {
+    tbody.innerHTML = '';
+    empty.style.display = '';
+    return;
+  }
+  empty.style.display = 'none';
+
+  tbody.innerHTML = data.map(p => `
+    <tr class="pr-row${panelId === p.id ? ' panel-open' : ''}" onclick="openPanel('${p.id}')">
+      <td class="col-time">${p.ts}</td>
+      <td class="col-client"><span class="client-id">${p.client}</span></td>
+      <td><div class="prompt-text" title="${esc(p.text)}">${esc(p.text)}</div></td>
+      <td class="col-tier">${tierBadge(p.tier)}</td>
+      <td class="col-action">${actionLabel(p.action)}</td>
+      <td class="col-open">
+        <svg class="open-icon" width="13" height="13" viewBox="0 0 13 13" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="4,2 11,2 11,9"/><line x1="11" y1="2" x2="2" y2="11"/>
+        </svg>
+      </td>
+    </tr>`).join('');
+}
+
+// ── SIDE PANEL ────────────────────────────────────────────────────
+function openPanel(id) {
+  panelId = id;
+  const p = PROMPTS.find(x => x.id === id);
+  if (!p) return;
+
+  document.getElementById('panel-client').textContent = p.client;
+  document.getElementById('panel-ts').textContent = p.ts;
+
+  const msgs = [
+    { role:'user', text: p.text },
+    { role:'assistant', text: RESPONSES[p.id] || '(No response recorded)', tier: p.tier },
+    ...(FOLLOW_UPS[p.id] || []),
+  ];
+
+  document.getElementById('panel-body').innerHTML = msgs.map((m, i) => {
+    const isUser = m.role === 'user';
+    const label  = isUser ? 'User' : 'Lorem';
+    const divider = (!isUser && i > 1)
+      ? `<div class="conv-divider">follow-up</div>` : '';
+    const tierHtml = (!isUser && m.tier)
+      ? ` ${tierBadge(m.tier)}` : '';
+    return `${divider}
+      <div class="conv-msg">
+        <div class="conv-label">${label}${tierHtml}</div>
+        <div class="conv-bubble ${m.role}">${esc(m.text)}</div>
+      </div>`;
+  }).join('');
+
+  const ACTION_LABELS = { 'Copied':'Copied', 'Follow-up':'Follow-up sent', 'Shorter':'Made shorter', 'Alternatives':'Alternatives requested', 'Dismissed':'Dismissed' };
+  document.getElementById('panel-footer').innerHTML =
+    `<span class="panel-footer-action">Outcome: <strong>${ACTION_LABELS[p.action] || p.action}</strong></span>`;
+
+  document.getElementById('side-panel').classList.add('open');
+  applyFilters();
+}
+
+function closePanel() {
+  panelId = null;
+  document.getElementById('side-panel').classList.remove('open');
+  applyFilters();
+}
+
+// ── FILTERING ─────────────────────────────────────────────────────
+function applyFilters() {
+  const q      = document.getElementById('search').value.trim().toLowerCase();
+  const tier   = document.getElementById('filter-tier').value;
+  const action = document.getElementById('filter-action').value;
+  render(PROMPTS.filter(p =>
+    (!q      || p.text.toLowerCase().includes(q)) &&
+    (!tier   || p.tier   === tier)                &&
+    (!action || p.action === action)
+  ));
+}
+
+// ── INIT ──────────────────────────────────────────────────────────
+document.getElementById('search').addEventListener('input',        () => { panelId = null; closePanel(); applyFilters(); });
+document.getElementById('filter-tier').addEventListener('change',  () => { panelId = null; closePanel(); applyFilters(); });
+document.getElementById('filter-action').addEventListener('change',() => { panelId = null; closePanel(); applyFilters(); });
+
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closePanel(); });
+
+applyFilters();
+</script>
+</body>
+</html>

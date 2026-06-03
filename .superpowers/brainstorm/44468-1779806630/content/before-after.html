@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Before / After — Token Swap</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600&family=DM+Mono:wght@400;500&family=DM+Serif+Display&display=swap" rel="stylesheet">
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: 'DM Sans', sans-serif; background: #F0EDE8; padding: 32px; color: #1E2D3A; }
+
+h1 { font-size: 18px; font-weight: 600; margin-bottom: 4px; }
+.page-sub { font-size: 13px; color: #6B8499; margin-bottom: 28px; }
+
+.split { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+
+.panel-label {
+  font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.07em;
+  color: #6B8499; margin-bottom: 10px;
+}
+
+/* ── BEFORE panel ── */
+.before {
+  --paper: #F8FAFC;
+  --canvas: #FFFFFF;
+  --divider: #E2E8F0;
+  --divider-strong: #CBD5E1;
+  --txt-1: #1E2D3A;
+  --txt-2: #64748B;
+  --txt-3: #94A3B8;
+  --r-md: 6px; --r-lg: 8px; --r-xl: 12px;
+  --font: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --success: #047857;
+  font-family: var(--font);
+  background: var(--paper);
+  border: 1px solid var(--divider-strong);
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+/* ── AFTER panel ── */
+.after {
+  --surface-base: #F7F8FA;
+  --surface-card: #F0EDE8;
+  --surface-white: #FFFFFF;
+  --border-default: #E0E5EA;
+  --border-input: #D9D2C8;
+  --text-primary: #1E2D3A;
+  --text-secondary: #6B8499;
+  --text-tertiary: #94A3B8;
+  --color-primary: #3B5BA5;
+  --r-md: 6px; --r-lg: 8px; --r-xl: 12px;
+  --font-ui: 'DM Sans', sans-serif;
+  font-family: var(--font-ui);
+  background: var(--surface-base);
+  border: 1px solid var(--border-input);
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+/* Shared topbar */
+.topbar {
+  height: 48px; display: flex; align-items: center; padding: 0 16px; gap: 10px;
+  border-bottom: 1px solid;
+}
+.before .topbar { background: #fff; border-color: #E2E8F0; }
+.after  .topbar { background: #F7F8FA; border-color: #E0E5EA; }
+
+.mark {
+  width: 22px; height: 22px; border-radius: 5px;
+  display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+}
+.before .mark { background: #047857; }
+.after  .mark { background: #3B5BA5; }
+.mark svg { display: block; }
+
+.wordmark { font-size: 13px; font-weight: 500; }
+.before .wordmark { font-family: 'JetBrains Mono', monospace; color: #1E2D3A; }
+.after  .wordmark { font-family: 'DM Mono', monospace; color: #1E2D3A; }
+
+.sep { width: 1px; height: 14px; background: currentColor; opacity: 0.2; }
+.page-title { font-size: 12.5px; }
+.before .page-title { color: #94A3B8; font-family: var(--font, sans-serif); }
+.after  .page-title { color: #94A3B8; font-family: 'DM Sans', sans-serif; }
+
+/* Cards */
+.cards-section { padding: 16px 14px 14px; }
+.section-title { font-size: 14px; font-weight: 600; margin-bottom: 12px; letter-spacing: -0.01em; }
+.before .section-title { color: #1E2D3A; font-family: var(--font, sans-serif); }
+.after  .section-title { color: #1E2D3A; font-family: 'DM Sans', sans-serif; }
+
+.cards { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+.card { border-radius: 8px; padding: 12px 14px; border: 1px solid; }
+.before .card { background: #fff; border-color: #E2E8F0; }
+.after  .card { background: #F0EDE8; border-color: #E0E5EA; }
+
+.card-label { font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.07em; margin-bottom: 7px; }
+.before .card-label { color: #94A3B8; font-family: var(--font, sans-serif); }
+.after  .card-label { color: #94A3B8; font-family: 'DM Sans', sans-serif; }
+
+.card-value { font-size: 22px; font-weight: 700; letter-spacing: -0.02em; margin-bottom: 4px; }
+.before .card-value { color: #1E2D3A; font-family: var(--font, sans-serif); }
+.after  .card-value { color: #1E2D3A; font-family: 'DM Sans', sans-serif; }
+
+.card-trend { font-size: 11px; }
+.before .card-trend { color: #94A3B8; font-family: var(--font, sans-serif); }
+.after  .card-trend { color: #94A3B8; font-family: 'DM Sans', sans-serif; }
+.card-trend.up { color: #047857; }
+.after .card-trend.up { color: oklch(58% 0.17 162); }
+
+/* Tiers section */
+.tiers-section { padding: 0 14px 14px; }
+.tier-label-hd { font-size: 11px; font-weight: 600; margin-bottom: 8px; }
+.before .tier-label-hd { color: #64748B; font-family: var(--font, sans-serif); }
+.after  .tier-label-hd { color: #6B8499; font-family: 'DM Sans', sans-serif; }
+
+.tiers { display: flex; flex-direction: column; gap: 7px; }
+.tier-row { display: flex; align-items: center; gap: 8px; }
+.tier-name { width: 54px; flex-shrink: 0; font-size: 11px; text-align: right; }
+.before .tier-name { color: #64748B; }
+.after  .tier-name { color: #6B8499; }
+.tier-track { flex: 1; height: 14px; border-radius: 3px; overflow: hidden; }
+.before .tier-track { background: #F8FAFC; }
+.after  .tier-track { background: #EDE8E0; }
+.tier-fill { height: 100%; border-radius: 3px; }
+.tier-pct { width: 28px; flex-shrink: 0; font-size: 11px; font-weight: 600; }
+.before .tier-pct { color: #1E2D3A; }
+.after  .tier-pct { color: #1E2D3A; }
+
+/* change annotations */
+.annotation {
+  display: flex; gap: 8px; flex-direction: column; margin-top: 16px; padding: 0 2px;
+}
+.ann-row { display: flex; align-items: flex-start; gap: 8px; font-size: 12px; color: #6B8499; line-height: 1.4; }
+.ann-dot { width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; margin-top: 5px; }
+.ann-dot.change { background: #3B5BA5; }
+.ann-dot.same { background: #C4B9AE; }
+</style>
+<!-- no helper script needed — informational only -->
+</head>
+<body>
+
+<h1>Token swap — before / after</h1>
+<p class="page-sub">Same layout, same sections. Visual tokens updated to DESIGN.md.</p>
+
+<div class="split">
+
+  <!-- BEFORE -->
+  <div>
+    <div class="panel-label">Before (current prototype)</div>
+    <div class="before">
+      <div class="topbar">
+        <div class="mark">
+          <svg width="11" height="11" viewBox="0 0 16 16" fill="none"><path d="M3 3h10v6a5 5 0 01-10 0V3z" fill="white" fill-opacity=".9"/></svg>
+        </div>
+        <span class="wordmark">Lorem</span>
+        <span class="sep"></span>
+        <span class="page-title">Dashboard</span>
+      </div>
+      <div class="cards-section">
+        <div class="section-title">Overview</div>
+        <div class="cards">
+          <div class="card"><div class="card-label">Active clients</div><div class="card-value">87</div><div class="card-trend up">↑ 12%</div></div>
+          <div class="card"><div class="card-label">Sessions</div><div class="card-value">218</div><div class="card-trend up">↑ 8%</div></div>
+          <div class="card"><div class="card-label">Copy rate</div><div class="card-value">31%</div><div class="card-trend">suggestions copied</div></div>
+        </div>
+      </div>
+      <div class="tiers-section">
+        <div class="tier-label-hd">Copy rate by source tier</div>
+        <div class="tiers">
+          <div class="tier-row"><span class="tier-name">Library</span><div class="tier-track"><div class="tier-fill" style="width:45%;background:#047857"></div></div><span class="tier-pct">45%</span></div>
+          <div class="tier-row"><span class="tier-name">Adapted</span><div class="tier-track"><div class="tier-fill" style="width:61%;background:#4F46E5"></div></div><span class="tier-pct">61%</span></div>
+          <div class="tier-row"><span class="tier-name">AI</span><div class="tier-track"><div class="tier-fill" style="width:28%;background:#D97706"></div></div><span class="tier-pct">28%</span></div>
+          <div class="tier-row"><span class="tier-name">AI low</span><div class="tier-track"><div class="tier-fill" style="width:12%;background:#EA580C"></div></div><span class="tier-pct">12%</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- AFTER -->
+  <div>
+    <div class="panel-label">After (DESIGN.md tokens)</div>
+    <div class="after">
+      <div class="topbar">
+        <div class="mark">
+          <svg width="11" height="11" viewBox="0 0 16 16" fill="none"><path d="M3 3h10v6a5 5 0 01-10 0V3z" fill="white" fill-opacity=".9"/></svg>
+        </div>
+        <span class="wordmark">Lorem</span>
+        <span class="sep"></span>
+        <span class="page-title">Dashboard</span>
+      </div>
+      <div class="cards-section">
+        <div class="section-title">Overview</div>
+        <div class="cards">
+          <div class="card"><div class="card-label">Active clients</div><div class="card-value">87</div><div class="card-trend up" style="color:oklch(58% 0.17 162)">↑ 12%</div></div>
+          <div class="card"><div class="card-label">Sessions</div><div class="card-value">218</div><div class="card-trend up" style="color:oklch(58% 0.17 162)">↑ 8%</div></div>
+          <div class="card"><div class="card-label">Copy rate</div><div class="card-value">31%</div><div class="card-trend">suggestions copied</div></div>
+        </div>
+      </div>
+      <div class="tiers-section">
+        <div class="tier-label-hd">Copy rate by source tier</div>
+        <div class="tiers">
+          <div class="tier-row"><span class="tier-name">Library</span><div class="tier-track"><div class="tier-fill" style="width:45%;background:oklch(48% 0.16 162)"></div></div><span class="tier-pct">45%</span></div>
+          <div class="tier-row"><span class="tier-name">Adapted</span><div class="tier-track"><div class="tier-fill" style="width:61%;background:#4A5D6B"></div></div><span class="tier-pct">61%</span></div>
+          <div class="tier-row"><span class="tier-name">AI</span><div class="tier-track"><div class="tier-fill" style="width:28%;background:oklch(55% 0.16 72)"></div></div><span class="tier-pct">28%</span></div>
+          <div class="tier-row"><span class="tier-name">AI low</span><div class="tier-track"><div class="tier-fill" style="width:12%;background:oklch(58% 0.18 45)"></div></div><span class="tier-pct">12%</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- change summary -->
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-top:20px">
+  <div>
+    <div style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:0.07em;color:#6B8499;margin-bottom:10px">What changes</div>
+    <div class="annotation">
+      <div class="ann-row"><div class="ann-dot change"></div><span>Brand mark: green → blue primary (#3B5BA5)</span></div>
+      <div class="ann-row"><div class="ann-dot change"></div><span>Wordmark: JetBrains Mono → DM Mono</span></div>
+      <div class="ann-row"><div class="ann-dot change"></div><span>Body text: system font → DM Sans</span></div>
+      <div class="ann-row"><div class="ann-dot change"></div><span>Cards: white → warm cream (#F0EDE8)</span></div>
+      <div class="ann-row"><div class="ann-dot change"></div><span>Secondary text: #64748B → #6B8499 (warmer)</span></div>
+      <div class="ann-row"><div class="ann-dot change"></div><span>Borders: cool grey → warm grey</span></div>
+      <div class="ann-row"><div class="ann-dot change"></div><span>Source tier colours → semantic DS values</span></div>
+      <div class="ann-row"><div class="ann-dot change"></div><span>Success/warning/danger → confirmed/provisional/critical oklch</span></div>
+    </div>
+  </div>
+  <div>
+    <div style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:0.07em;color:#6B8499;margin-bottom:10px">What stays the same</div>
+    <div class="annotation">
+      <div class="ann-row"><div class="ann-dot same"></div><span>All 5 sections: Overview, Usage, Suggestions, API health, Queries</span></div>
+      <div class="ann-row"><div class="ann-dot same"></div><span>All chart types (line, bar, horizontal bar)</span></div>
+      <div class="ann-row"><div class="ann-dot same"></div><span>Demo data and preset queries</span></div>
+      <div class="ann-row"><div class="ann-dot same"></div><span>Login screen with password gate</span></div>
+      <div class="ann-row"><div class="ann-dot same"></div><span>Date range switcher</span></div>
+      <div class="ann-row"><div class="ann-dot same"></div><span>CSV export</span></div>
+      <div class="ann-row"><div class="ann-dot same"></div><span>Single standalone HTML file</span></div>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>

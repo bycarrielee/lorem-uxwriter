@@ -1,0 +1,128 @@
+<h2>Copy library browser</h2>
+<p class="subtitle">Wireframe — practitioners browse and discover existing copy. Read-only.</p>
+
+<div style="background:white;border:1px solid #e5e7eb;border-radius:12px;overflow:hidden;max-width:900px;margin:0 auto;font-size:13px">
+
+  <!-- Top bar -->
+  <div style="padding:14px 20px;border-bottom:1px solid #e5e7eb;display:flex;gap:10px;align-items:center;background:#f9fafb">
+    <input class="mock-input" placeholder="🔍  Search copy, tags, context..." style="flex:1;font-size:13px">
+    <select style="border:1px solid #d1d5db;border-radius:6px;padding:6px 10px;font-size:12px;color:#374151;background:white">
+      <option>All products</option>
+      <option>MyLegacy</option>
+      <option>SupportGoWhere</option>
+    </select>
+    <select style="border:1px solid #d1d5db;border-radius:6px;padding:6px 10px;font-size:12px;color:#374151;background:white">
+      <option>All element types</option>
+      <option>Buttons</option>
+      <option>Modals</option>
+      <option>Errors</option>
+      <option>Forms</option>
+      <option>Alerts</option>
+    </select>
+    <select style="border:1px solid #d1d5db;border-radius:6px;padding:6px 10px;font-size:12px;color:#374151;background:white">
+      <option>Active only</option>
+      <option>All statuses</option>
+      <option>Draft</option>
+      <option>Deprecated</option>
+    </select>
+  </div>
+
+  <!-- Results count + scope toggle -->
+  <div style="padding:10px 20px;border-bottom:1px solid #f3f4f6;display:flex;justify-content:space-between;align-items:center">
+    <span style="font-size:12px;color:#6b7280">47 entries</span>
+    <div style="display:flex;gap:4px">
+      <button style="font-size:11px;padding:3px 10px;border-radius:4px;border:1px solid #2563eb;background:#eff6ff;color:#2563eb">All</button>
+      <button style="font-size:11px;padding:3px 10px;border-radius:4px;border:1px solid #e5e7eb;background:white;color:#6b7280">Global</button>
+      <button style="font-size:11px;padding:3px 10px;border-radius:4px;border:1px solid #e5e7eb;background:white;color:#6b7280">Product-specific</button>
+    </div>
+  </div>
+
+  <!-- Entry list -->
+  <div style="divide-y">
+
+    <!-- Entry 1 — expanded -->
+    <div style="padding:16px 20px;border-bottom:1px solid #f3f4f6;background:#fafffe">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px">
+        <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+          <span style="font-size:10px;background:#dcfce7;color:#15803d;padding:2px 8px;border-radius:4px;font-weight:600;text-transform:uppercase;letter-spacing:0.3px">Active</span>
+          <span style="font-size:10px;background:#e0f2fe;color:#0369a1;padding:2px 8px;border-radius:4px">Modal</span>
+          <span style="font-size:10px;background:#f3f4f6;color:#6b7280;padding:2px 8px;border-radius:4px">Global</span>
+          <span style="font-size:11px;color:#94a3b8">inactivity-timeout</span>
+        </div>
+        <button style="font-size:11px;color:#6b7280;background:none;border:none;cursor:pointer">▲ Collapse</button>
+      </div>
+
+      <!-- Copy (multi-part modal) -->
+      <div style="background:white;border:1px solid #e5e7eb;border-radius:8px;padding:12px;margin-bottom:10px">
+        <div style="display:flex;gap:6px;flex-direction:column">
+          <div><span style="font-size:10px;color:#9ca3af;text-transform:uppercase;letter-spacing:0.3px">Header</span><div style="font-weight:600;color:#111827;margin-top:2px">Your form has been closed</div></div>
+          <div><span style="font-size:10px;color:#9ca3af;text-transform:uppercase;letter-spacing:0.3px">Body</span><div style="color:#374151;margin-top:2px">It looks like you've left, so we closed the form to protect your privacy.</div></div>
+          <div><span style="font-size:10px;color:#9ca3af;text-transform:uppercase;letter-spacing:0.3px">Primary button</span><div style="color:#374151;margin-top:2px">Back to service</div></div>
+        </div>
+      </div>
+
+      <!-- Context + rationale -->
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;font-size:12px">
+        <div>
+          <div style="font-size:10px;font-weight:600;color:#9ca3af;text-transform:uppercase;letter-spacing:0.3px;margin-bottom:4px">Context</div>
+          <div style="color:#374151;line-height:1.6">Session timeout modal after user inactivity on a form or authenticated page (typically 15–30 min).</div>
+        </div>
+        <div>
+          <div style="font-size:10px;font-weight:600;color:#9ca3af;text-transform:uppercase;letter-spacing:0.3px;margin-bottom:4px">Rationale</div>
+          <div style="color:#374151;line-height:1.6">Frames timeout as privacy protection. "It looks like you've left" is gentler than "You were inactive". "Back to service" is clear about destination.</div>
+        </div>
+      </div>
+
+      <!-- Tags + meta -->
+      <div style="display:flex;gap:6px;margin-top:10px;flex-wrap:wrap;align-items:center">
+        <span style="font-size:10px;background:#f3f4f6;color:#6b7280;padding:2px 7px;border-radius:4px">timeout</span>
+        <span style="font-size:10px;background:#f3f4f6;color:#6b7280;padding:2px 7px;border-radius:4px">session</span>
+        <span style="font-size:10px;background:#f3f4f6;color:#6b7280;padding:2px 7px;border-radius:4px">privacy</span>
+        <span style="font-size:10px;background:#f3f4f6;color:#6b7280;padding:2px 7px;border-radius:4px">error-recovery</span>
+        <span style="font-size:10px;color:#9ca3af;margin-left:auto">Updated 31 Mar 2026</span>
+      </div>
+    </div>
+
+    <!-- Entry 2 — collapsed -->
+    <div style="padding:14px 20px;border-bottom:1px solid #f3f4f6;display:flex;justify-content:space-between;align-items:center">
+      <div style="display:flex;gap:8px;align-items:center;flex:1">
+        <span style="font-size:10px;background:#dcfce7;color:#15803d;padding:2px 8px;border-radius:4px;font-weight:600;text-transform:uppercase;letter-spacing:0.3px">Active</span>
+        <span style="font-size:10px;background:#e0f2fe;color:#0369a1;padding:2px 8px;border-radius:4px">Button</span>
+        <span style="font-size:10px;background:#f3f4f6;color:#6b7280;padding:2px 8px;border-radius:4px">Global</span>
+        <span style="color:#111827;margin-left:4px">Save and continue</span>
+        <span style="font-size:11px;color:#9ca3af">Multi-step form progression</span>
+      </div>
+      <button style="font-size:11px;color:#6b7280;background:none;border:none;cursor:pointer">▼ Expand</button>
+    </div>
+
+    <!-- Entry 3 — collapsed, product-specific -->
+    <div style="padding:14px 20px;border-bottom:1px solid #f3f4f6;display:flex;justify-content:space-between;align-items:center">
+      <div style="display:flex;gap:8px;align-items:center;flex:1">
+        <span style="font-size:10px;background:#dcfce7;color:#15803d;padding:2px 8px;border-radius:4px;font-weight:600;text-transform:uppercase;letter-spacing:0.3px">Active</span>
+        <span style="font-size:10px;background:#e0f2fe;color:#0369a1;padding:2px 8px;border-radius:4px">Button</span>
+        <span style="font-size:10px;background:#fdf4ff;color:#7e22ce;padding:2px 8px;border-radius:4px">MyLegacy</span>
+        <span style="color:#111827;margin-left:4px">Submit application</span>
+        <span style="font-size:11px;color:#9ca3af">Final submission on grant application form</span>
+      </div>
+      <button style="font-size:11px;color:#6b7280;background:none;border:none;cursor:pointer">▼ Expand</button>
+    </div>
+
+    <!-- Entry 4 — draft -->
+    <div style="padding:14px 20px;border-bottom:1px solid #f3f4f6;display:flex;justify-content:space-between;align-items:center;opacity:0.7">
+      <div style="display:flex;gap:8px;align-items:center;flex:1">
+        <span style="font-size:10px;background:#fef9c3;color:#854d0e;padding:2px 8px;border-radius:4px;font-weight:600;text-transform:uppercase;letter-spacing:0.3px">Draft</span>
+        <span style="font-size:10px;background:#e0f2fe;color:#0369a1;padding:2px 8px;border-radius:4px">Error</span>
+        <span style="font-size:10px;background:#f3f4f6;color:#6b7280;padding:2px 8px;border-radius:4px">Global</span>
+        <span style="color:#111827;margin-left:4px">Payment failed — try again</span>
+        <span style="font-size:11px;color:#9ca3af">Payment error recovery</span>
+      </div>
+      <button style="font-size:11px;color:#6b7280;background:none;border:none;cursor:pointer">▼ Expand</button>
+    </div>
+
+    <!-- Load more -->
+    <div style="padding:14px 20px;text-align:center">
+      <button style="font-size:12px;color:#6b7280;background:none;border:1px solid #e5e7eb;border-radius:6px;padding:6px 20px;cursor:pointer">Load more entries</button>
+    </div>
+
+  </div>
+</div>

@@ -1,0 +1,112 @@
+<h2>Full system design — summary</h2>
+<p class="subtitle">Everything we've agreed on. Review before I write the spec.</p>
+
+<div style="display:flex;flex-direction:column;gap:14px;max-width:860px;margin:0 auto">
+
+  <div style="background:#f0f9ff;border:2px solid #0284c7;border-radius:12px;padding:18px 22px">
+    <div style="font-size:11px;text-transform:uppercase;letter-spacing:1px;color:#0284c7;font-weight:600;margin-bottom:10px">What it is</div>
+    <div style="font-size:13px;color:#374151;line-height:1.8">
+      A web-based AI writing assistant for UX practitioners working on Singapore government digital products. The agent reviews copy against a managed library of approved copy strings, then falls back to writing guidelines and AI generation when no library match exists. Core value: <strong>consistency through library-first lookup</strong>, with transparent source labelling on every suggestion.
+    </div>
+  </div>
+
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px">
+
+    <div style="background:#f0fdf4;border:2px solid #16a34a;border-radius:12px;padding:18px 22px">
+      <div style="font-size:11px;text-transform:uppercase;letter-spacing:1px;color:#16a34a;font-weight:600;margin-bottom:10px">Users</div>
+      <div style="font-size:13px;color:#374151;line-height:1.7">
+        <strong>Practitioners</strong> — UX writers, content designers, product designers<br>
+        <strong>Secondary</strong> — product owners, developers<br>
+        <strong>Access</strong> — .gov.sg self-serve signup, or admin invite (for contractors/vendors)<br>
+        <strong>Default</strong> — can access all products<br>
+        <strong>Restricted</strong> — admin can limit to specific products
+      </div>
+    </div>
+
+    <div style="background:#fdf4ff;border:2px solid #9333ea;border-radius:12px;padding:18px 22px">
+      <div style="font-size:11px;text-transform:uppercase;letter-spacing:1px;color:#9333ea;font-weight:600;margin-bottom:10px">Core workflow</div>
+      <div style="font-size:13px;color:#374151;line-height:1.7">
+        1. Practitioner sets context (product, element type, journey stage)<br>
+        2. Pastes or types copy into editor<br>
+        3. Clicks Review<br>
+        4. Agent: queries library → loads foundations → calls Claude<br>
+        5. Results appear: suggested copy + rationale + source + confidence<br>
+        6. Practitioner shortlists, edits, or requests more options
+      </div>
+    </div>
+
+  </div>
+
+  <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px">
+
+    <div style="background:#fefce8;border:2px solid #ca8a04;border-radius:12px;padding:16px 18px">
+      <div style="font-size:11px;text-transform:uppercase;letter-spacing:1px;color:#ca8a04;font-weight:600;margin-bottom:8px">Tech stack</div>
+      <div style="font-size:12px;color:#374151;line-height:1.8">
+        <strong>Frontend</strong> — Next.js<br>
+        <strong>Backend</strong> — Next.js API routes<br>
+        <strong>Database</strong> — Supabase (PostgreSQL)<br>
+        <strong>Auth</strong> — Supabase Auth<br>
+        <strong>AI</strong> — Claude API<br>
+        <strong>Content API</strong> — Supabase REST (auto-generated)
+      </div>
+    </div>
+
+    <div style="background:#fff7ed;border:2px solid #ea580c;border-radius:12px;padding:16px 18px">
+      <div style="font-size:11px;text-transform:uppercase;letter-spacing:1px;color:#ea580c;font-weight:600;margin-bottom:8px">Agent logic</div>
+      <div style="font-size:12px;color:#374151;line-height:1.8">
+        <strong>Step 1</strong> — DB query: product library → global library<br>
+        <strong>Step 2</strong> — Load: element patterns + foundations<br>
+        <strong>Step 3</strong> — Call Claude with all context<br>
+        <strong>Source labels:</strong><br>
+        · Library match<br>
+        · Adapted from library<br>
+        · AI-generated<br>
+        · AI-generated · lower confidence
+      </div>
+    </div>
+
+    <div style="background:#f5f3ff;border:2px solid #7c3aed;border-radius:12px;padding:16px 18px">
+      <div style="font-size:11px;text-transform:uppercase;letter-spacing:1px;color:#7c3aed;font-weight:600;margin-bottom:8px">Editor UI</div>
+      <div style="font-size:12px;color:#374151;line-height:1.8">
+        <strong>Layout</strong> — two-panel (input left, results right)<br>
+        <strong>Features:</strong><br>
+        · Show / hide rationale<br>
+        · Shortlist options<br>
+        · Request more options<br>
+        · Edit AI output inline<br>
+        · Session history<br>
+        · Share session (read-only link)
+      </div>
+    </div>
+
+  </div>
+
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px">
+
+    <div style="background:#f8fafc;border:2px solid #64748b;border-radius:12px;padding:16px 18px">
+      <div style="font-size:11px;text-transform:uppercase;letter-spacing:1px;color:#64748b;font-weight:600;margin-bottom:8px">Admin panel</div>
+      <div style="font-size:12px;color:#374151;line-height:1.8">
+        · Copy library CRUD (add, edit, deprecate, import JSON)<br>
+        · Foundations &amp; patterns editor<br>
+        · Products management<br>
+        · Users: invite, promote to admin, restrict product access<br>
+        · Usage stats: sessions, library hit rate, top element types
+      </div>
+    </div>
+
+    <div style="background:#fff1f2;border:2px solid #e11d48;border-radius:12px;padding:16px 18px">
+      <div style="font-size:11px;text-transform:uppercase;letter-spacing:1px;color:#e11d48;font-weight:600;margin-bottom:8px">Out of scope (v1)</div>
+      <div style="font-size:12px;color:#374151;line-height:1.8">
+        · Multi-product comparison in one session<br>
+        · Auto-applying copy without human review<br>
+        · Marketing or long-form content<br>
+        · Figma / design tool integration<br>
+        · Real-time collaboration<br>
+        · SEO / meta copy<br>
+        · Non-Singapore government standards
+      </div>
+    </div>
+
+  </div>
+
+</div>

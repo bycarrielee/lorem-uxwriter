@@ -189,7 +189,7 @@ export async function POST(request: NextRequest) {
   // Increment shared budget — only on success, only when using the shared key
   if (!userApiKey && costUsd !== null) {
     try {
-      await serviceClient.rpc('increment_budget_cost', { delta: costUsd })
+      await serviceClient.rpc('increment_budget_cost', { amount: costUsd })
     } catch (budgetErr) {
       console.error('budget increment failed (non-critical)', budgetErr)
     }

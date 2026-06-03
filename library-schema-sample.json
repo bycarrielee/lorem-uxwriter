@@ -1,0 +1,74 @@
+[
+  {
+    "id": "your-agency.forms.nric.label",
+    "elementType": "form-field-label",
+    "status": "approved",
+    "value": "NRIC / FIN number",
+    "field": "nric"
+  },
+  {
+    "id": "your-agency.forms.nric.hint",
+    "elementType": "form-field-hint",
+    "status": "approved",
+    "value": "Enter the 9-character number on your NRIC or FIN card.",
+    "field": "nric"
+  },
+  {
+    "id": "your-agency.forms.nric.errors.required",
+    "elementType": "form-field-error",
+    "status": "approved",
+    "value": "Enter your NRIC or FIN number.",
+    "field": "nric",
+    "fieldRef": {
+      "id": "your-agency.forms.nric",
+      "label": "NRIC / FIN number"
+    }
+  },
+  {
+    "id": "your-agency.forms.nric.errors.invalid",
+    "elementType": "form-field-error",
+    "status": "approved",
+    "value": "Enter a valid NRIC or FIN number, for example S1234567A.",
+    "field": "nric",
+    "fieldRef": {
+      "id": "your-agency.forms.nric",
+      "label": "NRIC / FIN number"
+    }
+  },
+  {
+    "id": "your-agency.modals.confirmSubmit.title",
+    "elementType": "modal",
+    "status": "approved",
+    "value": "Submit your application?"
+  },
+  {
+    "id": "your-agency.modals.confirmSubmit.body",
+    "elementType": "modal",
+    "status": "approved",
+    "value": "Once submitted, you will not be able to make changes to this application."
+  },
+  {
+    "id": "your-agency.modals.confirmSubmit.primaryCta",
+    "elementType": "modal",
+    "status": "approved",
+    "value": "Submit application"
+  },
+  {
+    "id": "your-agency.modals.confirmSubmit.secondaryCta",
+    "elementType": "modal",
+    "status": "approved",
+    "value": "Go back"
+  },
+  {
+    "id": "your-agency.buttons.continue",
+    "elementType": "button",
+    "status": "approved",
+    "value": "Continue"
+  },
+  {
+    "id": "your-agency.buttons.saveAndExit",
+    "elementType": "button",
+    "status": "draft",
+    "value": "Save and exit"
+  }
+]

@@ -1,9 +1,10 @@
-import { NavItem } from '@/components/sidebar/NavItem'
-import { SessionList } from '@/components/sidebar/SessionList'
+import { SidebarContent } from '@/components/sidebar/SidebarContent'
 import { TopbarLink } from '@/components/TopbarLink'
+import { MetricsProvider } from '@/lib/metrics/context'
 
 export default function AppLayout({ children }: { children: React.ReactNode }) {
   return (
+    <MetricsProvider>
     <div className="app-root">
       {/* Topbar */}
       <header className="topbar">
@@ -39,24 +40,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
       <div className="app-body">
         {/* Sidebar */}
         <aside className="sidebar">
-          {/* Workspace nav */}
-          <nav className="sidebar-nav">
-            <div className="sidebar-section-label">Workspace</div>
-            <NavItem
-              href="/assistant"
-              label="Assistant"
-              icon={<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>}
-            />
-            <NavItem
-              href="/library"
-              label="Library"
-              icon={<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>}
-            />
-          </nav>
-
-          <div className="sidebar-divider" />
-
-          <SessionList />
+          <SidebarContent />
         </aside>
 
         {/* Main content */}
@@ -65,5 +49,6 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
         </main>
       </div>
     </div>
+    </MetricsProvider>
   )
 }

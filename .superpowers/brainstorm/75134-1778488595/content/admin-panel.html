@@ -1,0 +1,98 @@
+<h2>Admin panel structure</h2>
+<p class="subtitle">Four sections the admin team manages. Does this cover what you need?</p>
+
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;max-width:860px;margin:0 auto">
+
+  <!-- Copy Library -->
+  <div style="background:#f0fdf4;border:2px solid #16a34a;border-radius:12px;padding:20px">
+    <div style="font-size:11px;text-transform:uppercase;letter-spacing:1px;color:#16a34a;font-weight:600;margin-bottom:12px">📚 Copy library</div>
+    <div style="font-size:13px;color:#374151;line-height:1.8;margin-bottom:14px">
+      Browse, search, and filter all entries across products and element types. Add new entries, edit existing ones, mark as deprecated, or promote drafts to active.
+    </div>
+    <div style="background:white;border:1px solid #d1fae5;border-radius:8px;padding:10px;font-size:12px">
+      <div style="display:flex;justify-content:space-between;align-items:center;padding:6px 0;border-bottom:1px solid #f0fdf4">
+        <span style="color:#374151">inactivity-timeout <span style="color:#16a34a;font-size:10px;background:#f0fdf4;padding:1px 6px;border-radius:4px;margin-left:4px">active</span></span>
+        <span style="color:#6b7280;font-size:11px">modals · global</span>
+      </div>
+      <div style="display:flex;justify-content:space-between;align-items:center;padding:6px 0;border-bottom:1px solid #f0fdf4">
+        <span style="color:#374151">save-and-continue <span style="color:#16a34a;font-size:10px;background:#f0fdf4;padding:1px 6px;border-radius:4px;margin-left:4px">active</span></span>
+        <span style="color:#6b7280;font-size:11px">buttons · global</span>
+      </div>
+      <div style="display:flex;justify-content:space-between;align-items:center;padding:6px 0">
+        <span style="color:#374151">submit-grant-application <span style="color:#fef9c3;font-size:10px;background:#ca8a04;padding:1px 6px;border-radius:4px;margin-left:4px;color:white">draft</span></span>
+        <span style="color:#6b7280;font-size:11px">buttons · sgw</span>
+      </div>
+    </div>
+    <div style="margin-top:12px;display:flex;gap:8px">
+      <button style="font-size:11px;background:#16a34a;color:white;border:none;border-radius:6px;padding:5px 12px">+ Add entry</button>
+      <button style="font-size:11px;background:white;border:1px solid #d1fae5;border-radius:6px;padding:5px 12px;color:#374151">Import JSON</button>
+    </div>
+  </div>
+
+  <!-- Foundations & Patterns -->
+  <div style="background:#fdf4ff;border:2px solid #9333ea;border-radius:12px;padding:20px">
+    <div style="font-size:11px;text-transform:uppercase;letter-spacing:1px;color:#9333ea;font-weight:600;margin-bottom:12px">📐 Foundations &amp; patterns</div>
+    <div style="font-size:13px;color:#374151;line-height:1.8;margin-bottom:14px">
+      Edit the writing guidelines and element-type rules that the AI uses when no library match exists. Global versions apply to all products; product overrides take precedence.
+    </div>
+    <div style="background:white;border:1px solid #f3e8ff;border-radius:8px;padding:10px;font-size:12px">
+      <div style="font-weight:600;color:#6b7280;font-size:10px;text-transform:uppercase;margin-bottom:6px">Foundations</div>
+      <div style="display:flex;flex-wrap:wrap;gap:4px;margin-bottom:10px">
+        <span style="background:#f3e8ff;color:#7e22ce;padding:2px 8px;border-radius:4px;font-size:11px">Voice · global</span>
+        <span style="background:#f3e8ff;color:#7e22ce;padding:2px 8px;border-radius:4px;font-size:11px">Accessibility · global</span>
+        <span style="background:#ede9fe;color:#7e22ce;padding:2px 8px;border-radius:4px;font-size:11px">Voice · mylegacy</span>
+      </div>
+      <div style="font-weight:600;color:#6b7280;font-size:10px;text-transform:uppercase;margin-bottom:6px">Patterns</div>
+      <div style="display:flex;flex-wrap:wrap;gap:4px">
+        <span style="background:#fce7f3;color:#be185d;padding:2px 8px;border-radius:4px;font-size:11px">Buttons · global</span>
+        <span style="background:#fce7f3;color:#be185d;padding:2px 8px;border-radius:4px;font-size:11px">Errors · global</span>
+        <span style="background:#fce7f3;color:#be185d;padding:2px 8px;border-radius:4px;font-size:11px">Modals · global</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Products -->
+  <div style="background:#fff7ed;border:2px solid #ea580c;border-radius:12px;padding:20px">
+    <div style="font-size:11px;text-transform:uppercase;letter-spacing:1px;color:#ea580c;font-weight:600;margin-bottom:12px">🏛 Products</div>
+    <div style="font-size:13px;color:#374151;line-height:1.8;margin-bottom:14px">
+      Register and manage government products. Each product can have its own copy library entries, foundation overrides, and patterns. Practitioners select a product to scope their session.
+    </div>
+    <div style="background:white;border:1px solid #fed7aa;border-radius:8px;padding:10px;font-size:12px">
+      <div style="display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px solid #fff7ed">
+        <span style="font-weight:500">MyLegacy</span>
+        <span style="color:#6b7280;font-size:11px">3 foundations · 47 entries</span>
+      </div>
+      <div style="display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px solid #fff7ed">
+        <span style="font-weight:500">SupportGoWhere</span>
+        <span style="color:#6b7280;font-size:11px">0 foundations · 12 entries</span>
+      </div>
+      <div style="display:flex;justify-content:space-between;padding:5px 0">
+        <span style="font-weight:500;color:#9ca3af">+ Add product</span>
+        <span></span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Users & Usage -->
+  <div style="background:#f0f9ff;border:2px solid #0284c7;border-radius:12px;padding:20px">
+    <div style="font-size:11px;text-transform:uppercase;letter-spacing:1px;color:#0284c7;font-weight:600;margin-bottom:12px">👥 Users &amp; usage</div>
+    <div style="font-size:13px;color:#374151;line-height:1.8;margin-bottom:14px">
+      View registered users, promote practitioners to admins, and see basic usage stats — which products are most used, which element types are requested most, library hit rate vs AI-generated.
+    </div>
+    <div style="background:white;border:1px solid #bae6fd;border-radius:8px;padding:10px;font-size:12px">
+      <div style="display:flex;justify-content:space-between;margin-bottom:8px">
+        <span style="color:#6b7280">Total users</span><span style="font-weight:600">48</span>
+      </div>
+      <div style="display:flex;justify-content:space-between;margin-bottom:8px">
+        <span style="color:#6b7280">Sessions this month</span><span style="font-weight:600">312</span>
+      </div>
+      <div style="display:flex;justify-content:space-between;margin-bottom:8px">
+        <span style="color:#6b7280">Library hit rate</span><span style="font-weight:600;color:#16a34a">67%</span>
+      </div>
+      <div style="display:flex;justify-content:space-between">
+        <span style="color:#6b7280">Most requested</span><span style="font-weight:600">Modals · Buttons</span>
+      </div>
+    </div>
+  </div>
+
+</div>

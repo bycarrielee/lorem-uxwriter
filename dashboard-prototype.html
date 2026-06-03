@@ -1,0 +1,720 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Lorem · Dashboard</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --primary: #3B5BA5;
+      --primary-hover: #314C8A;
+      --signal: #4F46E5;
+      --signal-subtle: #EEF2FF;
+      --paper: #F8FAFC;
+      --canvas: #FFFFFF;
+      --divider: #E2E8F0;
+      --divider-strong: #CBD5E1;
+      --txt-1: #1E2D3A;
+      --txt-2: #64748B;
+      --txt-3: #94A3B8;
+      --success: #047857;
+      --success-bg: #ECFDF5;
+      --warning: #D97706;
+      --warning-bg: #FFFBEB;
+      --danger: #EA580C;
+      --danger-bg: #FFF7ED;
+      --r-sm: 4px;
+      --r-md: 6px;
+      --r-lg: 8px;
+      --r-xl: 12px;
+      --font: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+    }
+
+    body { font-family: var(--font); background: var(--paper); color: var(--txt-1); font-size: 14px; line-height: 1.5; }
+    .hidden { display: none !important; }
+
+    /* ── LOGIN ────────────────────────────────────── */
+    .login-screen {
+      min-height: 100vh;
+      display: flex; align-items: center; justify-content: center;
+      background: var(--paper);
+    }
+    .login-card {
+      width: 100%; max-width: 380px;
+      background: var(--canvas);
+      border: 1px solid var(--divider);
+      border-radius: var(--r-xl);
+      padding: 32px;
+    }
+    .login-brand { display: flex; align-items: center; gap: 8px; margin-bottom: 28px; }
+    .login-mark {
+      width: 28px; height: 28px; border-radius: 6px;
+      background: #047857;
+      display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+    }
+    .login-wordmark { font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 14px; font-weight: 500; color: var(--txt-1); }
+    .login-heading { font-size: 18px; font-weight: 600; letter-spacing: -0.01em; margin-bottom: 6px; }
+    .login-sub { font-size: 13px; color: var(--txt-2); margin-bottom: 24px; }
+    .form-label { display: block; font-size: 12px; font-weight: 500; color: var(--txt-2); margin-bottom: 6px; }
+    .form-input {
+      width: 100%; height: 36px; padding: 0 12px;
+      background: var(--canvas); border: 1px solid var(--divider-strong);
+      border-radius: var(--r-md); font-size: 14px; color: var(--txt-1);
+      font-family: var(--font); outline: none;
+      transition: border-color 100ms ease-out, box-shadow 100ms ease-out;
+    }
+    .form-input:focus { border-color: var(--signal); box-shadow: 0 0 0 2px var(--signal-subtle); }
+    .form-field { margin-bottom: 16px; }
+    .login-error { font-size: 13px; color: var(--danger); margin-bottom: 12px; }
+    .btn-primary {
+      width: 100%; height: 36px;
+      background: var(--primary); color: #fff;
+      border: none; border-radius: var(--r-md);
+      font-size: 14px; font-weight: 500; font-family: var(--font);
+      cursor: pointer; transition: background 100ms ease-out;
+    }
+    .btn-primary:hover { background: var(--primary-hover); }
+    .login-hint { font-size: 12px; color: var(--txt-3); text-align: center; margin-top: 16px; }
+    .login-hint code { font-family: 'JetBrains Mono', ui-monospace, monospace; color: var(--txt-2); }
+
+    /* ── DASHBOARD SHELL ─────────────────────────── */
+    .dashboard { display: flex; flex-direction: column; height: 100vh; overflow: hidden; }
+
+    .dash-header {
+      height: 56px; flex-shrink: 0;
+      background: var(--canvas); border-bottom: 1px solid var(--divider);
+      display: flex; align-items: center; padding: 0 20px; gap: 12px;
+    }
+    .dash-brand { display: flex; align-items: center; gap: 8px; flex: 1; }
+    .dash-mark {
+      width: 24px; height: 24px; border-radius: 5px; background: #047857;
+      display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+    }
+    .dash-wordmark { font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 13px; font-weight: 500; color: var(--txt-1); }
+    .dash-sep { width: 1px; height: 16px; background: var(--divider-strong); }
+    .dash-page-title { font-size: 13px; color: var(--txt-3); }
+    .btn-ghost {
+      height: 30px; padding: 0 12px;
+      background: none; border: 1px solid var(--divider-strong);
+      border-radius: var(--r-md); font-size: 13px; color: var(--txt-2);
+      font-family: var(--font); cursor: pointer; transition: background 100ms ease-out;
+    }
+    .btn-ghost:hover { background: var(--paper); }
+
+    .dash-body { display: flex; flex: 1; overflow: hidden; }
+
+    /* Sidebar */
+    .dash-sidebar {
+      width: 196px; flex-shrink: 0;
+      background: var(--paper); border-right: 1px solid var(--divider);
+      padding: 12px 8px; display: flex; flex-direction: column; gap: 2px;
+      overflow-y: auto;
+    }
+    .sidebar-group-label {
+      font-size: 11px; font-weight: 600; text-transform: uppercase;
+      letter-spacing: 0.07em; color: var(--txt-3);
+      padding: 0 10px; margin: 10px 0 4px;
+    }
+    .sidebar-group-label:first-child { margin-top: 2px; }
+    .dash-nav-btn {
+      height: 34px; padding: 0 10px;
+      border: none; background: none; border-radius: var(--r-md);
+      font-size: 13px; color: var(--txt-2); font-family: var(--font);
+      cursor: pointer; text-align: left;
+      display: flex; align-items: center; gap: 8px;
+      transition: background 100ms ease-out, color 100ms ease-out;
+    }
+    .dash-nav-btn:hover { background: var(--divider); color: var(--txt-1); }
+    .dash-nav-btn.active {
+      background: var(--canvas); color: var(--txt-1);
+      font-weight: 500; box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+    }
+    .nav-icon { width: 15px; height: 15px; flex-shrink: 0; opacity: 0.5; }
+    .dash-nav-btn.active .nav-icon,
+    .dash-nav-btn:hover .nav-icon { opacity: 1; }
+
+    /* Content */
+    .dash-content { flex: 1; overflow-y: auto; background: var(--canvas); }
+    .dash-section { display: none; padding: 28px 32px; max-width: 1100px; }
+    .dash-section.active { display: block; }
+
+    /* Section header */
+    .section-hd { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 24px; gap: 16px; }
+    .section-title { font-size: 18px; font-weight: 600; letter-spacing: -0.01em; color: var(--txt-1); }
+    .section-sub { font-size: 13px; color: var(--txt-3); margin-top: 3px; }
+
+    /* Date range */
+    .date-range {
+      display: flex; background: var(--paper);
+      border: 1px solid var(--divider); border-radius: var(--r-md);
+      padding: 2px; gap: 2px; flex-shrink: 0;
+    }
+    .date-btn {
+      height: 26px; padding: 0 11px; border: none; background: none;
+      border-radius: calc(var(--r-md) - 2px);
+      font-size: 12px; color: var(--txt-2); font-family: var(--font);
+      cursor: pointer; transition: background 100ms ease-out, color 100ms ease-out;
+    }
+    .date-btn:hover { color: var(--txt-1); }
+    .date-btn.active { background: var(--canvas); color: var(--txt-1); font-weight: 500; box-shadow: 0 1px 2px rgba(0,0,0,0.06); }
+
+    /* Summary cards */
+    .cards { display: grid; grid-template-columns: repeat(5, 1fr); gap: 12px; margin-bottom: 8px; }
+    .card { background: var(--canvas); border: 1px solid var(--divider); border-radius: var(--r-lg); padding: 16px 18px; }
+    .card-label { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.07em; color: var(--txt-3); margin-bottom: 10px; }
+    .card-value { font-size: 26px; font-weight: 700; color: var(--txt-1); letter-spacing: -0.02em; line-height: 1; margin-bottom: 8px; }
+    .card-trend { font-size: 12px; color: var(--txt-3); }
+    .card-trend.up { color: var(--success); }
+    .card-trend.down { color: var(--danger); }
+
+    /* Chart grid */
+    .chart-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px; }
+    .chart-row.full { grid-template-columns: 1fr; }
+    .chart-card { background: var(--canvas); border: 1px solid var(--divider); border-radius: var(--r-lg); padding: 20px 20px 16px; }
+    .chart-label { font-size: 13px; font-weight: 600; color: var(--txt-1); margin-bottom: 2px; }
+    .chart-sub { font-size: 12px; color: var(--txt-3); margin-bottom: 16px; }
+    .chart-wrap { width: 100%; }
+    .chart-wrap svg { display: block; width: 100%; }
+
+    /* Horizontal bars */
+    .hbar-list { display: flex; flex-direction: column; gap: 9px; }
+    .hbar-row { display: flex; align-items: center; gap: 10px; }
+    .hbar-label { width: 150px; flex-shrink: 0; font-size: 12px; color: var(--txt-2); text-align: right; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .hbar-track { flex: 1; height: 18px; background: var(--paper); border-radius: 3px; overflow: hidden; }
+    .hbar-fill { height: 100%; border-radius: 3px; background: var(--primary); }
+    .hbar-val { width: 36px; flex-shrink: 0; font-size: 12px; font-weight: 600; color: var(--txt-1); }
+
+    /* Tier bars */
+    .tier-list { display: flex; flex-direction: column; gap: 9px; }
+    .tier-row { display: flex; align-items: center; gap: 10px; }
+    .tier-label { width: 72px; flex-shrink: 0; font-size: 12px; color: var(--txt-2); text-align: right; }
+    .tier-track { flex: 1; height: 18px; background: var(--paper); border-radius: 3px; overflow: hidden; }
+    .tier-fill { height: 100%; border-radius: 3px; }
+    .tier-pct { width: 36px; flex-shrink: 0; font-size: 12px; font-weight: 600; color: var(--txt-1); }
+
+    /* Queries */
+    .query-list { display: flex; flex-direction: column; gap: 8px; margin-bottom: 20px; }
+    .query-item {
+      display: flex; align-items: center; gap: 14px;
+      padding: 14px 16px;
+      background: var(--canvas); border: 1px solid var(--divider);
+      border-radius: var(--r-lg); cursor: pointer;
+      transition: border-color 100ms ease-out, background 100ms ease-out;
+    }
+    .query-item:hover { background: var(--paper); border-color: var(--divider-strong); }
+    .query-name { font-size: 14px; font-weight: 500; color: var(--txt-1); }
+    .query-desc { font-size: 12px; color: var(--txt-3); margin-top: 2px; }
+    .query-run {
+      flex-shrink: 0; height: 28px; padding: 0 12px;
+      background: var(--primary); color: #fff;
+      border: none; border-radius: var(--r-sm);
+      font-size: 12px; font-weight: 500; font-family: var(--font);
+      cursor: pointer; transition: background 100ms ease-out;
+    }
+    .query-run:hover { background: var(--primary-hover); }
+    .results-wrap { background: var(--canvas); border: 1px solid var(--divider); border-radius: var(--r-lg); overflow: hidden; }
+    .results-hd {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 11px 16px; background: var(--paper); border-bottom: 1px solid var(--divider);
+    }
+    .results-title { font-size: 13px; font-weight: 600; color: var(--txt-1); }
+    .results-meta { font-size: 12px; color: var(--txt-3); }
+    .export-btn {
+      height: 26px; padding: 0 10px;
+      background: none; border: 1px solid var(--divider-strong);
+      border-radius: var(--r-sm); font-size: 12px; color: var(--txt-2);
+      font-family: var(--font); cursor: pointer; display: flex; align-items: center; gap: 5px;
+      transition: background 100ms ease-out;
+    }
+    .export-btn:hover { background: var(--divider); }
+    .results-table { width: 100%; border-collapse: collapse; }
+    .results-table th {
+      text-align: left; font-size: 11px; font-weight: 600;
+      text-transform: uppercase; letter-spacing: 0.06em;
+      color: var(--txt-3); padding: 9px 16px;
+      background: var(--paper); border-bottom: 1px solid var(--divider);
+    }
+    .results-table td { padding: 9px 16px; font-size: 13px; color: var(--txt-1); border-bottom: 1px solid var(--divider); }
+    .results-table tr:last-child td { border-bottom: none; }
+    .results-table tbody tr:hover td { background: var(--paper); }
+  </style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div id="login-screen" class="login-screen">
+  <div class="login-card">
+    <div class="login-brand">
+      <div class="login-mark">
+        <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M3 3h10v6a5 5 0 01-10 0V3z" fill="white" fill-opacity=".9"/></svg>
+      </div>
+      <span class="login-wordmark">Lorem</span>
+    </div>
+    <h1 class="login-heading">Dashboard</h1>
+    <p class="login-sub">Enter the dashboard password to continue.</p>
+    <form id="login-form">
+      <div class="form-field">
+        <label class="form-label" for="pw">Password</label>
+        <input class="form-input" type="password" id="pw" placeholder="" autocomplete="current-password" />
+      </div>
+      <div id="login-error" class="login-error hidden">Incorrect password.</div>
+      <button class="btn-primary" type="submit">Continue</button>
+    </form>
+    <p class="login-hint">Demo password: <code>lorem</code></p>
+  </div>
+</div>
+
+<!-- DASHBOARD -->
+<div id="dashboard" class="dashboard hidden">
+
+  <header class="dash-header">
+    <div class="dash-brand">
+      <div class="dash-mark">
+        <svg width="12" height="12" viewBox="0 0 16 16" fill="none"><path d="M3 3h10v6a5 5 0 01-10 0V3z" fill="white" fill-opacity=".9"/></svg>
+      </div>
+      <span class="dash-wordmark">Lorem</span>
+      <div class="dash-sep"></div>
+      <span class="dash-page-title">Dashboard</span>
+    </div>
+    <button class="btn-ghost" id="sign-out">Sign out</button>
+  </header>
+
+  <div class="dash-body">
+
+    <nav class="dash-sidebar">
+      <div class="sidebar-group-label">Analytics</div>
+      <button class="dash-nav-btn active" data-s="overview">
+        <svg class="nav-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><rect x="2" y="2" width="5" height="5" rx="1"/><rect x="9" y="2" width="5" height="5" rx="1"/><rect x="2" y="9" width="5" height="5" rx="1"/><rect x="9" y="9" width="5" height="5" rx="1"/></svg>
+        Overview
+      </button>
+      <button class="dash-nav-btn" data-s="usage">
+        <svg class="nav-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><polyline points="2,12 5,7 8,9 11,5 14,3"/><line x1="2" y1="14" x2="14" y2="14"/></svg>
+        Usage
+      </button>
+      <button class="dash-nav-btn" data-s="suggestions">
+        <svg class="nav-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M2 5h12v6a2 2 0 01-2 2H6l-3 2v-2H4a2 2 0 01-2-2V5z"/></svg>
+        Suggestions
+      </button>
+      <button class="dash-nav-btn" data-s="api-health">
+        <svg class="nav-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><polyline points="1,8 4,8 5.5,3 7,12 8.5,6 10,9 11.5,8 15,8"/></svg>
+        API health
+      </button>
+      <div class="sidebar-group-label">Tools</div>
+      <button class="dash-nav-btn" data-s="queries">
+        <svg class="nav-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><rect x="2" y="2" width="12" height="12" rx="2"/><line x1="5" y1="6" x2="11" y2="6"/><line x1="5" y1="9" x2="9" y2="9"/></svg>
+        Queries
+      </button>
+    </nav>
+
+    <main class="dash-content">
+
+      <!-- OVERVIEW -->
+      <div class="dash-section active" id="s-overview">
+        <div class="section-hd">
+          <div>
+            <div class="section-title">Overview</div>
+            <div class="section-sub">Key metrics at a glance</div>
+          </div>
+          <div class="date-range" id="overview-dr">
+            <button class="date-btn" data-p="7">7d</button>
+            <button class="date-btn active" data-p="30">30d</button>
+            <button class="date-btn" data-p="90">90d</button>
+          </div>
+        </div>
+        <div class="cards" id="overview-cards"></div>
+      </div>
+
+      <!-- USAGE -->
+      <div class="dash-section" id="s-usage">
+        <div class="section-hd">
+          <div>
+            <div class="section-title">Usage</div>
+            <div class="section-sub">Active users, sessions, and retention</div>
+          </div>
+          <div class="date-range">
+            <button class="date-btn" data-p="7">7d</button>
+            <button class="date-btn active" data-p="30">30d</button>
+            <button class="date-btn" data-p="90">90d</button>
+          </div>
+        </div>
+        <div class="chart-row">
+          <div class="chart-card">
+            <div class="chart-label">Weekly active clients</div>
+            <div class="chart-sub">Distinct client IDs with at least one session</div>
+            <div class="chart-wrap" id="c-weekly"></div>
+          </div>
+          <div class="chart-card">
+            <div class="chart-label">Daily sessions</div>
+            <div class="chart-sub">Total sessions started per day</div>
+            <div class="chart-wrap" id="c-daily"></div>
+          </div>
+        </div>
+        <div class="chart-row full">
+          <div class="chart-card">
+            <div class="chart-label">Session duration</div>
+            <div class="chart-sub">Distribution of completed session lengths</div>
+            <div class="chart-wrap" id="c-duration"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- SUGGESTIONS -->
+      <div class="dash-section" id="s-suggestions">
+        <div class="section-hd">
+          <div>
+            <div class="section-title">Suggestions</div>
+            <div class="section-sub">How users interact with AI-generated copy</div>
+          </div>
+          <div class="date-range">
+            <button class="date-btn" data-p="7">7d</button>
+            <button class="date-btn active" data-p="30">30d</button>
+            <button class="date-btn" data-p="90">90d</button>
+          </div>
+        </div>
+        <div class="chart-row">
+          <div class="chart-card">
+            <div class="chart-label">Interaction breakdown</div>
+            <div class="chart-sub">User actions on suggestions, last 30 days</div>
+            <div id="c-interactions"></div>
+          </div>
+          <div class="chart-card">
+            <div class="chart-label">Copy rate by source tier</div>
+            <div class="chart-sub">% of that tier's suggestions that were copied</div>
+            <div id="c-tiers"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- API HEALTH -->
+      <div class="dash-section" id="s-api-health">
+        <div class="section-hd">
+          <div>
+            <div class="section-title">API health</div>
+            <div class="section-sub">Call volume, latency, and cost</div>
+          </div>
+          <div class="date-range">
+            <button class="date-btn active" data-p="7">7d</button>
+            <button class="date-btn" data-p="30">30d</button>
+            <button class="date-btn" data-p="90">90d</button>
+          </div>
+        </div>
+        <div class="chart-row">
+          <div class="chart-card">
+            <div class="chart-label">Daily call volume</div>
+            <div class="chart-sub">Total Anthropic API calls per day · avg error rate 3.4%</div>
+            <div class="chart-wrap" id="c-calls"></div>
+          </div>
+          <div class="chart-card">
+            <div class="chart-label">Median response time</div>
+            <div class="chart-sub">p50 latency in milliseconds</div>
+            <div class="chart-wrap" id="c-latency"></div>
+          </div>
+        </div>
+        <div class="chart-row full">
+          <div class="chart-card">
+            <div class="chart-label">Daily API cost</div>
+            <div class="chart-sub">Anthropic API spend in USD</div>
+            <div class="chart-wrap" id="c-cost"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- QUERIES -->
+      <div class="dash-section" id="s-queries">
+        <div class="section-hd">
+          <div>
+            <div class="section-title">Preset queries</div>
+            <div class="section-sub">Run saved queries and export results as CSV</div>
+          </div>
+        </div>
+        <div class="query-list" id="query-list"></div>
+        <div id="query-results" class="hidden"></div>
+      </div>
+
+    </main>
+  </div>
+</div>
+
+<script>
+// ── DATA ────────────────────────────────────────────────────
+const DEMO_PW = 'lorem';
+
+const OVERVIEW = {
+  7:  { clients: 24,  sessions: 61,  copyRate: '34%', errRate: '2.1%', cost: '$4.82'  },
+  30: { clients: 87,  sessions: 218, copyRate: '31%', errRate: '3.4%', cost: '$18.60' },
+  90: { clients: 203, sessions: 541, copyRate: '29%', errRate: '2.8%', cost: '$47.30' },
+};
+
+const WEEKLY_DATA   = [12, 18, 15, 24, 28, 22, 31, 38];
+const WEEKLY_LABELS = ['W19','W20','W21','W22','W23','W24','W25','W26'];
+const DAILY_DATA    = [8,12,9,14,16,11,7,15,18,13,20,17,22,19];
+const DAILY_LABELS  = ['12','13','14','15','16','17','18','19','20','21','22','23','24','25'].map(d => d+' May');
+const DUR_DATA      = [14,38,29,19];
+const DUR_LABELS    = ['<1 min','1–5 min','5–15 min','15+ min'];
+
+const INTERACTIONS = [
+  { label: 'Copied',            val: 142 },
+  { label: 'Rationale opened',  val: 87  },
+  { label: 'Follow-up sent',    val: 63  },
+  { label: 'Shorter',           val: 41  },
+  { label: 'Alternatives',      val: 38  },
+];
+const TIERS = [
+  { label: 'Library', pct: 45, color: '#047857' },
+  { label: 'Adapted', pct: 61, color: '#4F46E5' },
+  { label: 'AI',      pct: 28, color: '#D97706' },
+  { label: 'AI low',  pct: 12, color: '#EA580C' },
+];
+
+const CALL_DATA    = [48,54,53,63,59,70,73];
+const LATENCY_DATA = [1240,1180,1350,1290,1210,1160,1140];
+const COST_DATA    = [0.62,0.71,0.67,0.88,0.79,0.94,1.01];
+const API_LABELS   = ['20','21','22','23','24','25','26'].map(d => d+' May');
+
+const QUERIES = [
+  {
+    id: 'weekly-actives', name: 'Weekly active clients',
+    desc: 'Distinct client IDs with at least one session, by week',
+    cols: ['Week','Active clients','Sessions'],
+    rows: [['W19','12','28'],['W20','18','41'],['W21','15','34'],['W22','24','58'],['W23','28','67'],['W24','22','52'],['W25','31','76'],['W26','38','83']],
+  },
+  {
+    id: 'top-interactions', name: 'Top interactions (last 30 days)',
+    desc: 'Suggestion interaction counts and share of total',
+    cols: ['Interaction','Count','% of total'],
+    rows: [['copied','142','38.4%'],['rationale_opened','87','23.5%'],['follow_up_sent','63','17.0%'],['quick_action_shorter','41','11.1%'],['quick_action_alternatives','38','10.3%']],
+  },
+  {
+    id: 'error-cost', name: 'Error rate and cost (last 7 days)',
+    desc: 'API call outcomes with average latency and total cost',
+    cols: ['Status','Calls','Avg latency (ms)','Total cost (USD)'],
+    rows: [['success','399','1,225','$8.41'],['error','21','3,180','—']],
+  },
+  {
+    id: 'copy-by-tier', name: 'Copy rate by source tier (last 30 days)',
+    desc: 'How often each tier's suggestions are copied',
+    cols: ['Tier','Suggestions','Copied','Copy rate'],
+    rows: [['library','62','28','45.2%'],['adapted','113','69','61.1%'],['ai','179','50','27.9%'],['ai_low','17','2','11.8%']],
+  },
+  {
+    id: 'daily-sessions', name: 'Daily sessions (last 14 days)',
+    desc: 'Session count and distinct clients per day',
+    cols: ['Date','Sessions','Distinct clients'],
+    rows: DAILY_LABELS.map((d,i) => [d, String(DAILY_DATA[i]), String(Math.round(DAILY_DATA[i]*0.7))]),
+  },
+];
+
+// ── CHART HELPERS ────────────────────────────────────────────
+function lineChart(data, labels, color='#3B5BA5', areaOpacity=0.12) {
+  const W=440, H=130, pt={t:12,r:10,b:28,l:34};
+  const iw=W-pt.l-pt.r, ih=H-pt.t-pt.b;
+  const max=Math.max(...data)*1.2;
+  const pts=data.map((v,i)=>[pt.l+(i/(data.length-1))*iw, pt.t+ih-(v/max)*ih]);
+  const line=pts.map(p=>p.join(',')).join(' ');
+  const area=`M${pts[0]}` + pts.slice(1).map(p=>`L${p}`).join('') + ` L${pts[pts.length-1][0]},${pt.t+ih} L${pts[0][0]},${pt.t+ih}Z`;
+  const yg=Array.from({length:4},(_,i)=>{
+    const v=Math.round(max*(1-i/4)); const y=pt.t+(i/4)*ih;
+    return `<line x1="${pt.l}" y1="${y}" x2="${pt.l+iw}" y2="${y}" stroke="#E2E8F0" stroke-width="1"/>
+            <text x="${pt.l-5}" y="${y+4}" text-anchor="end" fill="#94A3B8" font-size="9.5" font-family="-apple-system,sans-serif">${v}</text>`;
+  }).join('');
+  const step=Math.ceil(labels.length/6);
+  const xl=labels.map((l,i)=>{
+    if(i%step!==0 && i!==labels.length-1) return '';
+    return `<text x="${pt.l+(i/(labels.length-1))*iw}" y="${H-4}" text-anchor="middle" fill="#94A3B8" font-size="9.5" font-family="-apple-system,sans-serif">${l}</text>`;
+  }).join('');
+  const lp=pts[pts.length-1];
+  return `<svg viewBox="0 0 ${W} ${H}" xmlns="http://www.w3.org/2000/svg">
+    ${yg}
+    <path d="${area}" fill="${color}" fill-opacity="${areaOpacity}" stroke="none"/>
+    <polyline points="${line}" fill="none" stroke="${color}" stroke-width="1.75" stroke-linejoin="round" stroke-linecap="round"/>
+    <circle cx="${lp[0]}" cy="${lp[1]}" r="3" fill="${color}" stroke="white" stroke-width="1.5"/>
+    ${xl}
+  </svg>`;
+}
+
+function barChart(data, labels, color='#3B5BA5') {
+  const W=440, H=130, pt={t:12,r:10,b:28,l:34};
+  const iw=W-pt.l-pt.r, ih=H-pt.t-pt.b;
+  const max=Math.max(...data)*1.2;
+  const bw=iw/data.length*0.6, gap=iw/data.length;
+  const bars=data.map((v,i)=>{
+    const bh=(v/max)*ih; const x=pt.l+i*gap+(gap-bw)/2; const y=pt.t+ih-bh;
+    return `<rect x="${x.toFixed(1)}" y="${y.toFixed(1)}" width="${bw.toFixed(1)}" height="${bh.toFixed(1)}" fill="${color}" rx="2"/>`;
+  }).join('');
+  const yg=Array.from({length:4},(_,i)=>{
+    const v=Math.round(max*(1-i/4)); const y=pt.t+(i/4)*ih;
+    return `<line x1="${pt.l}" y1="${y}" x2="${pt.l+iw}" y2="${y}" stroke="#E2E8F0" stroke-width="1"/>
+            <text x="${pt.l-5}" y="${y+4}" text-anchor="end" fill="#94A3B8" font-size="9.5" font-family="-apple-system,sans-serif">${v}</text>`;
+  }).join('');
+  const step=Math.ceil(labels.length/7);
+  const xl=labels.map((l,i)=>{
+    if(i%step!==0 && i!==labels.length-1) return '';
+    return `<text x="${(pt.l+i*gap+gap/2).toFixed(1)}" y="${H-4}" text-anchor="middle" fill="#94A3B8" font-size="9.5" font-family="-apple-system,sans-serif">${l}</text>`;
+  }).join('');
+  return `<svg viewBox="0 0 ${W} ${H}" xmlns="http://www.w3.org/2000/svg">${yg}${bars}${xl}</svg>`;
+}
+
+// ── RENDER ───────────────────────────────────────────────────
+function renderOverview(period) {
+  const d = OVERVIEW[period];
+  const cards = [
+    { label:'Active clients', value: d.clients, trend:'↑ 12% vs prior period', cls:'up' },
+    { label:'Sessions',       value: d.sessions, trend:'↑ 8% vs prior period',  cls:'up' },
+    { label:'Copy rate',      value: d.copyRate, trend:'suggestions copied',     cls:'' },
+    { label:'Error rate',     value: d.errRate,  trend:'API calls failed',       cls:'' },
+    { label:'Total cost',     value: d.cost,     trend:'Anthropic API',          cls:'' },
+  ];
+  document.getElementById('overview-cards').innerHTML = cards.map(c=>`
+    <div class="card">
+      <div class="card-label">${c.label}</div>
+      <div class="card-value">${c.value}</div>
+      <div class="card-trend ${c.cls}">${c.trend}</div>
+    </div>`).join('');
+}
+
+function renderUsage() {
+  document.getElementById('c-weekly').innerHTML   = lineChart(WEEKLY_DATA, WEEKLY_LABELS);
+  document.getElementById('c-daily').innerHTML    = barChart(DAILY_DATA, DAILY_LABELS);
+  document.getElementById('c-duration').innerHTML = barChart(DUR_DATA, DUR_LABELS);
+}
+
+function renderSuggestions() {
+  const max = Math.max(...INTERACTIONS.map(d=>d.val));
+  document.getElementById('c-interactions').innerHTML = `<div class="hbar-list">${
+    INTERACTIONS.map(d=>`
+      <div class="hbar-row">
+        <div class="hbar-label">${d.label}</div>
+        <div class="hbar-track"><div class="hbar-fill" style="width:${(d.val/max*100).toFixed(1)}%"></div></div>
+        <div class="hbar-val">${d.val}</div>
+      </div>`).join('')
+  }</div>`;
+  document.getElementById('c-tiers').innerHTML = `<div class="tier-list">${
+    TIERS.map(t=>`
+      <div class="tier-row">
+        <div class="tier-label">${t.label}</div>
+        <div class="tier-track"><div class="tier-fill" style="width:${t.pct}%;background:${t.color}"></div></div>
+        <div class="tier-pct">${t.pct}%</div>
+      </div>`).join('')
+  }</div>`;
+}
+
+function renderAPIHealth() {
+  document.getElementById('c-calls').innerHTML   = barChart(CALL_DATA, API_LABELS);
+  document.getElementById('c-latency').innerHTML = lineChart(LATENCY_DATA, API_LABELS, '#D97706', 0.1);
+  document.getElementById('c-cost').innerHTML    = barChart(COST_DATA, API_LABELS, '#047857');
+}
+
+function renderQueries() {
+  document.getElementById('query-list').innerHTML = QUERIES.map(q=>`
+    <div class="query-item">
+      <div style="flex:1">
+        <div class="query-name">${q.name}</div>
+        <div class="query-desc">${q.desc}</div>
+      </div>
+      <button class="query-run" data-qid="${q.id}">Run</button>
+    </div>`).join('');
+  document.getElementById('query-list').addEventListener('click', e=>{
+    const btn = e.target.closest('[data-qid]');
+    if (!btn) return;
+    const q = QUERIES.find(x=>x.id===btn.dataset.qid);
+    if (!q) return;
+    showResults(q);
+  });
+}
+
+function showResults(q) {
+  const wrap = document.getElementById('query-results');
+  wrap.innerHTML = `
+    <div class="results-wrap">
+      <div class="results-hd">
+        <div>
+          <div class="results-title">${q.name}</div>
+          <div class="results-meta">${q.rows.length} rows</div>
+        </div>
+        <button class="export-btn" onclick="exportCSV('${q.id}')">
+          <svg width="11" height="11" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M8 2v8M5 7l3 3 3-3M3 13h10"/></svg>
+          Export CSV
+        </button>
+      </div>
+      <table class="results-table">
+        <thead><tr>${q.cols.map(c=>`<th>${c}</th>`).join('')}</tr></thead>
+        <tbody>${q.rows.map(r=>`<tr>${r.map(c=>`<td>${c}</td>`).join('')}</tr>`).join('')}</tbody>
+      </table>
+    </div>`;
+  wrap.classList.remove('hidden');
+  wrap.scrollIntoView({ behavior:'smooth', block:'nearest' });
+}
+
+function exportCSV(qid) {
+  const q = QUERIES.find(x=>x.id===qid);
+  if (!q) return;
+  const csv = [q.cols, ...q.rows].map(r=>r.join(',')).join('\n');
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(new Blob([csv], {type:'text/csv'}));
+  a.download = `lorem-${qid}.csv`;
+  a.click();
+}
+
+function initDashboard() {
+  renderOverview(30);
+  renderUsage();
+  renderSuggestions();
+  renderAPIHealth();
+  renderQueries();
+}
+
+// ── EVENTS ───────────────────────────────────────────────────
+document.getElementById('login-form').addEventListener('submit', e=>{
+  e.preventDefault();
+  if (document.getElementById('pw').value === DEMO_PW) {
+    document.getElementById('login-screen').classList.add('hidden');
+    document.getElementById('dashboard').classList.remove('hidden');
+    initDashboard();
+  } else {
+    document.getElementById('login-error').classList.remove('hidden');
+  }
+});
+document.getElementById('pw').addEventListener('input', ()=>{
+  document.getElementById('login-error').classList.add('hidden');
+});
+document.getElementById('sign-out').addEventListener('click', ()=>{
+  document.getElementById('dashboard').classList.add('hidden');
+  document.getElementById('login-screen').classList.remove('hidden');
+  document.getElementById('pw').value = '';
+});
+
+// Sidebar nav
+document.querySelectorAll('.dash-nav-btn').forEach(btn=>{
+  btn.addEventListener('click', ()=>{
+    document.querySelectorAll('.dash-nav-btn').forEach(b=>b.classList.remove('active'));
+    document.querySelectorAll('.dash-section').forEach(s=>s.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById('s-'+btn.dataset.s).classList.add('active');
+  });
+});
+
+// Overview date range (functional)
+document.getElementById('overview-dr').addEventListener('click', e=>{
+  const btn = e.target.closest('[data-p]');
+  if (!btn) return;
+  document.querySelectorAll('#overview-dr .date-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  renderOverview(+btn.dataset.p);
+});
+
+// Other date ranges (visual only)
+document.querySelectorAll('.date-range:not(#overview-dr)').forEach(dr=>{
+  dr.addEventListener('click', e=>{
+    const btn = e.target.closest('.date-btn');
+    if (!btn) return;
+    dr.querySelectorAll('.date-btn').forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+  });
+});
+</script>
+</body>
+</html>

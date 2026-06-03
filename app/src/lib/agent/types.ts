@@ -13,6 +13,14 @@ export type FigmaReviewRow = {
   rationale: string
 }
 
+export type BudgetStatus = 'ok' | 'warning' | 'exceeded'
+
+export interface BudgetInfo {
+  status: BudgetStatus
+  used_usd: number
+  limit_usd: number
+}
+
 export interface AgentRequest {
   input: string
   product_id?: string
@@ -23,6 +31,8 @@ export interface AgentRequest {
   metrics_session_id?: string
   // Figma — client-provided PAT; never stored in session messages
   figma_access_token?: string
+  // User-provided Anthropic API key (stored client-side only, never persisted server-side)
+  user_api_key?: string
 }
 
 export interface AgentResponse {
@@ -42,6 +52,7 @@ export interface AgentResponse {
   session_id: string
   message_id: string
   figma_review?: FigmaReviewRow[] | null
+  budget?: BudgetInfo | null
 }
 
 export const ELEMENT_TYPE_OPTIONS: Array<{ value: ElementType; label: string }> = [

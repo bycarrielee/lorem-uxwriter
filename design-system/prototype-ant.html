@@ -1,0 +1,1260 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>lorem-uxwriter — Prototype (Ant)</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@100;200;300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Plus Jakarta Sans', 'system-ui', 'sans-serif'],
+            mono: ['JetBrains Mono', 'ui-monospace', 'monospace'],
+          },
+          colors: {
+            primary: {
+              50:  '#e6f4ff',
+              100: '#bae0ff',
+              200: '#91caff',
+              300: '#69b1ff',
+              400: '#4096ff',
+              500: '#1677ff',
+              600: '#0958d9',
+              700: '#003eb3',
+              800: '#002c8c',
+              900: '#001d66',
+            }
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    * { box-sizing: border-box; }
+    body { font-family: 'Plus Jakarta Sans', system-ui, sans-serif; -webkit-font-smoothing: antialiased; }
+
+    /* Screen switcher — managed via inline style in JS */
+
+    /* Shimmer animation */
+    @keyframes shimmer {
+      0% { background-position: -200% 0; }
+      100% { background-position: 200% 0; }
+    }
+    .shimmer {
+      background: linear-gradient(90deg, #f1f5f9 25%, #e2e8f0 50%, #f1f5f9 75%);
+      background-size: 200% 100%;
+      animation: shimmer 1.5s infinite;
+    }
+
+    /* Fade-in for response */
+    @keyframes fadeSlideIn {
+      from { opacity: 0; transform: translateY(6px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .fade-in { animation: fadeSlideIn 200ms ease-out forwards; }
+
+    /* Collapsible — managed via inline style in JS */
+
+    /* Focus styles */
+    input:focus, textarea:focus, select:focus, button:focus-visible {
+      outline: 2px solid #1677ff;
+      outline-offset: 2px;
+    }
+    button:focus:not(:focus-visible) { outline: none; }
+
+    /* Custom scrollbar */
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 3px; }
+
+    /* Label caps style */
+    .label-caps {
+      font-family: 'JetBrains Mono', ui-monospace, monospace;
+      font-size: 0.75rem;
+      font-weight: 500;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+  </style>
+</head>
+<body class="bg-white">
+
+<!-- ─── Navigation Bar ─────────────────────────────────── -->
+<div class="fixed top-0 left-0 right-0 z-50 bg-slate-900 border-b border-slate-800 flex items-center gap-3 px-4 py-2">
+  <span class="label-caps text-slate-400">Prototype screens · Ant</span>
+  <div class="flex gap-1 ml-2">
+    <button onclick="showScreen('login')" id="btn-login" class="px-3 py-1.5 text-xs font-medium rounded transition-colors bg-slate-700 text-white">Login</button>
+    <button onclick="showScreen('signup')" id="btn-signup" class="px-3 py-1.5 text-xs font-medium rounded transition-colors text-slate-400 hover:text-white hover:bg-slate-800">Signup</button>
+    <button onclick="showScreen('editor')" id="btn-editor" class="px-3 py-1.5 text-xs font-medium rounded transition-colors text-slate-400 hover:text-white hover:bg-slate-800">Editor</button>
+    <button onclick="showScreen('editor-response')" id="btn-editor-response" class="px-3 py-1.5 text-xs font-medium rounded transition-colors text-slate-400 hover:text-white hover:bg-slate-800">Editor (response)</button>
+    <button onclick="showScreen('library')" id="btn-library" class="px-3 py-1.5 text-xs font-medium rounded transition-colors text-slate-400 hover:text-white hover:bg-slate-800">Library</button>
+    <button onclick="showScreen('admin')" id="btn-admin" class="px-3 py-1.5 text-xs font-medium rounded transition-colors text-slate-400 hover:text-white hover:bg-slate-800">Admin</button>
+  </div>
+</div>
+
+<!-- Offset for nav bar -->
+<div class="h-10"></div>
+
+<!-- ─────────────────────────────────────────────────────── -->
+<!-- SCREEN: Login                                          -->
+<!-- ─────────────────────────────────────────────────────── -->
+<div id="screen-login" class="min-h-screen bg-slate-50 items-center justify-center p-6" style="display:flex;">
+  <div class="w-full max-w-sm">
+
+    <!-- Brand -->
+    <div class="text-center mb-8">
+      <div class="inline-flex items-center gap-2 mb-3">
+        <div class="w-8 h-8 bg-primary-500 rounded-lg flex items-center justify-center">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+        </div>
+        <span class="text-slate-900 font-semibold text-lg tracking-tight">Lorem</span>
+      </div>
+      <p class="text-slate-500 text-sm">AI UX Writer for Singapore government digital services</p>
+    </div>
+
+    <!-- Card -->
+    <div class="bg-white border border-slate-200 rounded-lg p-6">
+      <h1 class="text-slate-900 font-semibold text-base mb-5">Sign in to your account</h1>
+
+      <form class="space-y-4" onsubmit="return false;">
+        <div>
+          <label class="block text-xs font-medium text-slate-700 mb-1.5" for="email">Email address</label>
+          <input
+            id="email"
+            type="email"
+            placeholder="name@agency.gov.sg"
+            class="w-full h-9 px-3 text-sm border border-slate-300 rounded bg-white text-slate-900 placeholder-slate-400 transition-colors hover:border-slate-400"
+          />
+        </div>
+        <div>
+          <div class="flex items-center justify-between mb-1.5">
+            <label class="block text-xs font-medium text-slate-700" for="password">Password</label>
+            <a href="#" class="text-xs text-primary-500 hover:text-primary-600 font-medium">Forgot password?</a>
+          </div>
+          <div class="relative">
+            <input
+              id="password"
+              type="password"
+              placeholder="••••••••"
+              class="w-full h-9 px-3 pr-9 text-sm border border-slate-300 rounded bg-white text-slate-900 placeholder-slate-400"
+            />
+            <button type="button" class="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+            </button>
+          </div>
+        </div>
+        <button class="w-full h-9 bg-primary-500 hover:bg-primary-600 text-white text-sm font-medium rounded transition-colors">
+          Sign in
+        </button>
+      </form>
+
+      <div class="mt-5 pt-5 border-t border-slate-100 text-center">
+        <p class="text-sm text-slate-500">
+          No account?
+          <button onclick="showScreen('signup')" class="text-primary-500 hover:text-primary-600 font-medium">Create one with your .gov.sg email</button>
+        </p>
+      </div>
+    </div>
+
+    <p class="text-center text-xs text-slate-400 mt-4">Invited by an admin? Check your email for a sign-up link.</p>
+  </div>
+</div>
+
+<!-- ─────────────────────────────────────────────────────── -->
+<!-- SCREEN: Signup                                         -->
+<!-- ─────────────────────────────────────────────────────── -->
+<div id="screen-signup" class="min-h-screen bg-slate-50 items-center justify-center p-6" style="display:none;">
+  <div class="w-full max-w-sm">
+    <div class="text-center mb-8">
+      <div class="inline-flex items-center gap-2 mb-3">
+        <div class="w-8 h-8 bg-primary-500 rounded-lg flex items-center justify-center">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+        </div>
+        <span class="text-slate-900 font-semibold text-lg tracking-tight">Lorem</span>
+      </div>
+    </div>
+
+    <div class="bg-white border border-slate-200 rounded-lg p-6">
+      <h1 class="text-slate-900 font-semibold text-base mb-1">Create your account</h1>
+      <p class="text-slate-500 text-sm mb-5">Use your <span class="font-mono text-xs bg-slate-100 px-1.5 py-0.5 rounded">.gov.sg</span> email to sign up instantly.</p>
+
+      <form class="space-y-4" onsubmit="return false;">
+        <div>
+          <label class="block text-xs font-medium text-slate-700 mb-1.5">Full name</label>
+          <input type="text" placeholder="Chloe Wong" class="w-full h-9 px-3 text-sm border border-slate-300 rounded bg-white text-slate-900 placeholder-slate-400" />
+        </div>
+        <div>
+          <label class="block text-xs font-medium text-slate-700 mb-1.5">Agency</label>
+          <input type="text" placeholder="e.g. GovTech, MCI, CPFB" class="w-full h-9 px-3 text-sm border border-slate-300 rounded bg-white text-slate-900 placeholder-slate-400" />
+          <p class="text-xs text-slate-400 mt-1">Used to personalise your experience. Not verified.</p>
+        </div>
+        <div>
+          <label class="block text-xs font-medium text-slate-700 mb-1.5">Email address</label>
+          <input type="email" placeholder="name@agency.gov.sg" class="w-full h-9 px-3 text-sm border border-slate-300 rounded bg-white text-slate-900 placeholder-slate-400" />
+        </div>
+        <div>
+          <label class="block text-xs font-medium text-slate-700 mb-1.5">Password</label>
+          <input type="password" placeholder="At least 8 characters" class="w-full h-9 px-3 text-sm border border-slate-300 rounded bg-white text-slate-900 placeholder-slate-400" />
+        </div>
+        <button class="w-full h-9 bg-primary-500 hover:bg-primary-600 text-white text-sm font-medium rounded transition-colors">
+          Create account
+        </button>
+      </form>
+
+      <div class="mt-5 pt-5 border-t border-slate-100 text-center">
+        <p class="text-sm text-slate-500">
+          Already have an account?
+          <button onclick="showScreen('login')" class="text-primary-500 hover:text-primary-600 font-medium">Sign in</button>
+        </p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ─────────────────────────────────────────────────────── -->
+<!-- SCREEN: Editor (empty state)                          -->
+<!-- ─────────────────────────────────────────────────────── -->
+<div id="screen-editor" class="min-h-screen bg-white" style="display:none;">
+  <div class="flex h-screen">
+
+    <!-- Sidebar -->
+    <aside class="w-60 flex-shrink-0 bg-white border-r border-gray-200 flex flex-col h-full overflow-hidden">
+      <!-- Brand -->
+      <div class="flex items-center gap-2.5 px-4 py-4 border-b border-gray-200">
+        <div class="w-7 h-7 bg-primary-500 rounded-md flex items-center justify-center flex-shrink-0">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+        </div>
+        <div>
+          <div class="text-gray-900 font-semibold text-sm leading-tight">Lorem</div>
+          <div class="text-gray-400 text-xs">AI UX Writer</div>
+        </div>
+      </div>
+
+      <!-- Product selector -->
+      <div class="px-3 py-3 border-b border-gray-200">
+        <button class="w-full flex items-center justify-between px-2.5 py-2 bg-gray-100 hover:bg-gray-200 rounded transition-colors text-left">
+          <div class="flex items-center gap-2">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#6b7280" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+            <span class="text-sm text-gray-800 font-medium">Global</span>
+          </div>
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#64748b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+        </button>
+      </div>
+
+      <!-- Nav -->
+      <nav class="px-3 py-3 space-y-0.5 flex-1 overflow-y-auto">
+        <!-- Section label -->
+        <p class="label-caps text-slate-500 px-2 pb-1 pt-1">Workspace</p>
+
+        <!-- Editor (active) -->
+        <button onclick="showScreen('editor')" class="w-full flex items-center gap-2.5 px-2.5 py-2 bg-primary-50 rounded text-primary-600 text-sm font-medium text-left">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+          Editor
+        </button>
+
+        <!-- Library -->
+        <button onclick="showScreen('library')" class="w-full flex items-center gap-2.5 px-2.5 py-2 hover:bg-gray-100 rounded text-gray-600 hover:text-gray-900 text-sm transition-colors text-left">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+          Library
+        </button>
+
+        <!-- Admin -->
+        <button onclick="showScreen('admin')" class="w-full flex items-center gap-2.5 px-2.5 py-2 hover:bg-gray-100 rounded text-gray-600 hover:text-gray-900 text-sm transition-colors text-left">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></svg>
+          Admin
+        </button>
+
+        <!-- Sessions -->
+        <div class="pt-3">
+          <div class="flex items-center justify-between px-2 pb-1">
+            <p class="label-caps text-slate-500">Recent sessions</p>
+            <button class="text-gray-400 hover:text-gray-700 transition-colors">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            </button>
+          </div>
+          <div class="space-y-0.5">
+            <button class="w-full flex items-center px-2.5 py-1.5 hover:bg-gray-100 rounded text-gray-500 hover:text-gray-800 text-xs transition-colors text-left truncate">Button copy for checkout flow</button>
+            <button class="w-full flex items-center px-2.5 py-1.5 hover:bg-gray-100 rounded text-gray-500 hover:text-gray-800 text-xs transition-colors text-left truncate">Error states for file upload</button>
+            <button class="w-full flex items-center px-2.5 py-1.5 hover:bg-gray-100 rounded text-gray-500 hover:text-gray-800 text-xs transition-colors text-left truncate">Modal copy - delete confirmation</button>
+          </div>
+        </div>
+      </nav>
+
+      <!-- User -->
+      <div class="px-3 py-3 border-t border-gray-200">
+        <button class="w-full flex items-center gap-2.5 px-2.5 py-2 hover:bg-gray-100 rounded transition-colors text-left">
+          <div class="w-6 h-6 rounded-full bg-primary-500 flex items-center justify-center flex-shrink-0">
+            <span class="text-white text-xs font-semibold">CW</span>
+          </div>
+          <div class="flex-1 min-w-0">
+            <p class="text-sm text-gray-800 font-medium truncate">Chloe Wong</p>
+            <p class="text-xs text-slate-500 truncate">GovTech</p>
+          </div>
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#64748b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+        </button>
+      </div>
+    </aside>
+
+    <!-- Editor: Left panel + Right panel -->
+    <div class="flex flex-1 overflow-hidden">
+
+      <!-- Left panel -->
+      <div class="w-96 flex-shrink-0 bg-slate-50 border-r border-slate-200 flex flex-col">
+        <div class="px-5 py-4 border-b border-slate-200">
+          <h2 class="text-sm font-semibold text-slate-900 mb-0.5">New session</h2>
+          <p class="text-xs text-slate-500">Global</p>
+        </div>
+
+        <div class="px-5 py-4 border-b border-slate-200 space-y-3">
+          <div>
+            <label class="block text-xs font-medium text-slate-600 mb-1.5">Element type</label>
+            <select class="w-full h-8 px-2.5 text-sm border border-slate-300 rounded bg-white text-slate-700 appearance-none">
+              <option value="">Select type (optional)</option>
+              <option>Buttons</option>
+              <option>Error messages</option>
+              <option>Form labels</option>
+              <option>Modals</option>
+              <option>Alerts</option>
+              <option>Navigation</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="px-5 py-4 flex flex-col flex-1">
+          <label class="block text-xs font-medium text-slate-600 mb-1.5">Copy or description</label>
+          <textarea
+            class="flex-1 min-h-0 px-3 py-2.5 text-sm border border-slate-300 rounded bg-white text-slate-900 placeholder-slate-400 resize-none leading-relaxed"
+            placeholder="Paste copy to review, or describe what you need.
+
+Examples:
+• &quot;Review this error message: File upload failed.&quot;
+• &quot;Write a button label for submitting a CPF nomination form.&quot;
+• &quot;What should an empty state say for a documents page?&quot;
+          "></textarea>
+          <button onclick="showScreen('editor-response')" class="mt-3 w-full h-9 bg-primary-500 hover:bg-primary-600 text-white text-sm font-medium rounded transition-colors flex items-center justify-center gap-2">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+            Get suggestions
+          </button>
+        </div>
+      </div>
+
+      <!-- Right panel: empty state -->
+      <div class="flex-1 bg-white flex items-center justify-center p-8">
+        <div class="text-center max-w-xs">
+          <div class="w-12 h-12 bg-slate-100 rounded-xl flex items-center justify-center mx-auto mb-4">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+          </div>
+          <h3 class="text-slate-700 font-medium text-sm mb-1.5">Suggestions appear here</h3>
+          <p class="text-slate-400 text-sm leading-relaxed">Describe what you need or paste existing copy to review. The agent checks the approved library first, then applies writing guidelines.</p>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- ─────────────────────────────────────────────────────── -->
+<!-- SCREEN: Editor (with response)                        -->
+<!-- ─────────────────────────────────────────────────────── -->
+<div id="screen-editor-response" class="min-h-screen bg-white" style="display:none;">
+  <div class="flex h-screen">
+
+    <!-- Sidebar (same as above) -->
+    <aside class="w-60 flex-shrink-0 bg-white border-r border-gray-200 flex flex-col h-full overflow-hidden">
+      <div class="flex items-center gap-2.5 px-4 py-4 border-b border-gray-200">
+        <div class="w-7 h-7 bg-primary-500 rounded-md flex items-center justify-center flex-shrink-0">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+        </div>
+        <div>
+          <div class="text-gray-900 font-semibold text-sm leading-tight">Lorem</div>
+          <div class="text-gray-400 text-xs">AI UX Writer</div>
+        </div>
+      </div>
+      <div class="px-3 py-3 border-b border-gray-200">
+        <button class="w-full flex items-center justify-between px-2.5 py-2 bg-gray-100 hover:bg-gray-200 rounded transition-colors text-left">
+          <div class="flex items-center gap-2">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#6b7280" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+            <span class="text-sm text-gray-800 font-medium">Global</span>
+          </div>
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#64748b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+        </button>
+      </div>
+      <nav class="px-3 py-3 space-y-0.5 flex-1 overflow-y-auto">
+        <p class="label-caps text-slate-500 px-2 pb-1 pt-1">Workspace</p>
+        <button onclick="showScreen('editor')" class="w-full flex items-center gap-2.5 px-2.5 py-2 bg-primary-50 rounded text-primary-600 text-sm font-medium text-left">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+          Editor
+        </button>
+        <button onclick="showScreen('library')" class="w-full flex items-center gap-2.5 px-2.5 py-2 hover:bg-gray-100 rounded text-gray-600 hover:text-gray-900 text-sm transition-colors text-left">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+          Library
+        </button>
+        <button onclick="showScreen('admin')" class="w-full flex items-center gap-2.5 px-2.5 py-2 hover:bg-gray-100 rounded text-gray-600 hover:text-gray-900 text-sm transition-colors text-left">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></svg>
+          Admin
+        </button>
+        <div class="pt-3">
+          <div class="flex items-center justify-between px-2 pb-1">
+            <p class="label-caps text-slate-500">Recent sessions</p>
+            <button class="text-gray-400 hover:text-gray-700 transition-colors">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            </button>
+          </div>
+          <div class="space-y-0.5">
+            <button class="w-full flex items-center px-2.5 py-1.5 bg-gray-100 rounded text-gray-800 text-xs text-left truncate">Error message for file upload</button>
+            <button class="w-full flex items-center px-2.5 py-1.5 hover:bg-gray-100 rounded text-gray-500 hover:text-gray-800 text-xs transition-colors text-left truncate">Button copy for checkout flow</button>
+            <button class="w-full flex items-center px-2.5 py-1.5 hover:bg-gray-100 rounded text-gray-500 hover:text-gray-800 text-xs transition-colors text-left truncate">Modal copy - delete confirmation</button>
+          </div>
+        </div>
+      </nav>
+      <div class="px-3 py-3 border-t border-gray-200">
+        <button class="w-full flex items-center gap-2.5 px-2.5 py-2 hover:bg-gray-100 rounded transition-colors text-left">
+          <div class="w-6 h-6 rounded-full bg-primary-500 flex items-center justify-center flex-shrink-0">
+            <span class="text-white text-xs font-semibold">CW</span>
+          </div>
+          <div class="flex-1 min-w-0">
+            <p class="text-sm text-gray-800 font-medium truncate">Chloe Wong</p>
+            <p class="text-xs text-slate-500 truncate">GovTech</p>
+          </div>
+        </button>
+      </div>
+    </aside>
+
+    <!-- Editor panels -->
+    <div class="flex flex-1 overflow-hidden">
+
+      <!-- Left panel: filled input -->
+      <div class="w-96 flex-shrink-0 bg-slate-50 border-r border-slate-200 flex flex-col">
+        <div class="px-5 py-4 border-b border-slate-200">
+          <h2 class="text-sm font-semibold text-slate-900 mb-0.5">Session</h2>
+          <p class="text-xs text-slate-500">Global · Error messages</p>
+        </div>
+
+        <div class="px-5 py-4 border-b border-slate-200 space-y-3">
+          <div>
+            <label class="block text-xs font-medium text-slate-600 mb-1.5">Element type</label>
+            <select class="w-full h-8 px-2.5 text-sm border border-slate-300 rounded bg-white text-slate-700 appearance-none">
+              <option>Error messages</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="px-5 py-4 flex flex-col flex-1">
+          <label class="block text-xs font-medium text-slate-600 mb-1.5">Copy or description</label>
+          <textarea
+            class="flex-1 min-h-0 px-3 py-2.5 text-sm border border-primary-500 rounded bg-white text-slate-900 resize-none leading-relaxed ring-2 ring-primary-100"
+          >Review this error message: "File upload failed. Please try again."</textarea>
+          <button onclick="showScreen('editor-response')" class="mt-3 w-full h-9 bg-primary-500 hover:bg-primary-600 text-white text-sm font-medium rounded transition-colors flex items-center justify-center gap-2">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+            Get suggestions
+          </button>
+        </div>
+      </div>
+
+      <!-- Right panel: response -->
+      <div class="flex-1 bg-white overflow-y-auto">
+        <div class="p-8 max-w-2xl fade-in">
+
+          <!-- Source label -->
+          <div class="flex items-center gap-2 mb-5">
+            <span class="inline-flex items-center gap-1.5 px-2.5 py-1 bg-amber-50 text-amber-700 border border-amber-200 text-xs font-medium rounded">
+              <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+              AI-generated
+            </span>
+            <span class="text-xs text-slate-400">No library match found · Generated from error message pattern</span>
+          </div>
+
+          <!-- Inferred context -->
+          <div class="flex flex-wrap gap-1.5 mb-5">
+            <span class="inline-flex items-center gap-1 px-2 py-0.5 bg-slate-100 text-slate-600 text-xs rounded-full">
+              <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+              Inferred: Error messages
+            </span>
+            <span class="inline-flex items-center gap-1 px-2 py-0.5 bg-slate-100 text-slate-600 text-xs rounded-full">
+              <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+              Context: File upload
+            </span>
+          </div>
+
+          <!-- Copy card -->
+          <div class="border border-slate-200 rounded-lg p-5 mb-3 bg-white hover:border-slate-300 transition-colors">
+            <p class="font-mono text-sm text-slate-900 leading-relaxed">Upload failed. Please try again or <a href="#" class="text-primary-500 underline underline-offset-2">contact support</a> if the problem continues.</p>
+          </div>
+
+          <!-- Actions row -->
+          <div class="flex items-center justify-between mb-6">
+            <div class="flex items-center gap-1.5">
+              <span class="text-xs text-slate-400">72 characters</span>
+            </div>
+            <div class="flex items-center gap-1">
+              <button class="h-7 px-3 flex items-center gap-1.5 text-xs font-medium text-slate-600 hover:bg-slate-100 rounded transition-colors border border-slate-200">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+                Copy
+              </button>
+              <button class="h-7 px-3 flex items-center gap-1.5 text-xs font-medium text-slate-600 hover:bg-slate-100 rounded transition-colors border border-slate-200">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+                Edit
+              </button>
+              <button class="h-7 px-3 flex items-center gap-1.5 text-xs font-medium text-slate-600 hover:bg-slate-100 rounded transition-colors border border-slate-200">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m19 21-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16z"/></svg>
+                Save
+              </button>
+            </div>
+          </div>
+
+          <!-- Divider -->
+          <div class="border-t border-slate-100 mb-5"></div>
+
+          <!-- Rationale (collapsible) -->
+          <div class="mb-3">
+            <button onclick="toggleCollapsible('rationale')" class="w-full flex items-center justify-between text-sm font-medium text-slate-700 hover:text-slate-900 transition-colors py-1">
+              <span>Rationale</span>
+              <svg id="chevron-rationale" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="transition-transform"><polyline points="6 9 12 15 18 9"/></svg>
+            </button>
+            <div id="collapsible-rationale" style="display:none;">
+              <p class="text-sm text-slate-600 leading-relaxed mt-2 max-w-prose">The original message "File upload failed. Please try again." is brief but lacks a recovery path for persistent failures. The revision adds an escape valve ("contact support if the problem continues") without over-explaining. The phrasing "Upload failed" is shorter than "File upload failed" — consistent with the patterns guideline to front-load the problem type.</p>
+            </div>
+          </div>
+
+          <!-- Guidelines met (collapsible) -->
+          <div class="mb-5">
+            <button onclick="toggleCollapsible('guidelines')" class="w-full flex items-center justify-between text-sm font-medium text-slate-700 hover:text-slate-900 transition-colors py-1">
+              <span>Guidelines met</span>
+              <svg id="chevron-guidelines" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="transition-transform"><polyline points="6 9 12 15 18 9"/></svg>
+            </button>
+            <div id="collapsible-guidelines" style="display:none;">
+              <ul class="mt-2 space-y-1.5">
+                <li class="flex items-start gap-2">
+                  <svg class="mt-0.5 flex-shrink-0" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#059669" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                  <span class="text-sm text-slate-600">Error pattern: state what failed, then what to do next</span>
+                </li>
+                <li class="flex items-start gap-2">
+                  <svg class="mt-0.5 flex-shrink-0" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#059669" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                  <span class="text-sm text-slate-600">Voice: plain language, no jargon, active voice</span>
+                </li>
+                <li class="flex items-start gap-2">
+                  <svg class="mt-0.5 flex-shrink-0" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#059669" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                  <span class="text-sm text-slate-600">Accessibility: recovery path included for persistent errors</span>
+                </li>
+                <li class="flex items-start gap-2">
+                  <svg class="mt-0.5 flex-shrink-0" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#059669" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                  <span class="text-sm text-slate-600">Style: sentence case, no full stop on button-style short messages</span>
+                </li>
+              </ul>
+            </div>
+          </div>
+
+          <!-- More options -->
+          <button class="text-sm text-primary-500 hover:text-primary-600 font-medium flex items-center gap-1.5 transition-colors">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
+            Generate 2 alternatives
+          </button>
+
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- ─────────────────────────────────────────────────────── -->
+<!-- SCREEN: Library                                        -->
+<!-- ─────────────────────────────────────────────────────── -->
+<div id="screen-library" class="min-h-screen bg-white" style="display:none;">
+  <div class="flex h-screen">
+
+    <!-- Sidebar (condensed repeat) -->
+    <aside class="w-60 flex-shrink-0 bg-white border-r border-gray-200 flex flex-col h-full overflow-hidden">
+      <div class="flex items-center gap-2.5 px-4 py-4 border-b border-gray-200">
+        <div class="w-7 h-7 bg-primary-500 rounded-md flex items-center justify-center flex-shrink-0">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+        </div>
+        <div>
+          <div class="text-gray-900 font-semibold text-sm leading-tight">Lorem</div>
+          <div class="text-gray-400 text-xs">AI UX Writer</div>
+        </div>
+      </div>
+      <nav class="px-3 py-3 space-y-0.5 flex-1">
+        <p class="label-caps text-slate-500 px-2 pb-1 pt-1">Workspace</p>
+        <button onclick="showScreen('editor')" class="w-full flex items-center gap-2.5 px-2.5 py-2 hover:bg-gray-100 rounded text-gray-600 hover:text-gray-900 text-sm transition-colors text-left">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+          Editor
+        </button>
+        <button class="w-full flex items-center gap-2.5 px-2.5 py-2 bg-primary-50 rounded text-primary-600 text-sm font-medium text-left">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+          Library
+        </button>
+        <button onclick="showScreen('admin')" class="w-full flex items-center gap-2.5 px-2.5 py-2 hover:bg-gray-100 rounded text-gray-600 hover:text-gray-900 text-sm transition-colors text-left">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></svg>
+          Admin
+        </button>
+      </nav>
+      <div class="px-3 py-3 border-t border-gray-200">
+        <button class="w-full flex items-center gap-2.5 px-2.5 py-2 hover:bg-gray-100 rounded transition-colors text-left">
+          <div class="w-6 h-6 rounded-full bg-primary-500 flex items-center justify-center flex-shrink-0"><span class="text-white text-xs font-semibold">CW</span></div>
+          <div class="flex-1 min-w-0"><p class="text-sm text-gray-800 font-medium truncate">Chloe Wong</p></div>
+        </button>
+      </div>
+    </aside>
+
+    <!-- Main content -->
+    <div class="flex-1 overflow-y-auto">
+
+      <!-- Top bar with search -->
+      <div class="sticky top-0 bg-white border-b border-slate-200 px-6 py-3 flex items-center gap-3 z-10">
+        <div class="flex-1 max-w-lg flex items-stretch border border-slate-300 rounded overflow-hidden bg-white focus-within:border-primary-500 focus-within:ring-2 focus-within:ring-primary-100 transition-all">
+          <div class="relative flex-shrink-0">
+            <select onchange="libProduct=this.value;renderLibrary()" class="h-8 pl-2.5 pr-7 text-sm text-slate-600 bg-transparent border-r border-slate-200 appearance-none cursor-pointer focus:outline-none">
+              <option value="all">All products</option>
+              <option value="psc">PSC</option>
+              <option value="global">Global</option>
+              <option value="mylegacy">MyLegacy</option>
+            </select>
+            <svg class="pointer-events-none absolute right-1.5 top-1/2 -translate-y-1/2 text-slate-400" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+          </div>
+          <div class="relative flex-1">
+            <svg class="absolute left-2.5 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+            <input type="text" placeholder="Search copy strings, tags, context…" class="w-full h-8 pl-8 pr-3 text-sm bg-transparent border-0 text-slate-900 placeholder-slate-400 focus:outline-none" oninput="libSearch=this.value;renderLibrary()" />
+          </div>
+        </div>
+        <div class="flex items-center gap-1.5">
+          <span class="text-xs text-slate-500 mr-1">Filter:</span>
+          <button data-lib-filter="all" onclick="setLibFilter('all')" class="h-7 px-3 text-xs font-medium rounded-full border border-primary-300 bg-primary-50 text-primary-600">All</button>
+          <button data-lib-filter="buttons" onclick="setLibFilter('buttons')" class="h-7 px-3 text-xs font-medium rounded-full border border-slate-200 text-slate-600 hover:bg-slate-50">Buttons</button>
+          <button data-lib-filter="errors" onclick="setLibFilter('errors')" class="h-7 px-3 text-xs font-medium rounded-full border border-slate-200 text-slate-600 hover:bg-slate-50">Errors</button>
+          <button data-lib-filter="forms" onclick="setLibFilter('forms')" class="h-7 px-3 text-xs font-medium rounded-full border border-slate-200 text-slate-600 hover:bg-slate-50">Forms</button>
+          <button data-lib-filter="content" onclick="setLibFilter('content')" class="h-7 px-3 text-xs font-medium rounded-full border border-slate-200 text-slate-600 hover:bg-slate-50">Content</button>
+        </div>
+        <div class="flex items-center gap-0.5 pl-3 border-l border-slate-200">
+          <button id="layout-grid" onclick="setLayout('grid')" title="Grid view" class="h-7 w-7 flex items-center justify-center rounded text-primary-500 bg-primary-50 transition-colors"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg></button>
+          <button id="layout-rows" onclick="setLayout('rows')" title="List view" class="h-7 w-7 flex items-center justify-center rounded text-slate-400 hover:bg-slate-50 transition-colors"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="21" y1="6" x2="3" y2="6"/><line x1="21" y1="12" x2="3" y2="12"/><line x1="21" y1="18" x2="3" y2="18"/></svg></button>
+          <button id="layout-grouped" onclick="setLayout('grouped')" title="Grouped by section" class="h-7 w-7 flex items-center justify-center rounded text-slate-400 hover:bg-slate-50 transition-colors"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></svg></button>
+        </div>
+      </div>
+
+      <div class="p-6">
+        <div class="flex items-center justify-between mb-5">
+          <div>
+            <h1 class="text-base font-semibold text-slate-900">Copy library</h1>
+            <p class="text-xs text-slate-500 mt-0.5" id="library-count">78 entries · PSC Section 1</p>
+          </div>
+        </div>
+
+        <!-- Entry grid (populated by JS) -->
+        <div id="library-grid"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ─────────────────────────────────────────────────────── -->
+<!-- SCREEN: Admin                                          -->
+<!-- ─────────────────────────────────────────────────────── -->
+<div id="screen-admin" class="min-h-screen bg-white" style="display:none;">
+  <div class="flex h-screen">
+
+    <!-- Sidebar -->
+    <aside class="w-60 flex-shrink-0 bg-white border-r border-gray-200 flex flex-col h-full overflow-hidden">
+      <div class="flex items-center gap-2.5 px-4 py-4 border-b border-gray-200">
+        <div class="w-7 h-7 bg-primary-500 rounded-md flex items-center justify-center flex-shrink-0">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+        </div>
+        <div>
+          <div class="text-gray-900 font-semibold text-sm leading-tight">Lorem</div>
+          <div class="text-gray-400 text-xs">AI UX Writer</div>
+        </div>
+      </div>
+      <nav class="px-3 py-3 space-y-0.5 flex-1">
+        <p class="label-caps text-slate-500 px-2 pb-1 pt-1">Workspace</p>
+        <button onclick="showScreen('editor')" class="w-full flex items-center gap-2.5 px-2.5 py-2 hover:bg-gray-100 rounded text-gray-600 hover:text-gray-900 text-sm transition-colors text-left">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+          Editor
+        </button>
+        <button onclick="showScreen('library')" class="w-full flex items-center gap-2.5 px-2.5 py-2 hover:bg-gray-100 rounded text-gray-600 hover:text-gray-900 text-sm transition-colors text-left">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+          Library
+        </button>
+        <button class="w-full flex items-center gap-2.5 px-2.5 py-2 bg-primary-50 rounded text-primary-600 text-sm font-medium text-left">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></svg>
+          Admin
+        </button>
+      </nav>
+      <div class="px-3 py-3 border-t border-gray-200">
+        <button class="w-full flex items-center gap-2.5 px-2.5 py-2 hover:bg-gray-100 rounded transition-colors text-left">
+          <div class="w-6 h-6 rounded-full bg-primary-500 flex items-center justify-center flex-shrink-0"><span class="text-white text-xs font-semibold">CW</span></div>
+          <div class="flex-1 min-w-0"><p class="text-sm text-gray-800 font-medium truncate">Chloe Wong</p><p class="text-xs text-amber-500 truncate">Admin</p></div>
+        </button>
+      </div>
+    </aside>
+
+    <!-- Admin main -->
+    <div class="flex-1 overflow-y-auto">
+      <div class="sticky top-0 bg-white border-b border-slate-200 px-6 py-3 z-10">
+        <div class="flex items-center justify-between">
+          <h1 class="text-base font-semibold text-slate-900">Admin</h1>
+        </div>
+        <!-- Tabs -->
+        <div class="flex gap-0 mt-3 -mb-3">
+          <button class="px-4 py-2 text-sm font-medium text-primary-500 border-b-2 border-primary-500">Copy library</button>
+          <button class="px-4 py-2 text-sm font-medium text-slate-500 hover:text-slate-700 border-b-2 border-transparent">Foundations &amp; patterns</button>
+          <button class="px-4 py-2 text-sm font-medium text-slate-500 hover:text-slate-700 border-b-2 border-transparent">Products</button>
+          <button class="px-4 py-2 text-sm font-medium text-slate-500 hover:text-slate-700 border-b-2 border-transparent">Users</button>
+        </div>
+      </div>
+
+      <div class="p-6">
+        <!-- Actions bar -->
+        <div class="flex items-center justify-between mb-4">
+          <div class="flex items-center gap-2">
+            <div class="relative">
+              <svg class="absolute left-2.5 top-1/2 -translate-y-1/2 text-slate-400" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+              <input type="text" placeholder="Filter entries…" class="h-8 pl-8 pr-3 w-52 text-sm border border-slate-300 rounded bg-white text-slate-900 placeholder-slate-400" oninput="adminSearch=this.value;adminPage=1;renderAdmin()" />
+            </div>
+            <select onchange="adminFilter=this.value;adminPage=1;renderAdmin()" class="h-8 px-2.5 text-sm border border-slate-300 rounded bg-white text-slate-600 appearance-none">
+              <option value="all">All types</option>
+              <option value="buttons">Buttons</option>
+              <option value="errors">Errors</option>
+              <option value="forms">Forms</option>
+              <option value="content">Content</option>
+            </select>
+            <select onchange="adminProduct=this.value;adminPage=1;renderAdmin()" class="h-8 px-2.5 text-sm border border-slate-300 rounded bg-white text-slate-600 appearance-none">
+              <option value="all">All products</option>
+              <option value="psc">PSC</option>
+            </select>
+          </div>
+          <div class="flex items-center gap-2">
+            <button class="h-8 px-3 text-sm font-medium text-slate-600 border border-slate-300 rounded hover:bg-slate-50 transition-colors flex items-center gap-1.5">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+              Import JSON
+            </button>
+            <button class="h-8 px-3 text-sm font-medium text-white bg-primary-500 hover:bg-primary-600 rounded transition-colors flex items-center gap-1.5">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+              Add entry
+            </button>
+          </div>
+        </div>
+
+        <!-- Table -->
+        <div class="border border-slate-200 rounded-lg overflow-hidden">
+          <table class="w-full text-sm">
+            <thead>
+              <tr class="bg-slate-50 border-b border-slate-200">
+                <th class="text-left px-4 py-2.5 text-xs font-medium text-slate-500 uppercase tracking-wider w-32">Type</th>
+                <th class="text-left px-4 py-2.5 text-xs font-medium text-slate-500 uppercase tracking-wider">Copy preview</th>
+                <th class="text-left px-4 py-2.5 text-xs font-medium text-slate-500 uppercase tracking-wider w-28">Product</th>
+                <th class="text-left px-4 py-2.5 text-xs font-medium text-slate-500 uppercase tracking-wider w-24">Status</th>
+                <th class="text-left px-4 py-2.5 text-xs font-medium text-slate-500 uppercase tracking-wider w-24">Links</th>
+                <th class="text-right px-4 py-2.5 text-xs font-medium text-slate-500 uppercase tracking-wider w-32">Actions</th>
+              </tr>
+            </thead>
+            <tbody id="admin-tbody" class="divide-y divide-slate-100">
+              <!-- Populated by JS -->
+            </tbody>
+          </table>
+        </div>
+
+        <div class="flex items-center justify-between mt-4">
+          <p class="text-xs text-slate-500" id="admin-count">Showing 1–20 of 78 entries</p>
+          <div class="flex items-center gap-1" id="admin-pagination">
+            <!-- Populated by JS -->
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ─────────────────────────────────────────────────────── -->
+<!-- MODAL: Edit links                                      -->
+<!-- ─────────────────────────────────────────────────────── -->
+<div id="edit-modal" class="fixed inset-0 z-50 items-center justify-center p-4" style="display:none;">
+  <div class="absolute inset-0 bg-slate-900/50" onclick="closeEditModal()"></div>
+  <div class="relative bg-white rounded-lg border border-slate-200 shadow-xl w-full max-w-md">
+    <div class="flex items-center justify-between px-5 py-4 border-b border-slate-200">
+      <h2 class="text-sm font-semibold text-slate-900">Edit links</h2>
+      <button onclick="closeEditModal()" class="text-slate-400 hover:text-slate-700 transition-colors rounded p-0.5">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>
+    <div class="px-5 py-3 bg-slate-50 border-b border-slate-200">
+      <p id="modal-entry-id" class="text-xs text-slate-400 font-mono mb-1"></p>
+      <p id="modal-entry-copy" class="text-sm text-slate-800 font-mono leading-relaxed line-clamp-2"></p>
+    </div>
+    <div class="px-5 py-5 space-y-4">
+      <div>
+        <label class="block text-xs font-medium text-slate-700 mb-1.5" for="modal-figma-url">Figma URL</label>
+        <input id="modal-figma-url" type="url" placeholder="https://figma.com/file/…"
+          class="w-full h-9 px-3 text-sm border border-slate-300 rounded bg-white text-slate-900 placeholder-slate-400 hover:border-slate-400" />
+        <p class="text-xs text-slate-400 mt-1">Link to the Figma frame or component where this copy is used.</p>
+      </div>
+      <div>
+        <label class="block text-xs font-medium text-slate-700 mb-1.5" for="modal-screenshot-url">Screenshot URL</label>
+        <input id="modal-screenshot-url" type="url" placeholder="https://…"
+          class="w-full h-9 px-3 text-sm border border-slate-300 rounded bg-white text-slate-900 placeholder-slate-400 hover:border-slate-400" />
+        <p class="text-xs text-slate-400 mt-1">Direct link to a screenshot showing this copy in context.</p>
+      </div>
+    </div>
+    <div class="flex items-center justify-end gap-2 px-5 py-4 border-t border-slate-200">
+      <button onclick="closeEditModal()" class="h-8 px-4 text-sm font-medium text-slate-600 border border-slate-300 rounded hover:bg-slate-50 transition-colors">Cancel</button>
+      <button onclick="saveEditModal()" class="h-8 px-4 text-sm font-medium text-white bg-primary-500 hover:bg-primary-600 rounded transition-colors">Save</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  // ─── Data ─────────────────────────────────────────────────
+  const ENTRIES = [
+    {id:"psc-s1-001",element_type:"content",copy:"Scholarship Application Form",context:"Page heading for the entire PSC scholarship application. Shown across all five sections.",tags:["heading","page-title","application"],status:"active",screenshot_url:"#"},
+    {id:"psc-s1-002",element_type:"forms",copy:"All fields marked with * are required. You may return to update your details at any time before submitting the form.",context:"Page-level instruction shown at the top of every section in the application form.",tags:["instruction","required-fields","save-and-return","form"],status:"active"},
+    {id:"psc-s1-003",element_type:"forms",copy:"Provide your personal details below. Some of the following fields are government verified and are not editable through this service.",context:"Section instruction for 1.1 Personal Details. Explains Myinfo pre-fill behaviour before the user sees disabled fields.",tags:["instruction","myinfo","pre-filled","personal-details"],status:"active"},
+    {id:"psc-s1-004",element_type:"content",copy:"Learn how to update your Myinfo details if it's outdated.",context:"Link text in the Applicant Details section. Appears near pre-filled fields.",tags:["link","myinfo","update","pre-filled"],status:"active"},
+    {id:"psc-s1-005",element_type:"forms",copy:"NRIC / FIN*",context:"Field label for the applicant's identity number. Pre-filled from Myinfo; not editable.",tags:["identity","nric","fin","myinfo","pre-filled"],status:"active",figma_url:"#",screenshot_url:"#"},
+    {id:"psc-s1-006",element_type:"forms",copy:"Full Name (as in NRIC)*",context:"Field label for the applicant's full name. Pre-filled from Myinfo; not editable.",tags:["name","nric","myinfo","pre-filled"],status:"active",figma_url:"#"},
+    {id:"psc-s1-007",element_type:"forms",copy:"Sex*",context:"Field label for the applicant's sex. Pre-filled from Myinfo; not editable.",tags:["sex","myinfo","pre-filled"],status:"active"},
+    {id:"psc-s1-008",element_type:"forms",copy:"Race*",context:"Field label for the applicant's race. Dropdown; not pre-filled from Myinfo.",tags:["race","dropdown"],status:"active"},
+    {id:"psc-s1-009",element_type:"forms",copy:"Religion",context:"Field label for the applicant's religion. Dropdown; optional.",tags:["religion","dropdown","optional"],status:"active"},
+    {id:"psc-s1-010",element_type:"forms",copy:"Date of Birth*",context:"Field label for the applicant's date of birth. Pre-filled from Myinfo; not editable. DD/MM/YYYY format.",tags:["date-of-birth","myinfo","pre-filled"],status:"active"},
+    {id:"psc-s1-011",element_type:"forms",copy:"Place of Birth*",context:"Field label for the applicant's place of birth. Pre-filled from Myinfo; not editable.",tags:["place-of-birth","myinfo","pre-filled"],status:"active"},
+    {id:"psc-s1-012",element_type:"forms",copy:"Citizenship*",context:"Field label for the applicant's citizenship status. Pre-filled from Myinfo; not editable.",tags:["citizenship","myinfo","pre-filled"],status:"active"},
+    {id:"psc-s1-013",element_type:"forms",copy:"Marital Status*",context:"Field label for the applicant's marital status. Dropdown.",tags:["marital-status","dropdown"],status:"active"},
+    {id:"psc-s1-014",element_type:"forms",copy:"Do you currently hold or have you previously held any Citizenship or Permanent Residence (PR) status from other countries?*",context:"Yes/No question in the Applicant Details section. Triggers two conditional fields when Yes is selected.",tags:["citizenship","pr","yes-no","conditional"],status:"active"},
+    {id:"psc-s1-015",element_type:"forms",copy:"Other Citizenship (Currently Held)",context:"Conditional field label. Shown when the applicant answers Yes to the citizenship/PR question. Optional field.",tags:["citizenship","conditional","optional"],status:"active"},
+    {id:"psc-s1-016",element_type:"forms",copy:"Other Citizenship (Previously Held)",context:"Conditional field label. Shown when the applicant answers Yes to the citizenship/PR question. Optional field.",tags:["citizenship","conditional","optional"],status:"active"},
+    {id:"psc-s1-017",element_type:"forms",copy:"Contact Number*",context:"Field label for the applicant's primary contact number. +65 prefix shown in UI.",tags:["contact-number","phone"],status:"active"},
+    {id:"psc-s1-018",element_type:"forms",copy:"Enter phone number",context:"Placeholder for the Contact Number field. The +65 prefix is shown separately in the UI.",tags:["placeholder","contact-number"],status:"active"},
+    {id:"psc-s1-019",element_type:"forms",copy:"Alternative Contact Number",context:"Field label for an optional secondary contact number. +65 prefix shown in UI.",tags:["contact-number","alternative","optional"],status:"active"},
+    {id:"psc-s1-020",element_type:"forms",copy:"Email Address*",context:"Field label for the applicant's email address.",tags:["email"],status:"active"},
+    {id:"psc-s1-021",element_type:"forms",copy:"Enter email address",context:"Placeholder for the Email Address field.",tags:["placeholder","email"],status:"active"},
+    {id:"psc-s1-022",element_type:"errors",copy:"Invalid contact number. Enter a valid 8-digit contact number.",context:"Inline error on the Contact Number field when the number format is invalid.",tags:["error","contact-number","validation","format"],status:"active",figma_url:"#",screenshot_url:"#"},
+    {id:"psc-s1-023",element_type:"errors",copy:"Contact number must only contain digits",context:"Inline error when non-numeric characters are entered in the Contact Number or Alternative Contact Number fields.",tags:["error","contact-number","validation","characters"],status:"review"},
+    {id:"psc-s1-024",element_type:"errors",copy:"Alternative contact number cannot be the same as your primary number",context:"Inline error when the alternative contact number entered matches the primary contact number.",tags:["error","contact-number","alternative","duplicate"],status:"review"},
+    {id:"psc-s1-025",element_type:"errors",copy:"Enter a valid email address (e.g., name@example.com)",context:"Inline error on the Email Address field when the format is invalid.",tags:["error","email","validation","format"],status:"active"},
+    {id:"psc-s1-026",element_type:"forms",copy:"Are you currently residing overseas?*",context:"Yes/No question that branches the Residential Address section.",tags:["residential-address","yes-no","conditional","overseas"],status:"active"},
+    {id:"psc-s1-027",element_type:"forms",copy:"Type of Dwelling*",context:"Conditional field label for the type of residential dwelling. Shown when applicant is residing in Singapore. Dropdown.",tags:["residential-address","dwelling","conditional","dropdown"],status:"active"},
+    {id:"psc-s1-028",element_type:"forms",copy:"Block/House Number*",context:"Conditional field label for block or house number of Singapore residential address.",tags:["residential-address","address","conditional"],status:"active"},
+    {id:"psc-s1-029",element_type:"forms",copy:"Enter block or house number",context:"Placeholder for Block/House Number field.",tags:["placeholder","address"],status:"active"},
+    {id:"psc-s1-030",element_type:"forms",copy:"Street Name",context:"Optional field label for street name in Singapore address.",tags:["residential-address","address","optional","conditional"],status:"active"},
+    {id:"psc-s1-031",element_type:"forms",copy:"Unit Number",context:"Optional field label for unit number in Singapore address (e.g. #08-123).",tags:["residential-address","unit","optional","conditional"],status:"active"},
+    {id:"psc-s1-032",element_type:"forms",copy:"Building Name",context:"Optional field label for the name of the building in a Singapore address.",tags:["residential-address","building","optional","conditional"],status:"active"},
+    {id:"psc-s1-033",element_type:"forms",copy:"Postal Code*",context:"Required field label for Singapore postal code in residential address.",tags:["residential-address","postal-code","conditional"],status:"active"},
+    {id:"psc-s1-034",element_type:"errors",copy:"Invalid postal code",context:"Inline error on the Postal Code field when the format is invalid.",tags:["error","postal-code","validation"],status:"review"},
+    {id:"psc-s1-035",element_type:"forms",copy:"Address*",context:"Free-text field label for overseas residential address. Shown when applicant selects Yes to 'Are you currently residing overseas?'",tags:["residential-address","overseas","conditional"],status:"active"},
+    {id:"psc-s1-036",element_type:"forms",copy:"Language(s) Spoken*",context:"Multi-select dropdown label for languages spoken by the applicant.",tags:["language","multi-select"],status:"active"},
+    {id:"psc-s1-037",element_type:"forms",copy:"Language(s) Written*",context:"Multi-select dropdown label for languages written by the applicant.",tags:["language","multi-select"],status:"active"},
+    {id:"psc-s1-038",element_type:"forms",copy:"You may select more than one",context:"Hint text below the Language(s) Spoken and Language(s) Written multi-select fields.",tags:["hint","multi-select","language"],status:"active"},
+    {id:"psc-s1-039",element_type:"content",copy:"Add your household income and family members.",context:"Section instruction for 1.2 Family Details. Shown at the top of the subsection before the income field and Add Family Member button.",tags:["instruction","family-details","household-income"],status:"active"},
+    {id:"psc-s1-040",element_type:"forms",copy:"Monthly Household Income*",context:"Field label for the household's combined monthly income. SGD $ prefix shown in the UI.",tags:["household-income","financial"],status:"active"},
+    {id:"psc-s1-041",element_type:"errors",copy:"Invalid format. Enter a number",context:"Inline error on the Monthly Household Income field when non-numeric characters are entered.",tags:["error","household-income","validation","format"],status:"review"},
+    {id:"psc-s1-042",element_type:"buttons",copy:"Add Family Member",context:"Button that opens the family member entry form in Section 1.2 Family Details.",tags:["button","family-member","add"],status:"active",figma_url:"#"},
+    {id:"psc-s1-043",element_type:"forms",copy:"Relationship*",context:"Dropdown field label for the family member's relationship to the applicant.",tags:["family-member","relationship","dropdown"],status:"active"},
+    {id:"psc-s1-044",element_type:"forms",copy:"Full Name (as in NRIC or passport)*",context:"Field label for the family member's full name in the family member form.",tags:["name","nric","passport","family-member"],status:"active"},
+    {id:"psc-s1-045",element_type:"forms",copy:"Enter full name",context:"Placeholder for the Full Name (as in NRIC or passport) field in the family member form.",tags:["placeholder","name","family-member"],status:"active"},
+    {id:"psc-s1-046",element_type:"forms",copy:"ID Type*",context:"Dropdown field label for the type of identification document for the family member.",tags:["identity","id-type","dropdown","family-member"],status:"active"},
+    {id:"psc-s1-047",element_type:"forms",copy:"NRIC / FIN / Passport Number*",context:"Field label for the family member's identification number. Displays after ID Type is selected.",tags:["identity","nric","fin","passport","family-member"],status:"active"},
+    {id:"psc-s1-048",element_type:"forms",copy:"Enter NRIC / FIN / passport number",context:"Placeholder for the NRIC / FIN / Passport Number field.",tags:["placeholder","identity","nric","fin","passport"],status:"active"},
+    {id:"psc-s1-049",element_type:"errors",copy:"Invalid format. Must be a valid NRIC / FIN / passport number.",context:"Inline error on the NRIC / FIN / Passport Number field when the format does not match the selected ID type.",tags:["error","identity","nric","fin","passport","validation"],status:"active"},
+    {id:"psc-s1-050",element_type:"forms",copy:"Date of Birth*",context:"Field label for the family member's date of birth. DD/MM/YYYY format.",tags:["date-of-birth","family-member"],status:"active"},
+    {id:"psc-s1-051",element_type:"errors",copy:"Enter date of birth",context:"Inline error on the Date of Birth field in the family member form when the field is left empty.",tags:["error","date-of-birth","validation","family-member"],status:"review"},
+    {id:"psc-s1-052",element_type:"forms",copy:"Place of Birth*",context:"Dropdown field for the family member's place of birth.",tags:["place-of-birth","dropdown","family-member"],status:"active"},
+    {id:"psc-s1-053",element_type:"forms",copy:"Citizenship*",context:"Dropdown field for the family member's citizenship status.",tags:["citizenship","dropdown","family-member"],status:"active"},
+    {id:"psc-s1-054",element_type:"forms",copy:"Other Citizenship (Currently Held)",context:"Optional field for the family member's other current citizenship. Shown if applicable.",tags:["citizenship","optional","family-member"],status:"active"},
+    {id:"psc-s1-055",element_type:"forms",copy:"Other Citizenship (Previously Held)",context:"Optional field for the family member's previously held citizenship. Shown if applicable.",tags:["citizenship","optional","family-member"],status:"active"},
+    {id:"psc-s1-056",element_type:"forms",copy:"Marital Status*",context:"Dropdown field for the family member's marital status.",tags:["marital-status","dropdown","family-member"],status:"active"},
+    {id:"psc-s1-057",element_type:"errors",copy:"Select marital status",context:"Inline error on the Marital Status dropdown in the family member form when the field is left empty.",tags:["error","marital-status","validation","family-member"],status:"review"},
+    {id:"psc-s1-058",element_type:"forms",copy:"Occupation*",context:"Field label for the family member's occupation.",tags:["occupation","family-member"],status:"active"},
+    {id:"psc-s1-059",element_type:"forms",copy:"Designation*",context:"Field label for the family member's job title or designation.",tags:["designation","family-member"],status:"active"},
+    {id:"psc-s1-060",element_type:"forms",copy:"Organisation Name",context:"Optional field label for the family member's employer or organisation.",tags:["organisation","optional","family-member"],status:"active"},
+    {id:"psc-s1-061",element_type:"forms",copy:"Contact Number",context:"Optional field label for the family member's contact number. +65 prefix shown.",tags:["contact-number","optional","family-member"],status:"active"},
+    {id:"psc-s1-062",element_type:"forms",copy:"Government Scholarship Held",context:"Optional field for the family member's government scholarship, if any.",tags:["scholarship","optional","family-member"],status:"active"},
+    {id:"psc-s1-063",element_type:"buttons",copy:"Add",context:"Primary button in the family member form. Saves and adds the family member to the list.",tags:["button","add","family-member","primary"],status:"active"},
+    {id:"psc-s1-064",element_type:"buttons",copy:"Cancel",context:"Secondary button in the family member form. Discards the entry without saving.",tags:["button","cancel","family-member","secondary"],status:"active"},
+    {id:"psc-s1-065",element_type:"buttons",copy:"Delete",context:"Button to remove an existing family member entry from the list.",tags:["button","delete","destructive","family-member"],status:"active"},
+    {id:"psc-s1-066",element_type:"content",copy:"For females who intend to apply for The SAF Scholarship or The SPF Scholarship, you are also required to fill up this section.",context:"Conditional instruction shown at the top of Section 1.3 National Service/Military Service for female applicants only.",tags:["instruction","national-service","conditional","female-applicants","saf","spf"],status:"active"},
+    {id:"psc-s1-067",element_type:"forms",copy:"National Service Status*",context:"Dropdown field for the applicant's NS status. Determines which subsequent NS fields are shown.",tags:["national-service","dropdown","ns"],status:"active"},
+    {id:"psc-s1-068",element_type:"forms",copy:"Date of Enlistment*",context:"Conditional field for the date the applicant enlisted. Shown for NS statuses: Waiting to be enlisted, Operationally Ready, Regular Service.",tags:["national-service","enlistment","date","conditional"],status:"active"},
+    {id:"psc-s1-069",element_type:"forms",copy:"Operationally Ready Date (ORD)*",context:"Conditional field for the applicant's ORD (NS completion date). Shown for: Operationally Ready, Regular Service.",tags:["national-service","ord","date","conditional"],status:"active"},
+    {id:"psc-s1-070",element_type:"forms",copy:"Rank*",context:"Conditional dropdown for the applicant's NS rank. Shown for: Operationally Ready, Regular Service.",tags:["national-service","rank","dropdown","conditional"],status:"active"},
+    {id:"psc-s1-071",element_type:"forms",copy:"Vocation*",context:"Conditional field for the applicant's NS vocation/role. Shown for: Operationally Ready, Regular Service.",tags:["national-service","vocation","conditional"],status:"active"},
+    {id:"psc-s1-072",element_type:"forms",copy:"Unit*",context:"Conditional field for the applicant's NS unit. Shown for: Operationally Ready, Regular Service.",tags:["national-service","unit","conditional"],status:"active"},
+    {id:"psc-s1-073",element_type:"forms",copy:"Medical Grading (PES)*",context:"Conditional dropdown for the applicant's NS medical fitness grade. Shown for: Operationally Ready, Regular Service.",tags:["national-service","pes","medical","dropdown","conditional"],status:"active"},
+    {id:"psc-s1-074",element_type:"forms",copy:"Medical Grading Reason",context:"Optional free-text field for the applicant to explain their medical grading. 200-character limit.",tags:["national-service","pes","medical","optional","conditional"],status:"active"},
+    {id:"psc-s1-075",element_type:"errors",copy:"Date of Enlistment cannot be later than Operationally Ready Date",context:"Inline error when the Date of Enlistment entered is after the Operationally Ready Date (ORD).",tags:["error","national-service","enlistment","ord","validation","cross-field"],status:"review"},
+    {id:"psc-s1-076",element_type:"buttons",copy:"Save",context:"Secondary action button that saves progress in the current section without advancing to the next one.",tags:["button","save","secondary"],status:"active"},
+    {id:"psc-s1-077",element_type:"buttons",copy:"Next",context:"Primary action button at the bottom of each section. Advances the applicant to the next section.",tags:["button","next","primary","navigation"],status:"active"},
+    {id:"psc-s1-078",element_type:"errors",copy:"Complete the following sections before going to the next step: [dynamic list]",context:"Error message shown when the user selects Next but one or more required sub-sections are incomplete.",tags:["error","validation","incomplete","submission"],status:"active"}
+  ];
+
+  // ─── Config ───────────────────────────────────────────────
+  const TYPE_CONFIG = {
+    forms:   { label: 'Forms',   badge: 'bg-blue-50 text-blue-700 border border-blue-200' },
+    errors:  { label: 'Errors',  badge: 'bg-amber-50 text-amber-700 border border-amber-200' },
+    buttons: { label: 'Buttons', badge: 'bg-emerald-50 text-emerald-700 border border-emerald-200' },
+    content: { label: 'Content', badge: 'bg-violet-50 text-violet-700 border border-violet-200' },
+  };
+
+  // ─── State ────────────────────────────────────────────────
+  let libFilter = 'all', libSearch = '', libProduct = 'all', libLayout = 'grid', libExpandedRow = null;
+  let adminFilter = 'all', adminProduct = 'all', adminSearch = '', adminPage = 1;
+  const PAGE_SIZE = 20;
+
+  // ─── Helpers ──────────────────────────────────────────────
+  function esc(s) {
+    return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  }
+
+  // ─── Library ──────────────────────────────────────────────
+  function getProductFromId(id) {
+    if (id.startsWith('psc-')) return 'psc';
+    if (id.startsWith('mylegacy-')) return 'mylegacy';
+    return 'global';
+  }
+
+  function getLibEntries() {
+    return ENTRIES.filter(e => {
+      if (libFilter !== 'all') {
+        if (libFilter === 'forms') {
+          if (e.element_type !== 'forms' && e.element_type !== 'errors') return false;
+        } else if (e.element_type !== libFilter) {
+          return false;
+        }
+      }
+      if (libProduct !== 'all' && getProductFromId(e.id) !== libProduct) return false;
+      if (libSearch) {
+        const q = libSearch.toLowerCase();
+        if (!e.copy.toLowerCase().includes(q) && !e.context.toLowerCase().includes(q) && !e.tags.some(t => t.includes(q))) return false;
+      }
+      return true;
+    });
+  }
+
+  // ─── Library layouts ──────────────────────────────────────
+  const PSC_SECTIONS = [
+    { label: 'Overview',                range: [1,  2]  },
+    { label: '1.1 Personal details',    range: [3,  25] },
+    { label: '1.2 Address & languages', range: [26, 38] },
+    { label: '1.2 Family details',      range: [39, 65] },
+    { label: '1.3 National service',    range: [66, 75] },
+    { label: 'Navigation',              range: [76, 78] },
+  ];
+
+  function makeCard(e) {
+    const tc = TYPE_CONFIG[e.element_type] || TYPE_CONFIG.forms;
+    const statusBadge = e.status === 'review'
+      ? '<span class="px-2 py-0.5 bg-amber-50 text-amber-700 text-xs rounded border border-amber-200">Review</span>'
+      : '<span class="px-2 py-0.5 bg-emerald-50 text-emerald-700 text-xs rounded">Active</span>';
+    const tags = e.tags.slice(0, 3).map(function(t) {
+      return '<span class="px-1.5 py-0.5 bg-slate-100 text-slate-500 text-xs rounded">' + esc(t) + '</span>';
+    }).join('');
+    const extIcon = '<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>';
+    const imgIcon  = '<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>';
+    let linkItems = '';
+    if (e.figma_url) linkItems += '<a href="' + esc(e.figma_url) + '" target="_blank" onclick="event.stopPropagation()" class="inline-flex items-center gap-1 text-xs text-slate-400 hover:text-[#1ABCFE] transition-colors">' + extIcon + 'Figma</a>';
+    if (e.screenshot_url) linkItems += '<a href="' + esc(e.screenshot_url) + '" target="_blank" onclick="event.stopPropagation()" class="inline-flex items-center gap-1 text-xs text-slate-400 hover:text-slate-700 transition-colors">' + imgIcon + 'Screenshot</a>';
+    const linksRow = linkItems ? '<div class="flex items-center gap-3 mt-3 pt-2.5 border-t border-slate-100">' + linkItems + '</div>' : '';
+    const copyBtn = '<button data-copy="' + esc(e.copy) + '" onclick="event.stopPropagation();navigator.clipboard&&navigator.clipboard.writeText(this.dataset.copy)" class="h-6 px-2 text-xs text-slate-400 border border-slate-200 rounded hover:bg-slate-50 hover:text-slate-700 transition-colors flex-shrink-0">Copy</button>';
+    return '<div class="bg-white border border-slate-200 rounded-lg p-4 hover:border-slate-300 hover:shadow-sm transition-all">'
+      + '<div class="flex items-start justify-between gap-2 mb-2.5">'
+      + '<div class="flex flex-wrap gap-1.5">'
+      + '<span class="px-2 py-0.5 ' + tc.badge + ' text-xs font-medium rounded">' + tc.label + '</span>'
+      + '<span class="px-2 py-0.5 bg-slate-100 text-slate-600 text-xs rounded">PSC</span>'
+      + statusBadge
+      + '</div>'
+      + copyBtn
+      + '</div>'
+      + '<p class="font-mono text-sm text-slate-900 mb-2 leading-relaxed line-clamp-2">' + esc(e.copy) + '</p>'
+      + '<p class="text-xs text-slate-500 leading-relaxed line-clamp-1">' + esc(e.context) + '</p>'
+      + (tags ? '<div class="flex flex-wrap gap-1 mt-2.5">' + tags + '</div>' : '')
+      + linksRow
+      + '</div>';
+  }
+
+  function renderGrid(entries, container) {
+    container.className = 'grid grid-cols-3 gap-3';
+    if (entries.length === 0) {
+      container.innerHTML = '<div class="col-span-3 py-12 text-center text-slate-400 text-sm">No entries match your search.</div>';
+      return;
+    }
+    container.innerHTML = entries.map(makeCard).join('');
+  }
+
+  function renderRows(entries, container) {
+    container.className = 'border border-slate-200 rounded-lg overflow-hidden bg-white';
+    if (entries.length === 0) {
+      container.innerHTML = '<div class="py-12 text-center text-slate-400 text-sm">No entries match your search.</div>';
+      return;
+    }
+    const extIcon = '<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>';
+    const imgIcon  = '<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>';
+    const chevronDown = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>';
+    const chevronUp   = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="18 15 12 9 6 15"/></svg>';
+    container.innerHTML = entries.map(function(e) {
+      const tc = TYPE_CONFIG[e.element_type] || TYPE_CONFIG.forms;
+      const isOpen = libExpandedRow === e.id;
+      const statusDot = e.status === 'review'
+        ? '<span class="w-1.5 h-1.5 rounded-full bg-amber-400 flex-shrink-0" title="Needs review"></span>'
+        : '<span class="w-1.5 h-1.5 rounded-full bg-emerald-400 flex-shrink-0" title="Active"></span>';
+      const linkIcons = (e.figma_url ? '<span class="text-slate-300 hover:text-[#1ABCFE] cursor-pointer transition-colors" title="Figma">' + extIcon + '</span>' : '')
+        + (e.screenshot_url ? '<span class="text-slate-300 hover:text-slate-500 cursor-pointer transition-colors" title="Screenshot">' + imgIcon + '</span>' : '');
+      const allTags = e.tags.map(function(t) {
+        return '<span class="px-1.5 py-0.5 bg-slate-100 text-slate-500 text-xs rounded">' + esc(t) + '</span>';
+      }).join('');
+      const charInfo = e.char_limit ? '<span>Max ' + e.char_limit + ' chars</span>' : '';
+      const copyBtn = '<button data-copy="' + esc(e.copy) + '" onclick="event.stopPropagation();navigator.clipboard&&navigator.clipboard.writeText(this.dataset.copy)" class="h-7 px-2.5 text-xs text-slate-500 border border-slate-200 rounded hover:bg-white hover:text-slate-800 transition-colors">Copy text</button>';
+      return '<div class="border-b border-slate-100 last:border-0">'
+        + '<div class="flex items-center gap-3 px-4 py-2.5 cursor-pointer ' + (isOpen ? 'bg-primary-50' : 'hover:bg-slate-50/60') + ' transition-colors" onclick="toggleRow(\'' + e.id + '\')">'
+        + '<span class="px-1.5 py-0.5 ' + tc.badge + ' text-xs font-medium rounded flex-shrink-0">' + tc.label + '</span>'
+        + '<p class="font-mono text-sm text-slate-800 flex-1 truncate">' + esc(e.copy) + '</p>'
+        + '<div class="flex items-center gap-2 flex-shrink-0">'
+        + statusDot
+        + (linkIcons ? '<div class="flex items-center gap-1">' + linkIcons + '</div>' : '')
+        + '<span class="text-slate-400">' + (isOpen ? chevronUp : chevronDown) + '</span>'
+        + '</div>'
+        + '</div>'
+        + (isOpen
+          ? '<div class="px-4 pb-4 pt-2.5 bg-slate-50/60 border-t border-slate-100">'
+            + '<p class="font-mono text-sm text-slate-900 leading-relaxed mb-2">' + esc(e.copy) + '</p>'
+            + '<p class="text-xs text-slate-500 leading-relaxed mb-3">' + esc(e.context) + '</p>'
+            + (allTags ? '<div class="flex flex-wrap gap-1 mb-3">' + allTags + '</div>' : '')
+            + '<div class="flex items-center justify-between mt-1">'
+            + '<div class="flex items-center gap-4 text-xs text-slate-400">'
+            + '<span class="font-mono">' + esc(e.id) + '</span>'
+            + charInfo
+            + '</div>'
+            + copyBtn
+            + '</div>'
+            + '</div>'
+          : '')
+        + '</div>';
+    }).join('');
+  }
+
+  function toggleRow(id) {
+    libExpandedRow = libExpandedRow === id ? null : id;
+    renderLibrary();
+  }
+
+  function renderGrouped(entries, container) {
+    container.className = '';
+    if (entries.length === 0) {
+      container.innerHTML = '<div class="py-12 text-center text-slate-400 text-sm">No entries match your search.</div>';
+      return;
+    }
+    let html = '';
+    PSC_SECTIONS.forEach(function(section) {
+      const secEntries = entries.filter(function(e) {
+        const num = parseInt(e.id.replace('psc-s1-', ''), 10);
+        return num >= section.range[0] && num <= section.range[1];
+      });
+      if (secEntries.length === 0) return;
+      html += '<div class="mb-8">'
+        + '<div class="flex items-center gap-2.5 mb-3">'
+        + '<span class="text-xs font-semibold text-slate-500 uppercase tracking-wider">' + esc(section.label) + '</span>'
+        + '<span class="text-xs text-slate-400">' + secEntries.length + ' ' + (secEntries.length === 1 ? 'entry' : 'entries') + '</span>'
+        + '<div class="flex-1 h-px bg-slate-100 ml-1"></div>'
+        + '</div>'
+        + '<div class="grid grid-cols-3 gap-3">' + secEntries.map(makeCard).join('') + '</div>'
+        + '</div>';
+    });
+    container.innerHTML = html;
+  }
+
+  function setLayout(type) {
+    libLayout = type;
+    libExpandedRow = null;
+    ['grid', 'rows', 'grouped'].forEach(function(t) {
+      const btn = document.getElementById('layout-' + t);
+      if (!btn) return;
+      btn.className = 'h-7 w-7 flex items-center justify-center rounded transition-colors '
+        + (t === type ? 'text-primary-500 bg-primary-50' : 'text-slate-400 hover:bg-slate-50');
+    });
+    renderLibrary();
+  }
+
+  function renderLibrary() {
+    const entries = getLibEntries();
+    const countEl = document.getElementById('library-count');
+    if (countEl) {
+      countEl.textContent = entries.length === ENTRIES.length
+        ? entries.length + ' entries · PSC Section 1'
+        : entries.length + ' of ' + ENTRIES.length + ' entries · PSC Section 1';
+    }
+    const grid = document.getElementById('library-grid');
+    if (!grid) return;
+    if (libLayout === 'rows') renderRows(entries, grid);
+    else if (libLayout === 'grouped') renderGrouped(entries, grid);
+    else renderGrid(entries, grid);
+  }
+
+  function setLibFilter(type) {
+    libFilter = type;
+    document.querySelectorAll('[data-lib-filter]').forEach(function(btn) {
+      btn.className = btn.dataset.libFilter === type
+        ? 'h-7 px-3 text-xs font-medium rounded-full border border-primary-300 bg-primary-50 text-primary-600'
+        : 'h-7 px-3 text-xs font-medium rounded-full border border-slate-200 text-slate-600 hover:bg-slate-50';
+    });
+    renderLibrary();
+  }
+
+  // ─── Admin ────────────────────────────────────────────────
+  function getAdminEntries() {
+    return ENTRIES.filter(function(e) {
+      if (adminFilter !== 'all' && e.element_type !== adminFilter) return false;
+      if (adminSearch) {
+        const q = adminSearch.toLowerCase();
+        if (!e.copy.toLowerCase().includes(q) && !e.id.toLowerCase().includes(q)) return false;
+      }
+      return true;
+    });
+  }
+
+  function renderAdmin() {
+    const all = getAdminEntries();
+    const total = all.length;
+    const totalPages = Math.max(1, Math.ceil(total / PAGE_SIZE));
+    if (adminPage > totalPages) adminPage = 1;
+    const start = (adminPage - 1) * PAGE_SIZE;
+    const page = all.slice(start, start + PAGE_SIZE);
+
+    const countEl = document.getElementById('admin-count');
+    if (countEl) {
+      const end = Math.min(start + page.length, total);
+      countEl.textContent = total === 0 ? 'No entries' : 'Showing ' + (start + 1) + '\u2013' + end + ' of ' + total + ' entries';
+    }
+
+    const editIcon   = '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>';
+    const delIcon    = '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg>';
+    const figmaIcon  = '<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>';
+    const shotIcon   = '<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>';
+
+    const tbody = document.getElementById('admin-tbody');
+    if (tbody) {
+      if (page.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="6" class="px-4 py-8 text-center text-slate-400 text-sm">No entries found.</td></tr>';
+      } else {
+        tbody.innerHTML = page.map(function(e) {
+          const tc = TYPE_CONFIG[e.element_type] || TYPE_CONFIG.forms;
+          const statusBadge = e.status === 'review'
+            ? '<span class="px-2 py-0.5 bg-amber-50 text-amber-700 text-xs rounded border border-amber-200">Review</span>'
+            : '<span class="px-2 py-0.5 bg-emerald-50 text-emerald-700 text-xs rounded">Active</span>';
+          const secondaryBtn = e.status === 'active'
+            ? '<button class="h-6 px-2 flex items-center text-xs text-slate-400 hover:text-amber-600 hover:bg-amber-50 rounded transition-colors">Deprecate</button>'
+            : '<button class="h-6 px-2 flex items-center text-xs text-primary-500 hover:bg-primary-50 rounded transition-colors font-medium">Publish</button>';
+          let linkCells = '';
+          if (e.figma_url) linkCells += '<a href="' + esc(e.figma_url) + '" target="_blank" title="Open in Figma" class="h-6 w-6 flex items-center justify-center text-slate-400 hover:text-[#1ABCFE] hover:bg-slate-100 rounded transition-colors">' + figmaIcon + '</a>';
+          if (e.screenshot_url) linkCells += '<a href="' + esc(e.screenshot_url) + '" target="_blank" title="View screenshot" class="h-6 w-6 flex items-center justify-center text-slate-400 hover:text-slate-700 hover:bg-slate-100 rounded transition-colors">' + shotIcon + '</a>';
+          const linksCell = '<td class="px-4 py-3"><div class="flex items-center gap-1">' + (linkCells || '<span class="text-slate-300 text-xs">—</span>') + '</div></td>';
+          return '<tr class="hover:bg-slate-50 transition-colors">'
+            + '<td class="px-4 py-3"><span class="px-2 py-0.5 ' + tc.badge + ' text-xs font-medium rounded">' + tc.label + '</span></td>'
+            + '<td class="px-4 py-3 font-mono text-xs text-slate-700 max-w-xs truncate" title="' + esc(e.copy) + '">' + esc(e.copy) + '</td>'
+            + '<td class="px-4 py-3 text-xs text-slate-500">PSC</td>'
+            + '<td class="px-4 py-3">' + statusBadge + '</td>'
+            + linksCell
+            + '<td class="px-4 py-3 text-right"><div class="flex items-center justify-end gap-1">'
+            + '<button onclick="openEditModal(\'' + e.id + '\')" class="h-6 w-6 flex items-center justify-center text-slate-400 hover:text-slate-700 hover:bg-slate-100 rounded transition-colors">' + editIcon + '</button>'
+            + secondaryBtn
+            + '<button class="h-6 w-6 flex items-center justify-center text-slate-400 hover:text-red-600 hover:bg-red-50 rounded transition-colors">' + delIcon + '</button>'
+            + '</div></td></tr>';
+        }).join('');
+      }
+    }
+
+    // Pagination
+    const pg = document.getElementById('admin-pagination');
+    if (pg) {
+      if (totalPages <= 1) { pg.innerHTML = ''; return; }
+      const prevD = adminPage === 1, nextD = adminPage === totalPages;
+      const prevBtn = '<button onclick="goPage(' + (adminPage - 1) + ')" ' + (prevD ? 'disabled ' : '') + 'class="h-7 w-7 flex items-center justify-center border border-slate-200 rounded text-slate-400 hover:bg-slate-50 transition-colors' + (prevD ? ' opacity-40 cursor-not-allowed' : '') + '"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg></button>';
+      const nextBtn = '<button onclick="goPage(' + (adminPage + 1) + ')" ' + (nextD ? 'disabled ' : '') + 'class="h-7 w-7 flex items-center justify-center border border-slate-200 rounded text-slate-400 hover:bg-slate-50 transition-colors' + (nextD ? ' opacity-40 cursor-not-allowed' : '') + '"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg></button>';
+      let pages = '';
+      for (let i = 1; i <= totalPages; i++) {
+        pages += i === adminPage
+          ? '<button class="h-7 w-7 flex items-center justify-center bg-primary-500 text-white text-xs font-medium rounded">' + i + '</button>'
+          : '<button onclick="goPage(' + i + ')" class="h-7 w-7 flex items-center justify-center border border-slate-200 rounded text-slate-600 hover:bg-slate-50 text-xs transition-colors">' + i + '</button>';
+      }
+      pg.innerHTML = prevBtn + pages + nextBtn;
+    }
+  }
+
+  function goPage(n) { adminPage = n; renderAdmin(); }
+
+  // ─── Edit modal ───────────────────────────────────────────
+  let editingId = null;
+
+  function openEditModal(id) {
+    const entry = ENTRIES.find(function(e) { return e.id === id; });
+    if (!entry) return;
+    editingId = id;
+    document.getElementById('modal-entry-id').textContent = id;
+    document.getElementById('modal-entry-copy').textContent = entry.copy;
+    document.getElementById('modal-figma-url').value = entry.figma_url || '';
+    document.getElementById('modal-screenshot-url').value = entry.screenshot_url || '';
+    document.getElementById('edit-modal').style.display = 'flex';
+    document.getElementById('modal-figma-url').focus();
+  }
+
+  function closeEditModal() {
+    document.getElementById('edit-modal').style.display = 'none';
+    editingId = null;
+  }
+
+  function saveEditModal() {
+    if (!editingId) return;
+    const entry = ENTRIES.find(function(e) { return e.id === editingId; });
+    if (!entry) return;
+    const figmaVal = document.getElementById('modal-figma-url').value.trim();
+    const shotVal  = document.getElementById('modal-screenshot-url').value.trim();
+    entry.figma_url      = figmaVal || null;
+    entry.screenshot_url = shotVal  || null;
+    closeEditModal();
+    renderAdmin();
+    renderLibrary();
+  }
+
+  document.addEventListener('keydown', function(ev) {
+    if (ev.key === 'Escape') closeEditModal();
+  });
+
+  // ─── Screen switching ──────────────────────────────────────
+  const SCREENS = ['login','signup','editor','editor-response','library','admin'];
+
+  function showScreen(name) {
+    SCREENS.forEach(function(s) {
+      const el = document.getElementById('screen-' + s);
+      if (el) el.style.display = 'none';
+    });
+    const target = document.getElementById('screen-' + name);
+    if (target) target.style.display = 'flex';
+    SCREENS.forEach(function(s) {
+      const btn = document.getElementById('btn-' + s);
+      if (!btn) return;
+      btn.className = 'px-3 py-1.5 text-xs font-medium rounded transition-colors text-slate-400 hover:text-white hover:bg-slate-800';
+    });
+    const activeBtn = document.getElementById('btn-' + name);
+    if (activeBtn) activeBtn.className = 'px-3 py-1.5 text-xs font-medium rounded transition-colors bg-slate-700 text-white';
+  }
+
+  function toggleCollapsible(id) {
+    const content = document.getElementById('collapsible-' + id);
+    const chevron = document.getElementById('chevron-' + id);
+    const isOpen = content.style.display !== 'none';
+    content.style.display = isOpen ? 'none' : 'block';
+    chevron.style.transform = isOpen ? 'rotate(-90deg)' : 'rotate(0deg)';
+  }
+
+  // ─── Init ─────────────────────────────────────────────────
+  document.addEventListener('DOMContentLoaded', function() {
+    document.getElementById('collapsible-rationale').style.display = 'block';
+    document.getElementById('collapsible-guidelines').style.display = 'block';
+    renderLibrary();
+    renderAdmin();
+    showScreen('login');
+  });
+</script>
+
+</body>
+</html>
